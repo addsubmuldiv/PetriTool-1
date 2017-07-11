@@ -1,0 +1,27 @@
+Net Properties
+
+Select this menu item in order to view the calculated
+Petri Net Properties for the current design.
+
+The properties displayed include safeness, boundedness,
+liveness, conservativeness, and overflows.
+
+A Place is safe if the number of Tokens in the Place
+never exceeds one.  The Petri net is safe if all of the
+Places in the net are safe.
+
+A Place is k-bounded when the number of Tokens in the
+Place never exceeds k.  The Petri net is k-bounded when
+the number of Tokens in any Place in the net never
+exceeds k.
+
+A Petri net is safe if there are no markings in the
+reachability tree such that there are no transitions
+enabled for that marking.
+
+A Petri net is strictly conservative if the number of
+Tokens in the net remains constant for all markings.
+
+An overflow indicates that the number of Tokens in a
+Place exceeded the Place Capacity specified under the
+Options menu.

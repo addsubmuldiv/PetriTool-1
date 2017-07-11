@@ -1,0 +1,10 @@
+Copy
+
+Use this menuitem to copy the currently selected
+Petri Net components to a temporary buffer.
+
+The copied components may then by Pasted back in the
+design window using the Paste option.
+
+See the Pointer help file for information on selecting
+components.

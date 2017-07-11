@@ -1,0 +1,9 @@
+Exit
+
+Use this menu item to exit PetriTool.
+Note that this will cause the loss of any changes
+made to the design since the last Save.
+
+A Dialog will prompt the user to make sure
+that an Exit is really desired.
+

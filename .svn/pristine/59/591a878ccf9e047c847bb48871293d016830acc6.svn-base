@@ -1,0 +1,124 @@
+//****************************************************************************
+// CLASS NAME:	InfoDialog.java
+//
+// AUTHOR:	Rick Brink
+//		    rick@mail.csh.rit.edu
+//		    http://www.csh.rit.edu/~rick
+//
+//          Adapted from an example in "Java in a Nutshell"
+//		    by David Flanagam, O'Reilly & Associates, Inc.
+//
+//
+// VERSION:	1.0
+//
+// HISTORY:	4/16/96		Initial Version
+//
+// COPYRIGHT INFORMATION:
+//
+// This program and the Java source is in the public domain.
+// Permission to use, copy, modify, and distribute this software
+// and its documentation for NON-COMMERCIAL purposes and
+// without fee is hereby granted.
+//
+//    Copyright 1996
+//
+//    Rick Brink
+//    1266 Brighton-Henrietta Townline Rd.
+//    Rochester, NY 14623
+//
+// DISCLAIMER:
+//
+// The author claims no responsibility for any damage, direct or indirect,
+// to any harware or software as a result of using this program.
+//****************************************************************************
+
+package PetriTool;
+
+import java.awt.Button;
+import java.awt.Dialog;
+import java.awt.Panel;
+import java.awt.FlowLayout;
+import java.awt.Event;
+import java.awt.BorderLayout;
+import java.awt.Frame;
+
+/**
+  * A class representing an information dialog.
+  *
+  * @see PetriToolFrame
+  * @see java.awt.Button
+  * @see java.awt.Dialog
+  * @see java.awt.Panel
+  * @see java.awt.FlowLayout
+  * @see java.awt.Event
+  * @see java.awt.BorderLayout
+  * @see java.awt.Frame
+  *
+  * @version 1.0 July 3, 1996
+  *
+  * @author  Rick Brink
+**/
+public class InfoDialog extends Dialog {
+    /** The OK Button used to close the InfoDialog **/
+    protected Button button_;
+
+    /** The text of the InfoDialog **/
+    protected MultiLineLabel label_;
+
+    /**
+      * Construct a new InfoDialog.
+      *
+      * @param parent The Frame from which this InfoDialog
+      *               was generated
+      * @param title A String title for the InfoDialog
+      * @param message A String message for the InfoDialog
+      *                to display
+    **/
+    public InfoDialog(Frame parent, String title, String message)
+    {
+        // Create a dialog with the specified title
+        super(parent, title, false);
+
+        // Create and use a BorderLayout manager with specified margins
+        this.setLayout(new BorderLayout(15, 15));
+
+        // Create the message component and add it to the window
+        label_ = new MultiLineLabel(message, 20, 20);
+        this.add("Center", label_);
+
+        // Create an Okay button in a Panel; add the Panel to the window
+        // Use a FlowLayout to center the button and give it margins.
+        button_ = new Button("Okay");
+        Panel p = new Panel();
+        p.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));
+        p.add(button_);
+        this.add("South", p);
+
+        // Resize the window to the preferred size of its components
+        this.pack();
+    }
+
+    /**
+      * Pop down the window when the button is clicked.
+    **/
+    public boolean action(Event e, Object arg)
+    {
+        if (e.target == button_) {
+            this.setVisible(false);
+            this.dispose();
+            return true;
+        }
+        else return false;
+    }
+
+    /**
+      * When the window gets the keyboard focus, give it to
+      * the button. This allows keyboard shortcuts to pop down
+      * the dialog.
+    **/
+    public boolean gotFocus(Event e, Object arg) {
+        button_.requestFocus();
+        return true;
+    }
+
+}

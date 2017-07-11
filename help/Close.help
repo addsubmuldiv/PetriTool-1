@@ -1,0 +1,7 @@
+Close
+
+Use this menu item to close the current design.  If a filename
+has been specified already for this design, it will be saved
+before exiting.  If no filename has been specified yet, a
+File Dialog will prompt for a name to save the file to before
+exiting.

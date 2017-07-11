@@ -1,0 +1,294 @@
+//****************************************************************************
+// CLASS NAME:	ComponentPanel.java
+//
+// AUTHOR:	Rick Brink
+//		    rick@mail.csh.rit.edu
+//		    http://www.csh.rit.edu/~rick
+//
+// VERSION:	1.0
+//
+// HISTORY:	4/16/96		Initial Version
+//
+// COPYRIGHT INFORMATION:
+//
+// This program and the Java source is in the public domain.
+// Permission to use, copy, modify, and distribute this software
+// and its documentation for NON-COMMERCIAL purposes and
+// without fee is hereby granted.
+//
+//    Copyright 1996
+//
+//    Rick Brink
+//    1266 Brighton-Henrietta Townline Rd.
+//    Rochester, NY 14623
+//
+// DISCLAIMER:
+//
+// The author claims no responsibility for any damage, direct or indirect,
+// to any harware or software as a result of using this program.
+//****************************************************************************
+
+package PetriTool;
+
+import java.awt.Panel;
+import java.awt.GridLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Label;
+import java.awt.TextField;
+import java.awt.Event;
+import java.awt.Container;
+import java.awt.Component;
+import java.awt.Insets;
+
+/**
+  * A class representing the Panel containing the characteristics
+  * that can be chosen for the different Petri Net components.
+  *
+  * @see PetriTool
+  * @see PetriToolFrame
+  * @see java.awt.Panel
+  * @see java.awt.GridLayout
+  * @see java.awt.GridBagLayout
+  * @see java.awt.GridBagConstraints
+  * @see java.awt.Label
+  * @see java.awt.TextField;
+  * @see java.awt.Event
+  * @see java.awt.Container
+  * @see java.awt.Component
+  * @see java.awt.Insets
+  *
+  * @version 1.0 July 3, 1996
+  *
+  * @author  Rick Brink
+**/
+class ComponentPanel extends Panel {
+    /**
+      * Used to access the system variables that are
+      * changed by the user.
+    **/
+    protected PetriTool petriTool_;
+
+    /** Panel containing the current set of options for a Place **/
+    protected Panel placePanel_;
+
+    /** Label for placePanel_ **/
+    protected Label placeLabel_;
+
+    /** Textfield for entering the capacity of a Place **/
+    protected TextField placeCapacity_;
+
+    /** Label for placeCapacity_ **/
+    protected Label placeCapacityLabel_;
+
+    /** Label for explaining placeCapacity_ = 0 is infinite **/
+    protected Label placeCapacityDefinition_;
+
+    /** Panel containing the current set of options for a Token **/
+    protected Panel tokenPanel_;
+
+    /** Textfield for entering the capacity of a Place **/
+    protected TextField numTokens_;
+
+    /** Label for placeCapacity_ **/
+    protected Label numTokensLabel_;
+
+    /** Label for tokenPanel_ **/
+    protected Label tokenLabel_;
+
+    /** Panel containing the current set of options for an Arc **/
+    protected Panel arcPanel_;
+
+    /** Label for arcPanel_ **/
+    protected Label arcLabel_;
+
+    /** Textfield for entering the capacity of a Place **/
+    protected TextField tokensToEnable_;
+
+    /** Label for placeCapacity_ **/
+    protected Label tokensToEnableLabel_;
+
+    /**
+      * Construct a new ComponentPanel.  This panel allows the
+      * user to select options relating to Places, Tokens, & Arcs
+    **/
+    public ComponentPanel(PetriTool app) {
+        petriTool_ = app;
+        setLayout (new GridLayout(1, 2));
+
+
+        // ---------------------------------------------------------
+        // TOKEN OPTIONS
+        // ---------------------------------------------------------
+
+        // Create a Panel for Color options
+        tokenPanel_ = new Panel();
+        tokenPanel_.setLayout (new GridBagLayout());
+
+        // Label the option box
+        tokenLabel_ = new Label("Token Options", Label.LEFT);
+        constrain(tokenPanel_, tokenLabel_, 0, 0, 2, 1, 0,
+                  GridBagConstraints.CENTER, 0, 0, 0, 0, 0, 0);
+
+        // Add a textfield for specifying the capacity of the Place
+        numTokens_ = new TextField("1", 3);
+        constrain(tokenPanel_, numTokens_, 0, 1, 1, 1, 0,
+                  GridBagConstraints.NORTH, 0, 0, 0, 0, 0, 0);
+
+        // Add a label for the above textfield
+        numTokensLabel_ = new Label("# Tokens", Label.LEFT);
+        constrain(tokenPanel_, numTokensLabel_, 1, 1, 1, 1, 0,
+                  GridBagConstraints.NORTH, 0, 0, 0, 0, 0, 0);
+
+
+        this.add(tokenPanel_);
+
+        // ---------------------------------------------------------
+        // ARC OPTIONS
+        // ---------------------------------------------------------
+
+        // Create a Panel for Color options
+        arcPanel_ = new Panel();
+        arcPanel_.setLayout (new GridBagLayout());
+
+        // Label the option box
+        arcLabel_ = new Label("Arc Options", Label.LEFT);
+        constrain(arcPanel_, arcLabel_, 0, 0, 2, 1, 0,
+                  GridBagConstraints.NORTH, 0, 0, 0, 0, 0, 0);
+
+        // Add a textfield for specifying the capacity of the Place
+        tokensToEnable_ = new TextField("1", 3);
+        constrain(arcPanel_, tokensToEnable_, 0, 1, 1, 1, 0,
+                  GridBagConstraints.NORTH, 0, 0, 0, 0, 0, 0);
+
+        // Add a label for the above textfield
+        tokensToEnableLabel_ = new Label("Tokens To Enable", Label.LEFT);
+        constrain(arcPanel_, tokensToEnableLabel_, 1, 1, 1, 1, 0,
+                  GridBagConstraints.NORTH, 0, 0, 0, 0, 0, 0);
+
+        this.add(arcPanel_);
+
+        repaint();
+    }
+
+
+    /**
+      * Return the number of tokens necessary to enable an arc
+    **/
+    public int getTokensToEnable() {
+        try {
+            Integer tempInt__ = new Integer(tokensToEnable_.getText());
+            if (tempInt__.intValue() < 1) {
+                throw new NumberFormatException();
+            }
+            else if (tempInt__.intValue() > 1024) {
+                throw new NumberFormatException();
+            }
+            else {
+                return (tempInt__.intValue());
+            }
+        }
+        catch (NumberFormatException e) {
+            StatusMessage("Invalid value for 'Tokens To Enable', " +
+                          "using 1 instead.");
+            return(1);
+        }
+    }
+
+
+
+    /**
+      * Return the number of tokens represented by a single token
+      * placement
+    **/
+    public int getNumTokens() {
+        try {
+            Integer tempInt__ = new Integer(numTokens_.getText());
+            if (tempInt__.intValue() < 1) {
+                throw new NumberFormatException();
+            }
+            else if (tempInt__.intValue() > petriTool_.maxPlaceCapacity_) {
+                StatusMessage("# Tokens exceeds Maximum Place " +
+                              "Capacity, using Maximum Place Capacity " +
+                              "instead.");
+                return (petriTool_.maxPlaceCapacity_);
+            }
+            else {
+                return (tempInt__.intValue());
+            }
+        }
+        catch (NumberFormatException e) {
+            StatusMessage("Invalid value for '# Tokens', " +
+                          "using 1 instead.");
+            return(1);
+        }
+    }
+
+
+    /**
+      * Display a status message in the status panel
+    **/
+    public void StatusMessage(String msg) {
+        petriTool_.statusPanel_.StatusMessage(msg);
+    }
+
+
+    /**
+	 * constrain - a method for placing components in a grid bag
+	 *             layout
+	 *
+	 * @see		awt.GridBagLayout
+	 * @author	Rick Brink
+	 *
+	**/
+    public void constrain(Container container, Component component,
+                  int grid_x, int grid_y, int grid_width, int grid_height,
+                  int fill, int anchor, double weight_x, double weight_y,
+                  int top, int left, int bottom, int right)
+    {
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = grid_x; c.gridy = grid_y;
+        c.gridwidth = grid_width; c.gridheight = grid_height;
+        c.fill = fill; c.anchor = anchor;
+        c.weightx = weight_x; c.weighty = weight_y;
+        if (top+bottom+left+right > 0)
+            c.insets = new Insets(top, left, bottom, right);
+
+        ((GridBagLayout)container.getLayout()).setConstraints(component, c);
+        container.add(component);
+    }
+
+	/**
+	 * constrain - a method for placing components in a grid bag
+	 *             layout
+	 *
+	 * @see		awt.GridBagLayout
+	 * @author	Rick Brink
+	 *
+	**/
+    public void constrain(Container container, Component component,
+                  int grid_x, int grid_y, int grid_width, int grid_height) {
+        constrain(container, component, grid_x, grid_y,
+              grid_width, grid_height, GridBagConstraints.NONE,
+              GridBagConstraints.NORTHWEST, 0.0, 0.0, 0, 0, 0, 0);
+    }
+
+
+	/**
+	 * constrain - a method for placing components in a grid bag
+	 *             layout
+	 *
+	 * @see		awt.GridBagLayout
+	 * @author	Rick Brink
+	 *
+	**/
+    public void constrain(Container container, Component component,
+                  int grid_x, int grid_y, int grid_width, int grid_height,
+                  int top, int left, int bottom, int right) {
+        constrain(container, component, grid_x, grid_y,
+              grid_width, grid_height, GridBagConstraints.NONE,
+              GridBagConstraints.NORTHWEST,
+              0.0, 0.0, top, left, bottom, right);
+    }
+
+}

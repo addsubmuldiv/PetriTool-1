@@ -1,0 +1,14 @@
+Paste
+
+Use this menuitem to paste the components
+in your clipboard to the design.
+
+After selecting Paste, the Pointer button will become
+depressed, signalling to the user to select a location
+for the components to be placed.
+
+The user should click the mouse button in grid square
+where they desire the upper left hand corner of the
+current clipboard to be placed.
+
+

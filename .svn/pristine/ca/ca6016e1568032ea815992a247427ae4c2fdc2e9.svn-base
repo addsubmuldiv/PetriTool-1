@@ -1,0 +1,8 @@
+Run
+
+After a Petri Net design has been completed, the user
+may simulate the design with the Run command.  This
+command will cause the simulation to continually make
+Transitions firings, until either there are no more
+Transitions enabled, or until the user presses the Stop
+button.

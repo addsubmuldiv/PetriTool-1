@@ -1,0 +1,25 @@
+Arc
+
+This is used to draw a Petri Net Arc.  After selecting
+the Arc option, click the mouse button on the Place or
+Transition where the Arc will begin.  Click the mouse
+button again at either an ending component, or an
+intermediate point between the source and destination
+for the Arc. There may be any number of intermediate
+points. If you start at a Place, you must end at a
+Transition, and vise versa.  Since Petri Net Arcs have
+a direction associated with them, they will end up
+pointing at whatever Petri Net Component that you end
+the drawing at, which will be denoted by a small
+arrowhead pointing into the component.
+
+Also, when drawing Arcs, the number of Tokens it will
+take to enable that Arc can be specified in the lower
+part of the Petri Net Tool window, just above the
+Status Panel.
+
+When trying to select an Arc for Cut, Copy, and Delete
+functions, simply have the Pointer button selected, then
+click the mouse anywhere along the length of the Arc.
+When selected, small green squares, one at each junction,
+will denote its selection.

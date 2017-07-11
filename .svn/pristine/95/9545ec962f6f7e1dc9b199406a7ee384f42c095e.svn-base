@@ -1,0 +1,147 @@
+//****************************************************************************
+// CLASS NAME:	FileViewer.java
+//
+// AUTHOR:	Rick Brink
+//          rick@mail.csh.rit.edu
+//		    http://www.csh.rit.edu/~rick
+//
+//          Adapted from an example in "Java in a Nutshell"
+//		    by David Flanagam, O'Reilly & Associates, Inc.
+//
+// VERSION:	1.0
+//
+// HISTORY:	4/16/96		Initial Version
+//
+// COPYRIGHT INFORMATION:
+//
+// This program and the Java source is in the public domain.
+// Permission to use, copy, modify, and distribute this software
+// and its documentation for NON-COMMERCIAL purposes and
+// without fee is hereby granted.
+//
+//    Copyright 1996
+//
+//    Rick Brink
+//    1266 Brighton-Henrietta Townline Rd.
+//    Rochester, NY 14623
+//
+// DISCLAIMER:
+//
+// The author claims no responsibility for any damage, direct or indirect,
+// to any harware or software as a result of using this program.
+//****************************************************************************
+
+package PetriTool;
+
+import java.awt.Frame;
+import java.awt.TextArea;
+import java.awt.Button;
+import java.awt.Event;
+import java.awt.Font;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileInputStream;
+
+/**
+  * A class to display the contents of a file in a TextArea.
+  *
+  * @see ControlPanel
+  * @see java.awt.Frame
+  * @see java.awt.TextArea
+  * @see java.awt.Button
+  * @see java.awt.Event
+  * @see java.awt.Font
+  * @see java.io.File
+  * @see java.io.IOException
+  * @see java.io.FileInputStream
+  *
+  * @version 1.0 July 3, 1996
+  *
+  * @author  Rick Brink
+**/
+public class FileViewer extends Frame {
+    /** Button used to close the frame **/
+    protected Button closeButton_;
+
+    /** File where data is to be read from **/
+    protected File inputFile_;
+
+    /** Size of the specified file **/
+    protected int fileSize_;
+
+    /** Used as a counter of the current number of bytes read
+      * from the file
+    **/
+    protected int bytesRead_;
+
+    /** Array of byte data containing the contents of the file **/
+    protected byte[] fileData_;
+
+    /** Where the file data is displayed **/
+    protected TextArea textArea_;
+
+    /** InputStream for reading from file **/
+    protected FileInputStream fileInputStream_;
+
+    /**
+      * Construct a new FileViewer, with the filename passed as
+      * a String parameter.  Query the size of the specified file,
+      * create an array of bytes big enough, and read it in.
+      * Then create a TextArea to display the text and a "Close"
+      * button to pop the window down.  This class throws the
+      * exception IOException.
+    **/
+    public FileViewer(String filename) throws IOException {
+        super("Help: " + filename);
+        inputFile_ = new File(filename);
+        fileSize_ = (int) inputFile_.length();
+        bytesRead_ = 0;
+        fileInputStream_ = new FileInputStream(inputFile_);
+        fileData_ = new byte[fileSize_];
+
+        while(bytesRead_ < fileSize_) {
+            bytesRead_ += fileInputStream_.read(fileData_, bytesRead_,
+                                                fileSize_ - bytesRead_);
+        }
+
+        textArea_ = new TextArea(new String(fileData_, 0), 24, 80);
+        textArea_.setFont(new Font("Helvetica", Font.PLAIN, 12));
+        textArea_.setEditable(false);
+        this.add("Center", textArea_);
+
+        closeButton_ = new Button("Close");
+        this.add("South", closeButton_);
+        this.pack();
+        this.show();
+    }
+
+    /**
+      * Handle the close button by popping this window down
+    **/
+    public boolean action(Event e, Object what) {
+        if (e.target == closeButton_) {
+            this.hide();
+            this.dispose();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+      * The FileViewer can be used by other classes, or it can be
+      * used standalone with this main() method.
+    **/
+    static public void main(String[] args) throws IOException {
+        if (args.length != 1) {
+            System.out.println("Usage: java FileViewer <filename>");
+            System.exit(0);
+        }
+        try {
+            Frame f = new FileViewer(args[0]);
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+}
+

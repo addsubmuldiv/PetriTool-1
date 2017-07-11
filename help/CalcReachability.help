@@ -1,0 +1,14 @@
+Calculate Reachability Tree
+
+Selecting this option will cause the Petri Net Tool to
+construct a Reachability tree for the design currently
+on the screen.
+
+If you are in the middle of a simulation, and the Tokens
+are not where the original design had them placed, the
+new design with the current marking will be used.  In order
+to get the Reachability tree for the original design, simply
+hit the Rest button, then select this option.
+
+In order to see the Reachability tree, select the Show
+Reachability Tree option.

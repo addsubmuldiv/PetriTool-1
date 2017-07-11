@@ -1,0 +1,122 @@
+//****************************************************************************
+// CLASS NAME:	StatusPanel.java
+//
+// AUTHOR:	Rick Brink
+//		    rick@mail.csh.rit.edu
+//		    http://www.csh.rit.edu/~rick
+//
+// VERSION:	1.0
+//
+// HISTORY:	4/16/96		Initial Version
+//
+// COPYRIGHT INFORMATION:
+//
+// This program and the Java source is in the public domain.
+// Permission to use, copy, modify, and distribute this software
+// and its documentation for NON-COMMERCIAL purposes and
+// without fee is hereby granted.
+//
+//    Copyright 1996
+//
+//    Rick Brink
+//    1266 Brighton-Henrietta Townline Rd.
+//    Rochester, NY 14623
+//
+// DISCLAIMER:
+//
+// The author claims no responsibility for any damage, direct or indirect,
+// to any harware or software as a result of using this program.
+//****************************************************************************
+
+package PetriTool;
+
+import java.awt.Panel;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+
+/**
+  * A class representing a Panel where status messages may
+  * be displayed.
+  *
+  * @see PetriTool
+  * @see java.awt.Panel
+  * @see java.awt.Font
+  * @see java.awt.FontMetrics
+  * @see java.awt.Color
+  * @see java.awt.Dimension
+  * @see java.awt.Graphics
+  *
+  * @version 1.0 July 3, 1996
+  *
+  * @author  Rick Brink
+**/
+
+class StatusPanel extends Panel {
+    /** Handle to a PetriTool object, not currently used **/
+    protected PetriTool petriTool_;
+
+    /** Pixel height of the StatusPanel **/
+    protected static final int STATUSPANEL_HEIGHT = 20;
+
+    /** Font to be used to display messages **/
+    protected Font statusFont_;
+
+    /** Used to calculate sizes of the text **/
+    protected FontMetrics statusFontMetrics_;
+
+    /** Background color for the StatusPanel **/
+    protected static final Color backgroundColor_ = Color.lightGray;
+
+    /** Color of the text in the StatusPanel **/
+    protected static final Color textColor_ = Color.black;
+
+    /** Message to display in the StatusPanel **/
+    protected String statusMessage_ = "PetriTool initialized.";
+
+    /**
+      * Construct a new StatusPanel.
+      *
+      * @param app Handle to a PetriTool object
+    **/
+    public StatusPanel(PetriTool app) {
+        petriTool_ = app;
+        statusFont_ = new Font("Courier",Font.PLAIN,12);
+        setFont(statusFont_);
+        statusFontMetrics_ = getFontMetrics(statusFont_);
+        repaint();
+    }
+
+    /**
+      * Calculate the preferred size of this panel
+    **/
+    public Dimension preferredSize() {
+        int w = size().width;
+        int h = STATUSPANEL_HEIGHT;
+        return new Dimension(w, h);
+    }
+
+
+    /**
+      * Draw the status panel
+    **/
+    public void paint(Graphics g) {
+        int height__ = statusFontMetrics_.getHeight();
+        g.setColor(backgroundColor_);
+        g.fillRect(0, 0, size().width, 20);
+
+        g.setColor(textColor_);
+        g.drawString(statusMessage_, 2, statusFontMetrics_.getHeight() - 2);
+    }
+
+    /**
+      * Display the message in the panel
+    **/
+    public void StatusMessage(String msg) {
+        statusMessage_ = msg;
+        repaint();
+    }
+
+}

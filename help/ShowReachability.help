@@ -1,0 +1,6 @@
+Show Reachability Tree
+
+Selecting this option will cause the Petri Net Tool to
+show the Reachability tree that was previously constructed
+using the Calculate Reachability Tree button.
+

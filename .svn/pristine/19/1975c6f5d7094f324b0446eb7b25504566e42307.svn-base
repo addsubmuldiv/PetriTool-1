@@ -1,0 +1,9 @@
+Open Design
+
+Use this menuitem to open a design on your computer.
+An extension of .pnt will denote files which are
+Petri Net Tool design files.
+
+Note that selecting Open Design will overwrite any
+current design of the design panel.
+

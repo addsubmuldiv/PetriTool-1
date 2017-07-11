@@ -1,0 +1,19 @@
+Preferences
+
+This menu item allows the user to bring up a window which
+contains a variety of options including:
+
+1) Colors (foreground, background, grid, border, caption)
+2) Grid (Show Grid, Grid Width, Grid Height)
+3) Analysis (Bound Analysis Time, Bound Time)
+4) Simulation (Simulation Speed, History Size)
+5) Miscellaneous (Display Place Labels, Display Transition Labels)
+
+The user may cancel any changes made by selecting the Cancel
+button at any time.  Also, by pressing the Default button, the
+user can reset all Petri Tool Options to their default values.
+Selecting the OK button causes the current set of option
+values to be set.
+
+
+

@@ -1,0 +1,80 @@
+//****************************************************************************
+// CLASS NAME:	ReallyQuitDialog.java
+//
+// AUTHOR:	Rick Brink
+//		    rick@mail.csh.rit.edu
+//		    http://www.csh.rit.edu/~rick
+//
+// VERSION:	1.0
+//
+// HISTORY:	4/16/96		Initial Version
+//
+// COPYRIGHT INFORMATION:
+//
+// This program and the Java source is in the public domain.
+// Permission to use, copy, modify, and distribute this software
+// and its documentation for NON-COMMERCIAL purposes and
+// without fee is hereby granted.
+//
+//    Copyright 1996
+//
+//    Rick Brink
+//    1266 Brighton-Henrietta Townline Rd.
+//    Rochester, NY 14623
+//
+// DISCLAIMER:
+//
+// The author claims no responsibility for any damage, direct or indirect,
+// to any harware or software as a result of using this program.
+//****************************************************************************
+
+package PetriTool;
+
+/**
+  * A class representing a Dialog which asks the user if they
+  * really want to quit the application, and presents them with two
+  * buttons (yes/no).
+  *
+  * @see YesNoDialog
+  * @see PetriToolFrame
+  *
+  * @version 1.0 July 3, 1996
+  *
+  * @author  Rick Brink
+**/
+public class ReallyQuitDialog extends YesNoDialog {
+    /**
+      * Handle to our caller so we can take certain actions
+      * based on the user's response.
+    **/
+    protected PetriToolFrame parent_;
+
+
+    /**
+      * Create the kind of YesNoDialog we want with our question
+      * and two buttons (yes and no).
+      *
+      * @param parent PetriToolFrame that called this object
+    **/
+    public ReallyQuitDialog(PetriToolFrame parent) {
+        super(parent, "Really Quit?", "Really Quit?", "Yes", "No", null);
+        parent_ = parent;
+    }
+
+    /**
+      * Action to take if user responds with the Yes button.
+      * Exit the application.
+    **/
+    public void yes() {
+        System.exit(0);
+    }
+
+    /**
+      * Action to take if user responds with the No button.
+      * Simply write a message confirming the cancellation of
+      * the quit.
+    **/
+    public void no() {
+        parent_.StatusMessage("Quit canceled.");
+    }
+}

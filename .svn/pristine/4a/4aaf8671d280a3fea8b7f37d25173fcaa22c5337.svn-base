@@ -1,0 +1,690 @@
+//****************************************************************************
+// CLASS NAME:	ControlPanel.java
+//
+// AUTHOR:	Rick Brink
+//		    rick@mail.csh.rit.edu
+//		    http://www.csh.rit.edu/~rick
+//
+// VERSION:	1.0
+//
+// HISTORY:	4/16/96		Initial Version
+//
+// COPYRIGHT INFORMATION:
+//
+// This program and the Java source is in the public domain.
+// Permission to use, copy, modify, and distribute this software
+// and its documentation for NON-COMMERCIAL purposes and
+// without fee is hereby granted.
+//
+//    Copyright 1996
+//
+//    Rick Brink
+//    1266 Brighton-Henrietta Townline Rd.
+//    Rochester, NY 14623
+//
+// DISCLAIMER:
+//
+// The author claims no responsibility for any damage, direct or indirect,
+// to any harware or software as a result of using this program.
+//****************************************************************************
+
+package PetriTool;
+
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.MediaTracker;
+import java.awt.Panel;
+import java.awt.Graphics;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.util.Vector;
+import java.io.IOException;
+
+/**
+  * A class representing a collection of ImageButtons used as a
+  * ControlPanel or toolbar
+  *
+  * @see ImageButton
+  * @see java.awt.Panel
+  * @see java.awt.Image
+  * @see java.awt.Toolkit
+  * @see java.awt.MediaTracker
+  * @see java.awt.Graphics
+  * @see java.awt.Color
+  * @see java.awt.FlowLayout
+  * @see java.util.Vector
+  * @see java.io.IOException
+  *
+  * @version 1.0 July 3, 1996
+  *
+  * @author  Rick Brink
+**/
+public class ControlPanel extends Panel {
+    /** The normal Image of a button - not pressed, disabled, or active **/
+    protected Image normal_;
+
+    /** The Image of a pressed button **/
+    protected Image pressed_;
+
+    /** The Image of a disabled button **/
+    protected Image disabled_;
+
+    /** The Image of an active button **/
+    protected Image active_;
+
+    /** Collection of ImageButton objects within the ControlPanel **/
+    protected Vector imageButtonList_;
+
+    /** Collection of String names of the ImageButton objects **/
+    protected Vector imageButtonNames_;
+
+    /** Number of ImageButton objects in the ControlPanel **/
+    protected int numButtons_;
+
+    /** Temporary ImageButton used for internal manipulations **/
+    protected ImageButton tempButton_;
+
+    /** Toolkit object used to load Images **/
+    protected Toolkit toolkit_;
+
+    /** MediaTracker object used to load Images **/
+    protected MediaTracker tracker_;
+
+    /**
+      * Handle to the main PetriTool object, used to send messages
+      * back to the StatusPanel
+    **/
+    protected PetriTool petriTool_;
+
+    /** Used for viewing the contents of help files **/
+    protected FileViewer helpDialog_;
+
+    /** Used to prompt the user for Caption text **/
+    protected TextDialog textDialog_;
+
+    /** Indicates if the user selected the Help button **/
+    protected boolean helpWanted_ = false;
+
+    /** String name of the currently selected button **/
+    protected String currentButton_ = new String("");
+
+    /**
+      * Construct a new ControlPanel, given a list of button
+      * names to load.  The names, when appended with "_n.gif",
+      * "_p.gif", "_d.gif", and "_a.gif" represent the file names
+      * of the GIF images for a normal, pressed, disabled, and
+      * active button
+    **/
+    public ControlPanel(String[] buttonList, PetriTool petriTool) {
+        tracker_ = new MediaTracker(this);
+        toolkit_ = Toolkit.getDefaultToolkit();
+        numButtons_ = buttonList.length;
+        petriTool_ = petriTool;
+        imageButtonList_ = new Vector(numButtons_);
+        imageButtonNames_ = new Vector(numButtons_);
+
+        for (int i__ = 0; i__ < numButtons_; i__++) {
+            normal_ = toolkit_.getImage("images/" + buttonList[i__] +
+                                        "_n.gif");
+            tracker_.addImage(normal_, 0);
+
+            pressed_ = toolkit_.getImage("images/" + buttonList[i__] +
+                                         "_p.gif");
+            tracker_.addImage(pressed_, 1);
+
+            disabled_ = toolkit_.getImage("images/" + buttonList[i__] +
+                                          "_d.gif");
+            tracker_.addImage(disabled_, 2);
+
+            active_ = toolkit_.getImage("images/" + buttonList[i__] +
+                                        "_a.gif");
+            tracker_.addImage(active_, 3);
+
+            // Wait for all variations of the button to load
+            try {
+                tracker_.waitForAll();
+            }
+            catch (InterruptedException e) {
+                StatusMessage("Error loading image " +
+                                    buttonList[i__]);
+            }
+
+            // Create a new ImageButton
+            tempButton_ = new ImageButton(normal_, pressed_,
+                                          disabled_, active_,
+                                          buttonList[i__], this);
+
+            imageButtonList_.addElement(tempButton_);
+            imageButtonNames_.addElement(buttonList[i__]);
+        }
+   	    this.setLayout(new FlowLayout(FlowLayout.CENTER,2,6));
+
+        for (int i__ = 0; i__ < imageButtonList_.size(); i__++) {
+	        this.add((ImageButton) imageButtonList_.elementAt(i__));
+	    }
+
+	}
+
+    /**
+      * Paint the ControlPanel to the screen
+    **/
+    public void paint (Graphics g) {
+	    g.setColor(Color.lightGray);
+	    g.fillRect(0, 0, size().width, size().height);
+	    g.setColor(Color.black);
+	    g.drawLine(0, 0, size().width, 0);
+	    g.drawLine(0, size().height-1, size().width-1, size().height-1);
+    }
+
+    /**
+      * Display a status message in the status panel
+    **/
+    public void StatusMessage(String msg) {
+        petriTool_.statusPanel_.StatusMessage(msg);
+    }
+
+    /**
+      * Return whether or not the help button is depressed
+    **/
+    public boolean helpWanted() {
+        return (helpWanted_);
+    }
+
+    /**
+      * Update the ImageButtons so that the selected button is
+      * activated, and the others are deactivated.
+    **/
+    public void updateButtons(String buttonName) {
+        ImageButton tempButton__;
+        for (int i__ = 0; i__ < numButtons_; i__++) {
+            tempButton__ = (ImageButton) imageButtonList_.elementAt(i__);
+            if (!tempButton__.getName().equals(buttonName)) {
+                tempButton__.deactivate();
+            }
+            else {
+                tempButton__.activate();
+            }
+        }
+    }
+
+    /**
+      * Used during simulation to disable all buttons except Stop
+    **/
+    public void disableButtons() {
+        ImageButton tempButton__;
+        for (int i__ = 0; i__ < numButtons_; i__++) {
+            tempButton__ = (ImageButton) imageButtonList_.elementAt(i__);
+            if (!tempButton__.getName().equals("Stop")) {
+                tempButton__.disable();
+            }
+        }
+    }
+
+    /**
+      * Used after simulation to enable all buttons
+    **/
+    public void enableButtons() {
+        ImageButton tempButton__;
+        for (int i__ = 0; i__ < numButtons_; i__++) {
+            tempButton__ = (ImageButton) imageButtonList_.elementAt(i__);
+            tempButton__.enable();
+        }
+    }
+
+    /**
+      * Return the name of the currently activated button
+    **/
+    public String getCurrentButton() {
+        return (currentButton_);
+    }
+
+    /**
+      * Pop up the button whose name is passed as a parameter.
+      * Useful for buttons that do not stay activated, but rather
+      * are pushed down and immediately pop back up.
+    **/
+    public void popUpButton(String buttonName) {
+        ImageButton tempButton__;
+        for (int i__ = 0; i__ < imageButtonList_.size(); i__++) {
+	        tempButton__ = (ImageButton) imageButtonList_.elementAt(i__);
+	        if (tempButton__.getName().equals(buttonName)) {
+	            tempButton__.deactivate();
+	        }
+	    }
+	}
+
+    /**
+      * Enable the Pointer button in the control panel
+    **/
+    public void userWantsPointer() {
+            if (helpWanted_) {
+                try {
+                    helpDialog_ = new FileViewer("help/Pointer.help");
+                }
+                catch (IOException e) {
+                    StatusMessage("Error opening help file.");
+                }
+                helpWanted_ = false;
+                updateButtons("");
+                return;
+            }
+            currentButton_ = "Pointer";
+            StatusMessage("Move the cursor to a petri net " +
+                          "component and press a mouse button.");
+    }
+
+    /**
+      * Enable the Place button in the control panel
+    **/
+    public void userWantsPlace() {
+
+            if (helpWanted_) {
+                try {
+                    helpDialog_ = new FileViewer("help/Place.help");
+                }
+                catch (IOException e) {
+                    StatusMessage("Error opening help file.");
+                }
+                helpWanted_ = false;
+                updateButtons("");
+                return;
+            }
+            currentButton_ = "Place";
+            StatusMessage("Move the mouse to the desired position, click the mouse button to draw a Place.");
+    }
+
+    /**
+      * Enable the Token button in the control panel
+    **/
+    public void userWantsToken() {
+            if (helpWanted_) {
+                try {
+                    helpDialog_ = new FileViewer("help/Token.help");
+                }
+                catch (IOException e) {
+                    StatusMessage("Error opening help file.");
+                }
+                helpWanted_ = false;
+                updateButtons("");
+                return;
+            }
+            currentButton_ = "Token";
+            StatusMessage("Move the mouse to the desired Place, and click the mouse button to add a Token.");
+    }
+
+    /**
+      * Enable the Transition button in the control panel
+    **/
+    public void userWantsTransition() {
+            if (helpWanted_) {
+                try {
+                    helpDialog_ = new FileViewer("help/Transition.help");
+                }
+                catch (IOException e) {
+                    StatusMessage("Error opening help file.");
+                }
+                helpWanted_ = false;
+                updateButtons("");
+                return;
+            }
+            currentButton_ = "Transition";
+            StatusMessage("Move the mouse to the desired position, and click the mouse button to add a Transition.");
+    }
+
+    /**
+      * Enable the Arc button in the control panel
+    **/
+    public void userWantsArc() {
+            if (helpWanted_) {
+                try {
+                    helpDialog_ = new FileViewer("help/Arc.help");
+                }
+                catch (IOException e) {
+                    StatusMessage("Error opening help file.");
+                }
+                helpWanted_ = false;
+                updateButtons("");
+                return;
+            }
+            currentButton_ = "Arc";
+            StatusMessage("Move the mouse to the desired position, and click and hold the mouse button to add an Arc.");
+    }
+
+    /**
+      * Enable the Text button in the control panel
+    **/
+    public void userWantsText() {
+        if (helpWanted_) {
+            try {
+                helpDialog_ = new FileViewer("help/Text.help");
+            }
+            catch (Exception e) {
+                StatusMessage("Error opening help file.");
+            }
+            helpWanted_ = false;
+            updateButtons("");
+            return;
+        }
+        currentButton_ = "Text";
+        StatusMessage("Please type your caption text in the dialog box.");
+        textDialog_ = new TextDialog (petriTool_.petriToolFrame_, "", true);
+    }
+
+    /**
+      * Enable the Reset Simulation button in the control panel
+    **/
+    public void userWantsReset() {
+            if (helpWanted_) {
+                try {
+                    helpDialog_ = new FileViewer("help/Reset.help");
+                }
+                catch (IOException e) {
+                    StatusMessage("Error opening help file.");
+                }
+                helpWanted_ = false;
+                updateButtons("");
+                return;
+            }
+            currentButton_ = "Reset";
+            popUpButton("Reset");
+
+            petriTool_.initializeSimulation();
+    }
+
+    /**
+      * Enable the Reverse Step Simulation button in the control panel
+    **/
+    public void userWantsRevStep() {
+        if (helpWanted_) {
+            try {
+                helpDialog_ = new FileViewer("help/ReverseStep.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            helpWanted_ = false;
+            updateButtons("");
+            return;
+        }
+        currentButton_ = "ReverseStep";
+        popUpButton("RevStep");
+
+        if (petriTool_.simulationInitialized_) {
+            petriTool_.petriSimulation_.reverseStep();
+        }
+        else {
+            StatusMessage("There is no simulation initialized, " +
+                          "select Reset, ForwardStep, or Run.");
+        }
+    }
+
+    /**
+      * Enable the Forward Step Simulation button in the control panel
+    **/
+    public void userWantsForStep() {
+        if (helpWanted_) {
+            try {
+                helpDialog_ = new FileViewer("help/ForwardStep.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            helpWanted_ = false;
+            updateButtons("");
+            return;
+        }
+        currentButton_ = "ForwardStep";
+        popUpButton("ForStep");
+
+        if (petriTool_.simulationInitialized_) {
+            petriTool_.petriSimulation_.forwardStep();
+        }
+        else {
+            petriTool_.initializeSimulation();
+            petriTool_.petriSimulation_.forwardStep();
+        }
+    }
+
+    /**
+      * Enable the Run Simulation button in the control panel
+    **/
+    public void userWantsRun() {
+        if (helpWanted_) {
+            try {
+                helpDialog_ = new FileViewer("help/Run.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            helpWanted_ = false;
+            updateButtons("");
+            return;
+        }
+        currentButton_ = "Run";
+        disableButtons();
+
+        if (petriTool_.simulationInitialized_) {
+            petriTool_.petriSimulation_.runSimulation();
+        }
+        else {
+            petriTool_.initializeSimulation();
+            petriTool_.petriSimulation_.runSimulation();
+        }
+    }
+
+    /**
+      * Enable the Stop Simulation button in the control panel
+    **/
+    public void userWantsStop() {
+        if (helpWanted_) {
+            try {
+                helpDialog_ = new FileViewer("help/Stop.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            helpWanted_ = false;
+            updateButtons("");
+            return;
+        }
+        currentButton_ = "Stop";
+        popUpButton("Stop");
+        enableButtons();
+
+        if (petriTool_.simulationInitialized_) {
+            petriTool_.petriSimulation_.stopSimulation();
+        }
+        else if (petriTool_.analysisRunning_) {
+            petriTool_.reachabilityTree_.stopAnalysis();
+        }
+        else {
+            StatusMessage("There is no simulation or analysis currently running.");
+        }
+    }
+
+    /**
+      * Enable the Calculate Reachability Tree button in the control panel
+    **/
+    public void userWantsCalc() {
+        if (helpWanted_) {
+            try {
+                helpDialog_ = new FileViewer("help/CalcReachability.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            helpWanted_ = false;
+            updateButtons("");
+            return;
+        }
+        currentButton_ = "CalcReachability";
+        popUpButton("Calc");
+        disableButtons();
+        StatusMessage("Calculating the reachability tree...");
+        petriTool_.reachabilityTree_ = new ReachabilityTree(petriTool_);
+
+    }
+
+    /**
+      * Enable the Show Reachability Tree button in the control panel
+    **/
+    public void userWantsShow() {
+        if (helpWanted_) {
+            try {
+                helpDialog_ = new FileViewer("help/ShowReachability.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            helpWanted_ = false;
+            updateButtons("");
+            return;
+        }
+        currentButton_ = "ShowReachability";
+        popUpButton("Show");
+
+        if (petriTool_.reachabilityTree_ != null) {
+            petriTool_.reachabilityTree_.displayTree();
+        }
+        else {
+            StatusMessage("No reachability tree currently " +
+                          "constructed, try Calculate " +
+                          "Reachability Tree first.");
+        }
+    }
+
+    /**
+      * Enable the Show Petri Net Properties button in the control panel
+    **/
+    public void userWantsProp() {
+        if (helpWanted_) {
+            try {
+                helpDialog_ = new FileViewer("help/Properties.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            helpWanted_ = false;
+            updateButtons("");
+            return;
+        }
+        currentButton_ = "Properties";
+        popUpButton("Prop");
+
+        if (petriTool_.reachabilityTree_ != null) {
+            petriTool_.reachabilityTree_.displayProperties();
+        }
+        else {
+            StatusMessage("No reachability tree currently " +
+                          "constructed, try Calculate " +
+                          "Reachability Tree first.");
+        }
+    }
+
+    /**
+      * Prompt user for a marking to search for in the reachability tree,
+      * and perform the search.
+    **/
+    public void userWantsSearch() {
+        if (helpWanted_) {
+            try {
+                helpDialog_ = new FileViewer("help/SearchReachability.help");
+            }
+            catch (Exception e) {
+                StatusMessage("Error opening help file.");
+            }
+
+            helpWanted_ = false;
+            updateButtons("");
+            return;
+        }
+        if (petriTool_.reachabilityTree_ != null) {
+            StatusMessage("Please type the marking to search for in the dialog box.");
+            petriTool_.petriToolFrame_.userWantsSearch_ = true;
+            textDialog_ = new TextDialog (petriTool_.petriToolFrame_, "", true);
+        }
+        else {
+            StatusMessage("No reachability tree currently " +
+                          "constructed, try Calculate " +
+                          "Reachability Tree first.");
+        }
+        updateButtons("");
+
+    }
+
+    /**
+      * Enable the Help button in the control panel
+    **/
+    public void userWantsHelp() {
+            if (helpWanted_) {
+                try {
+                    helpDialog_ = new FileViewer("help/Help.help");
+                }
+                catch (IOException e) {
+                    StatusMessage("Error opening help file.");
+                }
+                helpWanted_ = false;
+                updateButtons("");
+                return;
+            } else {
+                StatusMessage ("Choose a component, menu or button to get help about it.");
+                helpWanted_ = true;
+            }
+
+            currentButton_ = "Help";
+    }
+
+    /**
+      * Handle events on the various buttons within the ControlPanel
+      * given a String name of the button receiving activity
+    **/
+    public void buttonAction (String buttonName) {
+        updateButtons(buttonName);
+        if (buttonName.equals("Pointer")) {
+            userWantsPointer();
+        }
+        else if (buttonName.equals("Place")) {
+            userWantsPlace();
+        }
+        else if (buttonName.equals("Token")) {
+            userWantsToken();
+        }
+        else if (buttonName.equals("Transition")) {
+            userWantsTransition();
+        }
+        else if (buttonName.equals("Arc")) {
+            userWantsArc();
+        }
+        else if (buttonName.equals("Text")) {
+            userWantsText();
+        }
+        else if (buttonName.equals("Reset")) {
+            userWantsReset();
+        }
+        else if (buttonName.equals("RevStep")) {
+            userWantsRevStep();
+        }
+        else if (buttonName.equals("ForStep")) {
+            userWantsForStep();
+        }
+        else if (buttonName.equals("Run")) {
+            userWantsRun();
+        }
+        else if (buttonName.equals("Stop")) {
+            userWantsStop();
+        }
+        else if (buttonName.equals("Calc")) {
+            userWantsCalc();
+        }
+        else if (buttonName.equals("Show")) {
+            userWantsShow();
+        }
+        else if (buttonName.equals("Prop")) {
+            userWantsProp();
+        }
+        else if (buttonName.equals("Help")) {
+            userWantsHelp();
+        }
+    }
+
+}

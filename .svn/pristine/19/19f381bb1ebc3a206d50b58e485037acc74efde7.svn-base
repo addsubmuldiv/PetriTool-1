@@ -1,0 +1,450 @@
+//****************************************************************************
+// CLASS NAME:	PropertiesDisplay.java
+//
+// AUTHOR:	Rick Brink
+//		    rick@mail.csh.rit.edu
+//		    http://www.csh.rit.edu/~rick
+//
+// VERSION:	1.0
+//
+// HISTORY:	4/16/96		Initial Version
+//
+// COPYRIGHT INFORMATION:
+//
+// This program and the Java source is in the public domain.
+// Permission to use, copy, modify, and distribute this software
+// and its documentation for NON-COMMERCIAL purposes and
+// without fee is hereby granted.
+//
+//    Copyright 1996
+//
+//    Rick Brink
+//    1266 Brighton-Henrietta Townline Rd.
+//    Rochester, NY 14623
+//
+// DISCLAIMER:
+//
+// The author claims no responsibility for any damage, direct or indirect,
+// to any harware or software as a result of using this program.
+//****************************************************************************
+
+package PetriTool;
+
+import java.lang.Thread;
+import java.util.Vector;
+import java.awt.TextArea;
+import java.awt.Frame;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Button;
+import java.awt.Event;
+import java.awt.Toolkit;
+import java.util.StringTokenizer;
+import java.util.NoSuchElementException;
+
+/**
+  * A class to display the properties of a Petri Net, including
+  * liveness, boundedness, safeness, and conservativeness.  Also
+  * indicates if the number of Tokens in a Place would overflow.  A
+  * Reachability Tree must first be calculated in order to
+  * calculate the Petri Net Properties.
+  *
+  * @see java.lang.Thread
+  * @see java.util.Vector
+  * @see java.util.StringTokenizer
+  * @see java.util.NoSuchElementException
+  * @see java.awt.TextArea
+  * @see java.awt.Frame
+  * @see java.awt.Font
+  * @see java.awt.FontMetrics
+  * @see java.awt.Button
+  * @see java.awt.Event
+  * @see java.awt.Toolkit
+  *
+  * @version 1.0 July 3, 1996
+  *
+  * @author  Rick Brink
+**/
+class PropertiesDisplay extends Frame {
+    /** Holds Vectors of nodes of the reachability tree **/
+    protected Vector treeVector_;
+
+    /** Button used to close the displayFrame_ **/
+    protected Button closeButton_;
+
+    /** A TextArea to hold the text of the Reachability Tree **/
+    protected TextArea textArea_;
+
+    /** Holds String of information about Safeness of Petri Net **/
+    protected String safeString_;
+
+    /** Holds String of information about Boundedness of Petri Net **/
+    protected String boundString_;
+
+    /** Holds String of information about Liveness of Petri Net **/
+    protected String liveString_;
+
+    /** Holds String of information about Conservativeness of Petri Net **/
+    protected String conservativeString_;
+
+    /** Holds String of information about Place overflows **/
+    protected String overflowString_;
+
+    /**
+      * Vector of Integers, each Integer representing the maximum
+      * number of Tokens that appears in each place in the
+      * reachability tree.
+    **/
+    protected Vector maxTokenVector_;
+
+    /** A Vector of Booleans indicating if a Place had an Overflow **/
+    protected Vector overflowVector_;
+
+    /**
+      * Construct a new Reachability Tree.
+    **/
+    public PropertiesDisplay(Vector treeVector, Vector overflowVector) {
+        // Add a title to the display window
+        super("Petri Net Properties");
+
+        treeVector_ = treeVector;
+        overflowVector_ = overflowVector;
+        maxTokenVector_ = new Vector();
+
+        // Create a TextArea to display the properties in
+        textArea_ = new TextArea(24, 80);
+        Font treeFont__ = new Font("Dialog", Font.PLAIN, 12);
+        textArea_.setFont(treeFont__);
+
+        // Calculate properties
+        calculateMaxTokens();
+        safeString_ = calculateSafe();
+        boundString_ = calculateBound();
+        liveString_ = calculateLive();
+        conservativeString_ = calculateConservative();
+        overflowString_ = calculateOverflow();
+
+        // Add properties to the TextArea
+        textArea_.append("Reachability Tree has " + treeVector_.size() + " nodes.\n\n");
+        textArea_.append(safeString_);
+        textArea_.append("\n");
+        textArea_.append(boundString_);
+        textArea_.append("\n");
+        textArea_.append(liveString_);
+        textArea_.append("\n");
+        textArea_.append(conservativeString_);
+        textArea_.append("\n");
+        textArea_.append(overflowString_);
+
+        // Add the TextArea to the Frame
+        this.add("Center", textArea_);
+
+        // Add a Button to close the Display Frame
+        closeButton_ = new Button("Close");
+        this.add("South", closeButton_);
+
+        // Show the Frame
+        this.pack();
+        this.setVisible(true);
+    }
+
+    /**
+      * Procedure that traverses the reachability tree and
+      * sets the maxTokenVector_ to contain maximum values of
+      * Tokens that appear in each Place.
+    **/
+    private void calculateMaxTokens() {
+        Vector nodeVector_;
+        String markingString_;
+        StringTokenizer tokenizer__;
+        int numPlaces__;
+        String numTokensString__ = new String("");;
+        Integer numTokensInteger__ = new Integer(0);
+        Integer currentMax__;
+
+        // Initialize the Vector with Integers of 0
+        nodeVector_ = (Vector) treeVector_.elementAt(0);
+        markingString_ = (String) nodeVector_.elementAt(0);
+        tokenizer__ = new StringTokenizer(markingString_, "(,)");
+        numPlaces__ = tokenizer__.countTokens();
+
+        for (int j__ = 0; j__ < numPlaces__; j__++) {
+             maxTokenVector_.addElement(new Integer(0));
+        }
+
+        for (int i__ = 0; i__ < treeVector_.size(); i__++) {
+            nodeVector_ = (Vector) treeVector_.elementAt(i__);
+
+            for (int j__ = 0; j__ < nodeVector_.size(); j__ = j__+2) {
+                markingString_ = (String) nodeVector_.elementAt(j__);
+                tokenizer__ = new StringTokenizer(markingString_, "(,)");
+                for (int k__ = 0; k__ < numPlaces__; k__++) {
+                    try {
+                        numTokensString__ = tokenizer__.nextToken();
+                    }
+                    catch (NoSuchElementException e) {
+                        System.out.println("Error - " + e);
+                    }
+
+                    try {
+                        numTokensInteger__ = new Integer(numTokensString__);
+                    }
+                    catch (NumberFormatException e) {
+                        System.out.println("Error - " + e);
+                    }
+
+                    currentMax__ = (Integer) maxTokenVector_.elementAt(k__);
+                    if (numTokensInteger__.intValue() > currentMax__.intValue()) {
+                        try {
+                            maxTokenVector_.setElementAt(numTokensInteger__, k__);
+                        }
+                        catch(ArrayIndexOutOfBoundsException e) {
+                            System.out.println("Error - " + e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+      * Calculates the Safeness of the Petri Net and returns information
+      * in a String.  A Place is safe if the number of Tokens in the
+      * Place never exceeds 1.  The Petri Net is Safe if all the Places
+      * in the Petri Net are Safe.
+    **/
+    public String calculateSafe() {
+        Integer tempInt__ = new Integer(0);
+        String returnString__ = new String("SAFENESS\n");
+        returnString__ = returnString__.concat("------------------\n");
+        boolean netIsSafe__ = true;
+
+        // Look at each Place and determine if it is Safe
+        for(int i__ = 0; i__ < maxTokenVector_.size(); i__++) {
+            returnString__ = returnString__.concat("Place " + i__ + " = ");
+            tempInt__ = (Integer) maxTokenVector_.elementAt(i__);
+
+            if (tempInt__.intValue() <= 1) {
+                returnString__ = returnString__.concat("SAFE\n");
+            }
+            else {
+                returnString__ = returnString__.concat("NOT SAFE\n");
+                netIsSafe__ = false;
+            }
+        }
+
+        // If all Places are Safe, net is Safe
+        if (netIsSafe__) {
+            returnString__ = returnString__.concat("\n*** NET IS SAFE ***\n");
+        }
+        else {
+            returnString__ = returnString__.concat("\n*** NET IS NOT SAFE ***\n");
+        }
+
+        return (returnString__);
+    }
+
+    /**
+      * Calculates the Boundness of the Petri Net and returns information
+      * in a String.  Each Place is k-bounded, where k represents the
+      * maximum number of Tokens that can ever occur in that Place.  The
+      * Petri Net is bound by the maximum bound value of all Places.
+    **/
+    public String calculateBound() {
+        Integer tempInt__ = new Integer(0);
+        String returnString__ = new String("BOUNDNESS\n");
+        returnString__ = returnString__.concat("-----------------------\n");
+        int maxBound__ = 0;
+        int boundValue__;
+
+        for(int i__ = 0; i__ < maxTokenVector_.size(); i__++) {
+            returnString__ = returnString__.concat("Place " + i__ + " is ");
+            tempInt__ = (Integer) maxTokenVector_.elementAt(i__);
+            boundValue__ = tempInt__.intValue();
+            returnString__ = returnString__.concat(boundValue__ + "-BOUNDED\n");
+            if (boundValue__ > maxBound__) {
+                maxBound__ = boundValue__;
+            }
+        }
+
+        returnString__ = returnString__.concat("\n*** NET IS " + maxBound__ + "-BOUNDED ***\n");
+        return (returnString__);
+    }
+
+    /**
+      * Calculates the Liveness of the Petri Net and returns information
+      * in a String.  A Petri Net is live if no markings in the
+      * Reachability tree are dead end markings.
+    **/
+    public String calculateLive() {
+        boolean live__ = true;
+        Vector nodeVector__;
+        String returnString__ = new String("");
+
+        for (int i__ = 0; i__ < treeVector_.size(); i__++) {
+            nodeVector__ = (Vector) treeVector_.elementAt(i__);
+
+            if (nodeVector__.size() == 1) {
+                live__ = false;
+            }
+        }
+
+        returnString__ = returnString__.concat("LIVENESS\n");
+        returnString__ = returnString__.concat("-----------------\n");
+
+        if (live__) {
+            returnString__ = returnString__.concat("\n*** NET IS LIVE ***\n");
+        }
+        else {
+            returnString__ = returnString__.concat("\n*** NET IS NOT LIVE ***\n");
+        }
+
+        return (returnString__);
+    }
+
+    /**
+      * Calculates the Conservativeness of the Petri Net and returns information
+      * in a String.  A Petri Net is strictly conservative if
+      * the number of Tokens in the net is always constant.
+    **/
+    public String calculateConservative() {
+        Vector nodeVector_;
+        String markingString_;
+        StringTokenizer tokenizer__;
+        int numPlaces__;
+        String numTokensString__ = new String("");;
+        Integer numTokensInteger__ = new Integer(0);
+
+        String returnString__ = new String("");
+        boolean conservative__ = true;
+
+        // Determine # of Places in this Petri Net
+        nodeVector_ = (Vector) treeVector_.elementAt(0);
+        markingString_ = (String) nodeVector_.elementAt(0);
+        tokenizer__ = new StringTokenizer(markingString_, "(,)");
+        numPlaces__ = tokenizer__.countTokens();
+        int startTokens__ = 0;
+
+
+        // Calculate the starting number of Tokens
+        for (int i__ = 0; i__ < numPlaces__; i__++) {
+            try {
+                numTokensString__ = tokenizer__.nextToken();
+            }
+            catch (NoSuchElementException e) {
+                System.out.println("Error - " + e);
+            }
+
+            try {
+                numTokensInteger__ = new Integer(numTokensString__);
+            }
+            catch (NumberFormatException e) {
+                System.out.println("Error - " + e);
+            }
+            startTokens__ += numTokensInteger__.intValue();
+        }
+
+        for (int i__ = 1; i__ < treeVector_.size(); i__++) {
+            nodeVector_ = (Vector) treeVector_.elementAt(i__);
+
+            // For each marking in the Reachability Tree...
+            for (int j__ = 0; j__ < nodeVector_.size(); j__ = j__+2) {
+                int numTokens__ = 0;
+                markingString_ = (String) nodeVector_.elementAt(j__);
+                tokenizer__ = new StringTokenizer(markingString_, "(,)");
+
+                // Add up the number of Tokens in the marking
+                for (int k__ = 0; k__ < numPlaces__; k__++) {
+                    try {
+                        numTokensString__ = tokenizer__.nextToken();
+                    }
+                    catch (NoSuchElementException e) {
+                        System.out.println("Error - " + e);
+                    }
+
+                    try {
+                        numTokensInteger__ = new Integer(numTokensString__);
+                    }
+                    catch (NumberFormatException e) {
+                        System.out.println("Error - " + e);
+                    }
+
+                    numTokens__ += numTokensInteger__.intValue();
+                }
+
+                // If the number of Tokens in this marking is
+                // not the same as the initial, Petri Net is
+                // not strictly conservative
+                if (numTokens__ != startTokens__) {
+                    conservative__ = false;
+                    break;
+                }
+            }
+        }
+
+        returnString__ = returnString__.concat("CONSERVATIVE\n");
+        returnString__ = returnString__.concat("---------------------------\n");
+
+        if (conservative__) {
+            returnString__ = returnString__.concat("\n*** PETRI NET IS STRICTLY CONSERVATIVE ***\n");
+        }
+        else {
+            returnString__ = returnString__.concat("\n*** PETRI NET IS NOT STRICTLY CONSERVATIVE ***\n");
+        }
+
+        return (returnString__);
+    }
+
+    /**
+      * Constructs a String which indicates which Places, if any, had
+      * Token overflows.  The actual Boolean Vector is constructed
+      * when the reachability tree is constructed in ReachabilityTree.
+    **/
+    private String calculateOverflow() {
+        Boolean overflow;
+        String returnString__ = new String("");
+        returnString__ = returnString__.concat("PLACE OVERFLOWS\n");
+        returnString__ = returnString__.concat("---------------------------------\n");
+
+
+        for (int i__ = 0; i__ < overflowVector_.size(); i__++) {
+            overflow = (Boolean) overflowVector_.elementAt(i__);
+            returnString__ = returnString__.concat("Place " + i__ + " = ");
+
+            if (overflow.booleanValue()) {
+                returnString__ = returnString__.concat("OVERFLOW\n");
+            }
+            else {
+                returnString__ = returnString__.concat("NO OVERFLOW\n");
+            }
+        }
+        return (returnString__);
+
+    }
+
+
+    /**
+      * Handle the close button by closing this window down
+    **/
+    public boolean handleEvent(Event event) {
+        switch(event.id) {
+        // Most components generate ACTION_EVENT
+        // We test the target field to find out which component.
+            case Event.ACTION_EVENT:
+                if (event.target == closeButton_) {
+                    this.setVisible(false);
+                    this.dispose();
+                    return true;
+                }
+                break;
+            case Event.WINDOW_DESTROY:
+                this.setVisible(false);
+                this.dispose();
+                return true;
+            case Event.MOUSE_DOWN:
+                repaint();
+                break;
+        }
+        return (false);
+    }
+}

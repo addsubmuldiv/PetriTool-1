@@ -1,0 +1,9 @@
+Save design
+
+Use this menu item to save a design to disk.  This option
+only works when a file has been loaded from disk or has
+been saved previously using the Save As command, and will
+use the file name and directory previously specified.
+
+Use the Save As command to save a new design or to save
+the design under a different name.

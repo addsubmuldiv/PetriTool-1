@@ -1,0 +1,6 @@
+Transition
+
+Use this option to position a Transition into the
+Petri Net design.  Transitions must be placed in an
+empty grid space, and with all surrounding grid spaces
+empty as well.  This is done to prevent a cluttered design.

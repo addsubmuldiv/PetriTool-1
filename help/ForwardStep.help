@@ -1,0 +1,17 @@
+Forward Step
+
+After the user has created a Petri Net Design, he may begin
+simulation using either Forward Step, or Run.
+
+Before the simulation begins, the program will check to make
+sure that the design is valid.  The design must not have any
+Tokens outside of Places or Arcs that do not connect a Place
+and a Transition.
+
+Forward Step makes one set of transition firings and displays
+the resulting marking.  At this point, the user may select either
+Forward Step again to see the next set of Transition firings,
+Reverse Step to go back one marking in the simulation, Reset
+to reset the marking to the initial marking, or Run to continuously
+step through Transition Firings.
+

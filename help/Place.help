@@ -1,0 +1,8 @@
+Place
+
+After selecting the Place button or menuitem, the user
+can selecta grid square to draw the place by clicking
+the mouse button in the desired grid square.  The grid
+square selected should be an empty grid square, as well as
+have all the surrounding grid squares empty.  This is
+enforced to produce an uncluttered design.

@@ -1,0 +1,9 @@
+Token
+
+Use this button to place Tokens in the Petri Net.  The
+design will only allow you to position a Token in a grid
+space occupied by a place.  In the Component Panel, just
+above the Status Panel at the bottom of the Petri Net Tool
+window, you can select the number of Tokens you wish to
+draw.  This number will also appear in the design after
+you have selected a position for the Tokens.

@@ -1,0 +1,6 @@
+Reset
+
+The reset button changes the state of the Petri Net by
+restoring the Petri Net to its initial marking.  The
+initial marking of the Petri Net is set anytime a
+Place or Token is added to the design.

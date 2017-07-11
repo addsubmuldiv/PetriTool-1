@@ -1,0 +1,11 @@
+Search Reachability Tree
+
+Selecting this option will cause the Petri Net Tool to
+prompt the user to input a marking, i.e. (1,0,1,1).
+The Petri Net Tool will then search the current
+Reachability Tree for that marking and display a
+Reachability Tree window with all occurrences of that
+marking highlighted.
+
+Note that use must first use Caclulate Reachability Tree
+before selecting this option.

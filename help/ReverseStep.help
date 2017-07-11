@@ -1,0 +1,13 @@
+Reverse Step
+
+After the user has created a Petri Net Design, he may begin
+simulation using either Forward Step, or Run.
+
+After the simulation has progressed in this manner for at
+least one simulation step, the Reverse Step can be used.
+
+The number of Reverse Steps that can be performed is limited by
+the History Size, which can be changed under the Options Menu.
+
+Also, you may only Reverse Step the number of Forward Steps
+that were performed, so the design will stop at the initial marking.

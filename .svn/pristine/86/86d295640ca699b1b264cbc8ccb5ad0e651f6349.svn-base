@@ -1,0 +1,242 @@
+//****************************************************************************
+// CLASS NAME:	Caption.java
+//
+// AUTHOR:	Rick Brink
+//		    rick@mail.csh.rit.edu
+//		    http://www.csh.rit.edu/~rick
+//
+// VERSION:	1.0
+//
+// HISTORY:	4/16/96		Initial Version
+//
+// COPYRIGHT INFORMATION:
+//
+// This program and the Java source is in the public domain.
+// Permission to use, copy, modify, and distribute this software
+// and its documentation for NON-COMMERCIAL purposes and
+// without fee is hereby granted.
+//
+//    Copyright 1996
+//
+//    Rick Brink
+//    1266 Brighton-Henrietta Townline Rd.
+//    Rochester, NY 14623
+//
+// DISCLAIMER:
+//
+// The author claims no responsibility for any damage, direct or indirect,
+// to any harware or software as a result of using this program.
+//****************************************************************************
+
+package PetriTool;
+
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Color;
+import java.awt.Toolkit;
+import java.io.PrintStream;
+import java.util.StringTokenizer;
+
+/**
+  * A class representing a text Caption in a Petri Net diagram.
+  *
+  * @see PetriComponent
+  * @see java.awt.Font
+  * @see java.awt.FontMetrics
+  * @see java.awt.Graphics
+  * @see java.awt.Color
+  * @see java.awt.Toolkit
+  * @see java.io.PrintStream
+  * @see java.util.StringTokenizer
+  *
+  * @version 1.0 July 3, 1996
+  *
+  * @author  Rick Brink
+**/
+class Caption extends PetriComponent {
+
+    /** Font used for the Caption text **/
+    protected Font captionFont_;
+
+    /** The text of the Caption **/
+    protected String captionText_;
+
+    /** The actual size of the Font, which may not be the actual
+      * size displayed, which is bound to 1.  This is necessary
+      * to ensure proper sizing in zoom operations.
+    **/
+    protected double actualSize_;
+
+    /** Used for determining the size of the Caption **/
+    protected FontMetrics fontMetrics_;
+
+    /** The width of the Caption text **/
+    protected int width_;
+
+    /** The height of the Caption text **/
+    protected int height_;
+
+    /** Used to get a FontMetrics for the Font **/
+    protected Toolkit toolkit_;
+
+
+    /**
+      * Construct a new Caption, with starting coordinates of
+      * (x,y) which are the absolute coordinates divided by
+      * gridStep_.  Also note, all coordinates represent the
+      * upper left hand corner of a grid square.  The text of
+      * the caption along with its Font are also parameters.
+    **/
+    public Caption (int x, int y, String text, Font font) {
+
+        xCoordinate_ = x;
+        yCoordinate_ = y;
+        captionText_ = text;
+        captionFont_ = font;
+        actualSize_ = (double) captionFont_.getSize();
+
+        // Get FontMetrics and setup the hit box for select operations
+        toolkit_ = Toolkit.getDefaultToolkit();
+        fontMetrics_ = toolkit_.getFontMetrics(captionFont_);
+        width_ = fontMetrics_.stringWidth(captionText_);
+        height_ = fontMetrics_.getHeight();
+    }
+
+    /**
+      * Construct a new Caption without specifying any parameters.
+    **/
+    public Caption() {
+    }
+
+    /**
+      * Create a copy of the current Caption Object
+    **/
+    public Object clone() {
+        Caption c = new Caption(xCoordinate_, yCoordinate_,
+                                captionText_, captionFont_);
+        return c;
+    }
+
+    /**
+      * Inform the Caption of a mouseDown event so that the Caption may
+      * determine if the mouseDown occurred somewhere within its
+      * text, and if so, select the Caption.
+    **/
+    public void mouseDownAt(int x, int y, int gridStep) {
+        // Determine if mouse down is within hit area for this caption
+        int x__ = xCoordinate_ * gridStep;
+        int y__ = yCoordinate_ * gridStep;
+
+        if ((x >= x__) && (x <= x__ + width_)) {
+            if ((y <= y__) && (y >= y__ - height_)) {
+                toggleSelected();
+            }
+        }
+    }
+
+    /**
+      * Return the Font used by this Caption
+    **/
+    public Font getFont() {
+        return (captionFont_);
+    }
+
+    /**
+      * Draw the Caption to the screen.
+    **/
+    public void draw(Graphics g, int gridStep, Color captionColor) {
+        g.setColor(captionColor);
+        g.setFont (captionFont_);
+        g.drawString(captionText_,xCoordinate_ * gridStep,
+                     yCoordinate_ * gridStep);
+        if (selected_) {
+            int x__ = xCoordinate_ * gridStep;
+            int y__ = yCoordinate_ * gridStep;
+            g.setColor(Color.green);
+            g.fillRect(x__ - 2, y__ - 2, SELECT_SIZE, SELECT_SIZE);
+            g.fillRect(x__ + width_ - 2, y__ - 2, SELECT_SIZE, SELECT_SIZE);
+            g.fillRect(x__ - 2, y__ - height_ - 2, SELECT_SIZE, SELECT_SIZE);
+            g.fillRect(x__ + width_ - 2, y__ - height_ - 2, SELECT_SIZE, SELECT_SIZE);
+        }
+    }
+
+    /**
+      * Return the text of the caption
+    **/
+    public String getText() {
+        return (captionText_);
+    }
+
+    /**
+      * Save the necessary Caption information to a PrintStream
+      * The actual text of the caption is preceded by the string
+      * "~^~" so that any delimiting characters can be used by
+      * the StringTokenizer when reading the text back in.
+    **/
+    public void saveToFile(PrintStream printStream) {
+        printStream.println("Caption: " +
+                             xCoordinate_ + "," +
+                             yCoordinate_ + "," +
+                             actualSize_ + "," +
+                             captionFont_.getName() + "," +
+                             captionFont_.getStyle() + "," +
+                             captionFont_.getSize() + "," +
+                             "~^~" + captionText_);
+    }
+
+    /**
+      * Given a StringTokenizer, set the Caption values.  Useful
+      * for restoring a Caption from a file.
+    **/
+    public void loadFromFile(StringTokenizer tokenizer,
+                             String entireLine) {
+
+        xCoordinate_ = Integer.parseInt(tokenizer.nextToken());
+
+        yCoordinate_ = Integer.parseInt(tokenizer.nextToken());
+
+        Double tempDouble__ = new Double(tokenizer.nextToken());
+
+        actualSize_ = tempDouble__.doubleValue();
+        captionFont_ = new Font(tokenizer.nextToken(),
+                                Integer.parseInt(tokenizer.nextToken()),
+                                Integer.parseInt(tokenizer.nextToken()));
+        int index__ = entireLine.lastIndexOf("~^~");
+        captionText_ = entireLine.substring(index__+3);
+
+        return;
+    }
+
+    /**
+      * Adjust the size of the Font, for use with zoom operations.
+      * Note minimum size is bound to 1
+    **/
+    public void adjustSize(double factor) {
+        Font tempFont__;
+        if (factor < 0) {
+            actualSize_ = actualSize_ / Math.abs(factor);
+        }
+        else {
+            actualSize_ = actualSize_ * factor;
+        }
+
+        if (actualSize_ < 1.0) {
+            tempFont__ = new Font (captionFont_.getName(),
+                                    captionFont_.getStyle(), 1);
+        }
+        else {
+            tempFont__ = new Font (captionFont_.getName(),
+                                    captionFont_.getStyle(),
+                                    (int) actualSize_);
+        }
+        captionFont_ = tempFont__;
+
+        // Get new FontMetrics sizes for hit box
+        toolkit_ = Toolkit.getDefaultToolkit();
+        fontMetrics_ = toolkit_.getFontMetrics(captionFont_);
+        width_ = fontMetrics_.stringWidth(captionText_);
+        height_ = fontMetrics_.getHeight();
+    }
+
+}

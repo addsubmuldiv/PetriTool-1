@@ -1,0 +1,6 @@
+Delete
+
+This option is used to Delete all the currently selected
+Petri Net Components from the design.  Note that these
+deleted components are unavailable for future pasting, they
+are permanently destroyed.

@@ -1,0 +1,5 @@
+Save As
+
+Use this menuitem to save a design to disk with a
+filename. A Filedialog will appear prompting for a name
+and directory for the file to be saved.

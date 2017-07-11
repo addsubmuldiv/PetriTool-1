@@ -1,0 +1,171 @@
+//****************************************************************************
+// CLASS NAME:	ReachabilityDisplay.java
+//
+// AUTHOR:	Rick Brink
+//		    rick@mail.csh.rit.edu
+//		    http://www.csh.rit.edu/~rick
+//
+// VERSION:	1.0
+//
+// HISTORY:	4/16/96		Initial Version
+//
+// COPYRIGHT INFORMATION:
+//
+// This program and the Java source is in the public domain.
+// Permission to use, copy, modify, and distribute this software
+// and its documentation for NON-COMMERCIAL purposes and
+// without fee is hereby granted.
+//
+//    Copyright 1996
+//
+//    Rick Brink
+//    1266 Brighton-Henrietta Townline Rd.
+//    Rochester, NY 14623
+//
+// DISCLAIMER:
+//
+// The author claims no responsibility for any damage, direct or indirect,
+// to any harware or software as a result of using this program.
+//****************************************************************************
+
+package PetriTool;
+
+import java.lang.Thread;
+import java.util.Vector;
+import java.awt.TextArea;
+import java.awt.Frame;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Button;
+import java.awt.Event;
+import java.awt.Toolkit;
+import java.awt.Color;
+import java.awt.Panel;
+import java.awt.Label;
+import java.awt.Scrollbar;
+import java.awt.Graphics;
+import java.awt.BorderLayout;
+
+/**
+  * A class to display a Petri Net Reachability Tree
+  *
+  * @see java.lang.Thread
+  * @see java.util.Vector
+  * @see java.awt.TextArea
+  * @see java.awt.Frame
+  * @see java.awt.Font
+  * @see java.awt.FontMetrics
+  * @see java.awt.Button
+  * @see java.awt.Event
+  * @see java.awt.Toolkit
+  * @see java.awt.Color
+  * @see java.awt.Panel
+  * @see java.awt.Label
+  * @see java.awt.Scrollbar
+  * @see java.awt.Graphics
+  * @see java.awt.BorderLayout
+  *
+  * @version 1.0 July 3, 1996
+  *
+  * @author  Rick Brink
+**/
+class ReachabilityDisplay extends Frame {
+    /** Holds Vectors of nodes of the reachability tree **/
+    protected Vector treeVector_;
+
+    /** Button used to close the displayFrame_ **/
+    protected Button closeButton_;
+
+    /** A TextArea to hold the text of the Reachability Tree **/
+    protected TextArea textArea_;
+
+    /** Vector holding the data for a single node of the tree **/
+    protected Vector nodeVector_;
+
+    /** String to hold a single marking **/
+    protected String markingString_;
+
+    /** String to hold a transition label **/
+    protected String transitionString_;
+
+    /** Number of spaces to indent a node of the tree **/
+    protected int indentChars_;
+
+    /** Width of the initial marking of a node in the tree **/
+    protected int width_;
+
+    /** Width of a String of spaces used to indent leaves of the tree **/
+    protected int spaceWidth_;
+
+    /** String of spaces used to indent leaves of the tree **/
+    protected String spaceString_;
+
+    /** Panel to display tree **/
+    protected ReachabilityDisplayPanel displayPanel_;
+
+    /** Controls horizontal scrolling of the DesignPanel **/
+    protected Scrollbar horizontalScrollbar_;
+
+    /** Controls vertical scrolling of the DesignPanel **/
+    protected Scrollbar verticalScrollbar_;
+
+    /** Indicates if searchText_ items should be highlighted **/
+    protected boolean search_;
+
+    /** Marking to be highlighted if in tree and search_ is true **/
+    protected String searchText_;
+
+    /**
+      * Construct a new Reachability Tree.
+    **/
+    public ReachabilityDisplay(Vector treeVector, boolean search,
+                               String searchText) {
+        super("Reachability Tree");
+        treeVector_ = treeVector;
+        search_ = search;
+        searchText_ = searchText;
+        this.setLayout(new BorderLayout());
+
+        displayPanel_ = new ReachabilityDisplayPanel(treeVector, search, searchText);
+        this.add("Center", displayPanel_);
+
+        closeButton_ = new Button("Close");
+        this.add("South", closeButton_);
+        resize(200, 550);
+        show();
+    }
+
+    /**
+      * Handle the close button by closing this window down
+    **/
+    public boolean handleEvent(Event event) {
+        switch(event.id) {
+        // Most components generate ACTION_EVENT
+        // We test the target field to find out which component.
+            case Event.ACTION_EVENT:
+                if (event.target == closeButton_) {
+                    this.hide();
+                    this.dispose();
+                    return true;
+                }
+                break;
+            case Event.WINDOW_DESTROY:
+                this.hide();
+                this.dispose();
+                return true;
+            case Event.MOUSE_DOWN:
+                repaint();
+                break;
+        }
+        return (false);
+    }
+
+
+    /**
+      * Repaint the elements in the frame
+    **/
+    public void repaint() {
+        displayPanel_.repaint();
+    }
+
+}
