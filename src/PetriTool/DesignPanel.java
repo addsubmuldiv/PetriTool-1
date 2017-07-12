@@ -62,8 +62,8 @@ import java.util.StringTokenizer;
 
 class DesignPanel extends Panel{
 	
-//	/**		使用新的API会导致旧的API被覆盖，使得原本的代码不能用，故废弃
-//	 * 定义一个内部类，用来监听鼠标点击事件，如果点击的不是某一组件，取消所有组件的选中状态
+//	/**		浣跨敤鏂扮殑API浼氬鑷存棫鐨凙PI琚鐩栵紝浣垮緱鍘熸湰鐨勪唬鐮佷笉鑳界敤锛屾晠搴熷純
+//	 * 瀹氫箟涓�涓唴閮ㄧ被锛岀敤鏉ョ洃鍚紶鏍囩偣鍑讳簨浠讹紝濡傛灉鐐瑰嚮鐨勪笉鏄煇涓�缁勪欢锛屽彇娑堟墍鏈夌粍浠剁殑閫変腑鐘舵��
 //	 * **/
 	/*class DesignPanelListener extends MouseAdapter
 	{
@@ -79,14 +79,14 @@ class DesignPanel extends Panel{
 	}*/
 	
 //	DesignPanelListener myListener_;
-	/**鼠标按住选择的矩形的左上角坐标和右下角坐标**/
+	/**榧犳爣鎸変綇閫夋嫨鐨勭煩褰㈢殑宸︿笂瑙掑潗鏍囧拰鍙充笅瑙掑潗鏍�**/
     private int selectRectX1_;
     private int selectRectY1_;
     private int selectRectX2_;
     private int selectRectY2_;
 	
 
-    /**多个选中，一起移动的时候的其中某一组件的原始位置和新位置，计算出偏移量，施加到每一个组件上**/
+    /**澶氫釜閫変腑锛屼竴璧风Щ鍔ㄧ殑鏃跺�欑殑鍏朵腑鏌愪竴缁勪欢鐨勫師濮嬩綅缃拰鏂颁綅缃紝璁＄畻鍑哄亸绉婚噺锛屾柦鍔犲埌姣忎竴涓粍浠朵笂**/
     private int oldPositionX_;
     private int oldPositionY_;
     private int newPositionX_;
@@ -210,6 +210,8 @@ class DesignPanel extends Panel{
         // Under JDK1.02 on Win95, the set increments do not work
         verticalScrollbar_.setLineIncrement (LINE_INCREMENT);
         verticalScrollbar_.setPageIncrement (PAGE_INCREMENT);
+        verticalScrollbar_.setBackground(Color.gray);
+        
         add( "East", verticalScrollbar_);
 
         horizontalScrollbar_ = new Scrollbar(Scrollbar.HORIZONTAL);
@@ -217,6 +219,7 @@ class DesignPanel extends Panel{
         // Under JDK1.02 on Win95, the set increments do not work
         horizontalScrollbar_.setLineIncrement (LINE_INCREMENT);
         horizontalScrollbar_.setPageIncrement (PAGE_INCREMENT);
+        horizontalScrollbar_.setBackground(Color.gray);
         add( "South", horizontalScrollbar_);
         repaint();
 
@@ -634,6 +637,7 @@ class DesignPanel extends Panel{
         int gridStep__ = petriTool_.gridStep_;
 
         int VisibleXGridPoints = (size().width / gridStep__) - 1;
+           
         int VisibleYGridPoints = (size().height / gridStep__) - 1;
 
         // Determine OS because of scrollbar implementation differences
@@ -642,6 +646,7 @@ class DesignPanel extends Panel{
         if (OSName.equals ("Windows 95") ||
             OSName.equals ("Windows NT")) {
             verticalScrollbar_.setValues(minY, VisibleYGridPoints, 0, petriTool_.maxYPoints_ + 1);
+        //    verticalScrollbar_.;
             horizontalScrollbar_.setValues(minX, VisibleXGridPoints, 0, petriTool_.maxXPoints_ + 1);
         } else {
             verticalScrollbar_.setValues(minY, VisibleYGridPoints, 0, petriTool_.maxYPoints_ + 1 - VisibleYGridPoints);
@@ -656,6 +661,7 @@ class DesignPanel extends Panel{
     **/
     public void paint(Graphics g) {
     	
+    	/**Draw a dashed rectangular box to include the places or transitions for dragging **/
     	float[] g2dDashWidth= {(float) 10.0,(float) 10.0};
     	
     	Graphics2D g2d = (Graphics2D)getGraphics();
@@ -1673,7 +1679,7 @@ class DesignPanel extends Panel{
 	
 	
 	
-	/**多个一起拖动时，需要变动的arc的vector**/
+	/**澶氫釜涓�璧锋嫋鍔ㄦ椂锛岄渶瑕佸彉鍔ㄧ殑arc鐨剉ector**/
 	private Vector<Arc> arcsInVector__=new Vector<>();
 	private Vector<Arc> arcsOutVector__=new Vector<>();
 	/**==============================**/
@@ -2217,31 +2223,31 @@ class DesignPanel extends Panel{
 		x = x - (x % gridStep__);
 		y = y - (y % gridStep__);
 		
-		/**多个一起移动时新位置的坐标**/
+		/**澶氫釜涓�璧风Щ鍔ㄦ椂鏂颁綅缃殑鍧愭爣**/
 		newPositionX_=x;
 		newPositionY_=y;
-		/**设置选择矩形框的右下角坐标**/
+		/**璁剧疆閫夋嫨鐭╁舰妗嗙殑鍙充笅瑙掑潗鏍�**/
 		selectRectX2_=x;
 		selectRectY2_=y;
     	
-		/**把偏移量换算成网格数**/
+		/**鎶婂亸绉婚噺鎹㈢畻鎴愮綉鏍兼暟**/
 		int gridPosChangedX__=(newPositionX_-oldPositionX_)/petriTool_.gridStep_;
 		int gridPosChangedY__=(newPositionY_-oldPositionY_)/petriTool_.gridStep_;
 		/**===============**/
-		/**检测是否在虚线矩形框内，是则选中============================================**/
+		/**妫�娴嬫槸鍚﹀湪铏氱嚎鐭╁舰妗嗗唴锛屾槸鍒欓�変腑============================================**/
 		Iterator<Transition> transitionIterator=transitionVector_.iterator();
 		Iterator<Place> placeIterator=placeVector_.iterator();
 		Iterator<Token> tokenIterator=tokenVector_.iterator();
 		while(placeIterator.hasNext())
 		{
 			Place tempPlace=placeIterator.next();
-			//判断每一个place是不是在虚线矩形框以内，是的话，标记为选中，下面transition,token同理
+			//鍒ゆ柇姣忎竴涓猵lace鏄笉鏄湪铏氱嚎鐭╁舰妗嗕互鍐咃紝鏄殑璇濓紝鏍囪涓洪�変腑锛屼笅闈ransition,token鍚岀悊
 			if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
 					tempPlace.getXCoordinate(), tempPlace.getYCoordinate()))
 			{	
 				tempPlace.setSelected();
 			}
-			else if(mouseDraging_==false)		//解决拖拽时其他的被选中变成未选中
+			else if(mouseDraging_==false)		//瑙ｅ喅鎷栨嫿鏃跺叾浠栫殑琚�変腑鍙樻垚鏈�変腑
 			{
 				tempPlace.setNotSelected();
 			}
@@ -2274,7 +2280,7 @@ class DesignPanel extends Panel{
 
     	}
     	/**========================================================================**/
-    	/**单个拖拽移动===============================================================**/
+    	/**鍗曚釜鎷栨嫿绉诲姩===============================================================**/
     	if(mouseDraging_==true)
 		{
 			
@@ -2329,7 +2335,7 @@ class DesignPanel extends Panel{
     }
 
 
-    /**画虚线框的时候通过传进来的参数判断哪些组件在选框内**/
+    /**鐢昏櫄绾挎鐨勬椂鍊欓�氳繃浼犺繘鏉ョ殑鍙傛暟鍒ゆ柇鍝簺缁勪欢鍦ㄩ�夋鍐�**/
     public boolean isInRect(int x1,int y1,int x2,int y2,int x,int y)
     {
     	
@@ -2448,7 +2454,7 @@ class DesignPanel extends Panel{
 			}
 		}
 
-		/**把每一次的新位置作为旧位置，否则偏移量会不同步**/
+		/**鎶婃瘡涓�娆＄殑鏂颁綅缃綔涓烘棫浣嶇疆锛屽惁鍒欏亸绉婚噺浼氫笉鍚屾**/
 		oldPositionX_=newPositionX_;
 		oldPositionY_=newPositionY_;
     }
