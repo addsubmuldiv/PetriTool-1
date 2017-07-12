@@ -61,32 +61,18 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 class DesignPanel extends Panel{
-	
-//	/**		使用新的API会导致旧的API被覆盖，使得原本的代码不能用，故废弃
-//	 * 定义一个内部类，用来监听鼠标点击事件，如果点击的不是某一组件，取消所有组件的选中状态
-//	 * **/
-	/*class DesignPanelListener extends MouseAdapter
-	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-			System.out.println("lalala");
-			if(gridSpaceOccupied(e.getX(), e.getY()))
-			{
-				System.out.println("hahaha");
-			}
-		}
-	}*/
-	
-//	DesignPanelListener myListener_;
-	/**鼠标按住选择的矩形的左上角坐标和右下角坐标**/
+//	DesignPanelListener myListener_;	/**The select rectangle's coordinates
+	 * (x1,y1) and (x2,y2)
+	 * **/
     private int selectRectX1_;
     private int selectRectY1_;
     private int selectRectX2_;
     private int selectRectY2_;
 	
-
-    /**多个选中，一起移动的时候的其中某一组件的原始位置和新位置，计算出偏移量，施加到每一个组件上**/
+    /**
+     * When you drag components more than one, you need to calculate the offset,
+     * this is the way
+     * **/
     private int oldPositionX_;
     private int oldPositionY_;
     private int newPositionX_;
@@ -1673,7 +1659,9 @@ class DesignPanel extends Panel{
 	
 	
 	
-	/**多个一起拖动时，需要变动的arc的vector**/
+	/**Declare the vector of arcs of components those are dragged,
+	 * which are not being dragged by mouse, but together with it
+	 *  **/
 	private Vector<Arc> arcsInVector__=new Vector<>();
 	private Vector<Arc> arcsOutVector__=new Vector<>();
 	/**==============================**/
@@ -2217,38 +2205,46 @@ class DesignPanel extends Panel{
 		x = x - (x % gridStep__);
 		y = y - (y % gridStep__);
 		
-		/**多个一起移动时新位置的坐标**/
+		/**Set the dragged components' new position **/
 		newPositionX_=x;
 		newPositionY_=y;
-		/**设置选择矩形框的右下角坐标**/
+		/**Set the second point of dash rectangle**/
 		selectRectX2_=x;
 		selectRectY2_=y;
     	
-		/**把偏移量换算成网格数**/
+		/**
+		 * Change the x,y of mouse to grid's x,y
+		 * **/
 		int gridPosChangedX__=(newPositionX_-oldPositionX_)/petriTool_.gridStep_;
 		int gridPosChangedY__=(newPositionY_-oldPositionY_)/petriTool_.gridStep_;
 		/**===============**/
-		/**检测是否在虚线矩形框内，是则选中============================================**/
+		/**Declare iterators to traverse the vector of place,
+		 * transition, token. And judge if they are in the dash rectangle
+		 * ============================================**/
 		Iterator<Transition> transitionIterator=transitionVector_.iterator();
 		Iterator<Place> placeIterator=placeVector_.iterator();
 		Iterator<Token> tokenIterator=tokenVector_.iterator();
 		while(placeIterator.hasNext())
 		{
-			Place tempPlace=placeIterator.next();
-			//判断每一个place是不是在虚线矩形框以内，是的话，标记为选中，下面transition,token同理
+			Place tempPlace=placeIterator.next();			/**
+			 * Detect if there are any place in the dash rectangle, if so, set it as selected,
+			 * otherwise set it unselected
+			 * **/
 			if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
 					tempPlace.getXCoordinate(), tempPlace.getYCoordinate()))
 			{	
 				tempPlace.setSelected();
 			}
-			else if(mouseDraging_==false)		//解决拖拽时其他的被选中变成未选中
-			{
+			else if(mouseDraging_==false)		//Prevent the selected become unselected
+			{									//when you drag component more than one			
 				tempPlace.setNotSelected();
 			}
 		}
 		while(transitionIterator.hasNext())
 		{
-			Transition tempTransition=transitionIterator.next();
+			Transition tempTransition=transitionIterator.next();			/**
+			 * Just the same as place
+			 */
 			if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
 					tempTransition.getXCoordinate(), tempTransition.getYCoordinate()))
 			{
@@ -2261,8 +2257,7 @@ class DesignPanel extends Panel{
 		}
     	while(tokenIterator.hasNext())
     	{
-    		Token tempToken=tokenIterator.next();
-    		if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
+    		Token tempToken=tokenIterator.next();    		/**			 * Just the same as place			 */    		if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
 					tempToken.getXCoordinate(), tempToken.getYCoordinate()))
 			{
 				tempToken.setSelected();
@@ -2274,7 +2269,7 @@ class DesignPanel extends Panel{
 
     	}
     	/**========================================================================**/
-    	/**单个拖拽移动===============================================================**/
+    	/**Single drag and move===============================================================**/
     	if(mouseDraging_==true)
 		{
 			
@@ -2328,8 +2323,8 @@ class DesignPanel extends Panel{
     	return true;
     }
 
-
-    /**画虚线框的时候通过传进来的参数判断哪些组件在选框内**/
+    /**When drawing a dashed frame, determine which components are in the 
+     * box by passing in parameters**/
     public boolean isInRect(int x1,int y1,int x2,int y2,int x,int y)
     {
     	
@@ -2447,8 +2442,8 @@ class DesignPanel extends Panel{
 				tempToken.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_);
 			}
 		}
-
-		/**把每一次的新位置作为旧位置，否则偏移量会不同步**/
+		/**Everytime the old coordinate value copys to new coordinator
+		 * Otherwise, they will not synchronize**/
 		oldPositionX_=newPositionX_;
 		oldPositionY_=newPositionY_;
     }
