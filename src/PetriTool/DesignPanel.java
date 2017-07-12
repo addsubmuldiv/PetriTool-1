@@ -1,4 +1,5 @@
 
+
 //****************************************************************************
 // CLASS NAME:	DesignPanel.java
 //
@@ -61,32 +62,20 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 class DesignPanel extends Panel{
-	
-//	/**		浣跨敤鏂扮殑API浼氬鑷存棫鐨凙PI琚鐩栵紝浣垮緱鍘熸湰鐨勪唬鐮佷笉鑳界敤锛屾晠搴熷純
-//	 * 瀹氫箟涓�涓唴閮ㄧ被锛岀敤鏉ョ洃鍚紶鏍囩偣鍑讳簨浠讹紝濡傛灉鐐瑰嚮鐨勪笉鏄煇涓�缁勪欢锛屽彇娑堟墍鏈夌粍浠剁殑閫変腑鐘舵��
-//	 * **/
-	/*class DesignPanelListener extends MouseAdapter
-	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-			System.out.println("lalala");
-			if(gridSpaceOccupied(e.getX(), e.getY()))
-			{
-				System.out.println("hahaha");
-			}
-		}
-	}*/
-	
 //	DesignPanelListener myListener_;
-	/**榧犳爣鎸変綇閫夋嫨鐨勭煩褰㈢殑宸︿笂瑙掑潗鏍囧拰鍙充笅瑙掑潗鏍�**/
+	/**The select rectangle's coordinates
+	 * (x1,y1) and (x2,y2)
+	 * **/
     private int selectRectX1_;
     private int selectRectY1_;
     private int selectRectX2_;
     private int selectRectY2_;
 	
 
-    /**澶氫釜閫変腑锛屼竴璧风Щ鍔ㄧ殑鏃跺�欑殑鍏朵腑鏌愪竴缁勪欢鐨勫師濮嬩綅缃拰鏂颁綅缃紝璁＄畻鍑哄亸绉婚噺锛屾柦鍔犲埌姣忎竴涓粍浠朵笂**/
+    /**
+     * When you drag components more than one, you need to calculate the offset,
+     * this is the way
+     * **/
     private int oldPositionX_;
     private int oldPositionY_;
     private int newPositionX_;
@@ -210,8 +199,6 @@ class DesignPanel extends Panel{
         // Under JDK1.02 on Win95, the set increments do not work
         verticalScrollbar_.setLineIncrement (LINE_INCREMENT);
         verticalScrollbar_.setPageIncrement (PAGE_INCREMENT);
-        verticalScrollbar_.setBackground(Color.gray);
-        
         add( "East", verticalScrollbar_);
 
         horizontalScrollbar_ = new Scrollbar(Scrollbar.HORIZONTAL);
@@ -219,7 +206,6 @@ class DesignPanel extends Panel{
         // Under JDK1.02 on Win95, the set increments do not work
         horizontalScrollbar_.setLineIncrement (LINE_INCREMENT);
         horizontalScrollbar_.setPageIncrement (PAGE_INCREMENT);
-        horizontalScrollbar_.setBackground(Color.gray);
         add( "South", horizontalScrollbar_);
         repaint();
 
@@ -637,7 +623,6 @@ class DesignPanel extends Panel{
         int gridStep__ = petriTool_.gridStep_;
 
         int VisibleXGridPoints = (size().width / gridStep__) - 1;
-           
         int VisibleYGridPoints = (size().height / gridStep__) - 1;
 
         // Determine OS because of scrollbar implementation differences
@@ -646,7 +631,6 @@ class DesignPanel extends Panel{
         if (OSName.equals ("Windows 95") ||
             OSName.equals ("Windows NT")) {
             verticalScrollbar_.setValues(minY, VisibleYGridPoints, 0, petriTool_.maxYPoints_ + 1);
-        //    verticalScrollbar_.;
             horizontalScrollbar_.setValues(minX, VisibleXGridPoints, 0, petriTool_.maxXPoints_ + 1);
         } else {
             verticalScrollbar_.setValues(minY, VisibleYGridPoints, 0, petriTool_.maxYPoints_ + 1 - VisibleYGridPoints);
@@ -661,7 +645,6 @@ class DesignPanel extends Panel{
     **/
     public void paint(Graphics g) {
     	
-    	/**Draw a dashed rectangular box to include the places or transitions for dragging **/
     	float[] g2dDashWidth= {(float) 10.0,(float) 10.0};
     	
     	Graphics2D g2d = (Graphics2D)getGraphics();
@@ -1679,7 +1662,9 @@ class DesignPanel extends Panel{
 	
 	
 	
-	/**澶氫釜涓�璧锋嫋鍔ㄦ椂锛岄渶瑕佸彉鍔ㄧ殑arc鐨剉ector**/
+	/**Declare the vector of arcs of components those are dragged,
+	 * which are not being dragged by mouse, but together with it
+	 *  **/
 	private Vector<Arc> arcsInVector__=new Vector<>();
 	private Vector<Arc> arcsOutVector__=new Vector<>();
 	/**==============================**/
@@ -2223,38 +2208,48 @@ class DesignPanel extends Panel{
 		x = x - (x % gridStep__);
 		y = y - (y % gridStep__);
 		
-		/**澶氫釜涓�璧风Щ鍔ㄦ椂鏂颁綅缃殑鍧愭爣**/
+		/**Set the dragged components' new position **/
 		newPositionX_=x;
 		newPositionY_=y;
-		/**璁剧疆閫夋嫨鐭╁舰妗嗙殑鍙充笅瑙掑潗鏍�**/
+		/**Set the second point of dash rectangle**/
 		selectRectX2_=x;
 		selectRectY2_=y;
     	
-		/**鎶婂亸绉婚噺鎹㈢畻鎴愮綉鏍兼暟**/
+		/**
+		 * Change the x,y of mouse to grid's x,y
+		 * **/
 		int gridPosChangedX__=(newPositionX_-oldPositionX_)/petriTool_.gridStep_;
 		int gridPosChangedY__=(newPositionY_-oldPositionY_)/petriTool_.gridStep_;
 		/**===============**/
-		/**妫�娴嬫槸鍚﹀湪铏氱嚎鐭╁舰妗嗗唴锛屾槸鍒欓�変腑============================================**/
+		/**Declare iterators to traverse the vector of place,
+		 * transition, token. And judge if they are in the dash rectangle
+		 * ============================================**/
 		Iterator<Transition> transitionIterator=transitionVector_.iterator();
 		Iterator<Place> placeIterator=placeVector_.iterator();
 		Iterator<Token> tokenIterator=tokenVector_.iterator();
 		while(placeIterator.hasNext())
 		{
 			Place tempPlace=placeIterator.next();
-			//鍒ゆ柇姣忎竴涓猵lace鏄笉鏄湪铏氱嚎鐭╁舰妗嗕互鍐咃紝鏄殑璇濓紝鏍囪涓洪�変腑锛屼笅闈ransition,token鍚岀悊
+			/**
+			 * Detect if there are any place in the dash rectangle, if so, set it as selected,
+			 * otherwise set it unselected
+			 * **/
 			if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
 					tempPlace.getXCoordinate(), tempPlace.getYCoordinate()))
 			{	
 				tempPlace.setSelected();
 			}
-			else if(mouseDraging_==false)		//瑙ｅ喅鎷栨嫿鏃跺叾浠栫殑琚�変腑鍙樻垚鏈�変腑
-			{
+			else if(mouseDraging_==false)		//Prevent the selected become unselected
+			{									//when you drag component more than one			
 				tempPlace.setNotSelected();
 			}
 		}
 		while(transitionIterator.hasNext())
 		{
 			Transition tempTransition=transitionIterator.next();
+			/**
+			 * Just the same as place
+			 */
 			if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
 					tempTransition.getXCoordinate(), tempTransition.getYCoordinate()))
 			{
@@ -2268,6 +2263,9 @@ class DesignPanel extends Panel{
     	while(tokenIterator.hasNext())
     	{
     		Token tempToken=tokenIterator.next();
+    		/**
+			 * Just the same as place
+			 */
     		if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
 					tempToken.getXCoordinate(), tempToken.getYCoordinate()))
 			{
@@ -2280,7 +2278,7 @@ class DesignPanel extends Panel{
 
     	}
     	/**========================================================================**/
-    	/**鍗曚釜鎷栨嫿绉诲姩===============================================================**/
+    	/**Single drag and move===============================================================**/
     	if(mouseDraging_==true)
 		{
 			
@@ -2335,7 +2333,8 @@ class DesignPanel extends Panel{
     }
 
 
-    /**鐢昏櫄绾挎鐨勬椂鍊欓�氳繃浼犺繘鏉ョ殑鍙傛暟鍒ゆ柇鍝簺缁勪欢鍦ㄩ�夋鍐�**/
+    /**When drawing a dashed frame, determine which components are in the 
+     * box by passing in parameters**/
     public boolean isInRect(int x1,int y1,int x2,int y2,int x,int y)
     {
     	
@@ -2454,7 +2453,8 @@ class DesignPanel extends Panel{
 			}
 		}
 
-		/**鎶婃瘡涓�娆＄殑鏂颁綅缃綔涓烘棫浣嶇疆锛屽惁鍒欏亸绉婚噺浼氫笉鍚屾**/
+		/**Everytime the old coordinate value copys to new coordinator
+		 * Otherwise, they will not synchronize**/
 		oldPositionX_=newPositionX_;
 		oldPositionY_=newPositionY_;
     }
