@@ -1,4 +1,5 @@
 
+
 //****************************************************************************
 // CLASS NAME:	DesignPanel.java
 //
@@ -61,7 +62,8 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 class DesignPanel extends Panel{
-//	DesignPanelListener myListener_;	/**The select rectangle's coordinates
+//	DesignPanelListener myListener_;
+	/**The select rectangle's coordinates
 	 * (x1,y1) and (x2,y2)
 	 * **/
     private int selectRectX1_;
@@ -69,7 +71,8 @@ class DesignPanel extends Panel{
     private int selectRectX2_;
     private int selectRectY2_;
 	
-    /**
+
+    /**
      * When you drag components more than one, you need to calculate the offset,
      * this is the way
      * **/
@@ -2226,7 +2229,8 @@ class DesignPanel extends Panel{
 		Iterator<Token> tokenIterator=tokenVector_.iterator();
 		while(placeIterator.hasNext())
 		{
-			Place tempPlace=placeIterator.next();			/**
+			Place tempPlace=placeIterator.next();
+			/**
 			 * Detect if there are any place in the dash rectangle, if so, set it as selected,
 			 * otherwise set it unselected
 			 * **/
@@ -2242,7 +2246,8 @@ class DesignPanel extends Panel{
 		}
 		while(transitionIterator.hasNext())
 		{
-			Transition tempTransition=transitionIterator.next();			/**
+			Transition tempTransition=transitionIterator.next();
+			/**
 			 * Just the same as place
 			 */
 			if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
@@ -2257,7 +2262,11 @@ class DesignPanel extends Panel{
 		}
     	while(tokenIterator.hasNext())
     	{
-    		Token tempToken=tokenIterator.next();    		/**			 * Just the same as place			 */    		if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
+    		Token tempToken=tokenIterator.next();
+    		/**
+			 * Just the same as place
+			 */
+    		if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
 					tempToken.getXCoordinate(), tempToken.getYCoordinate()))
 			{
 				tempToken.setSelected();
@@ -2323,7 +2332,8 @@ class DesignPanel extends Panel{
     	return true;
     }
 
-    /**When drawing a dashed frame, determine which components are in the 
+
+    /**When drawing a dashed frame, determine which components are in the 
      * box by passing in parameters**/
     public boolean isInRect(int x1,int y1,int x2,int y2,int x,int y)
     {
@@ -2442,7 +2452,8 @@ class DesignPanel extends Panel{
 				tempToken.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_);
 			}
 		}
-		/**Everytime the old coordinate value copys to new coordinator
+
+		/**Everytime the old coordinate value copys to new coordinator
 		 * Otherwise, they will not synchronize**/
 		oldPositionX_=newPositionX_;
 		oldPositionY_=newPositionY_;
