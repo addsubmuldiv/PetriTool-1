@@ -34,10 +34,13 @@
 package PetriTool;
 
 import java.awt.Panel;
+import java.awt.PopupMenu;
 import java.awt.Event;
 import java.awt.Dimension;
 import java.awt.Scrollbar;
 import java.awt.Stroke;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -45,6 +48,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.MenuItem;
 import java.awt.Color;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -61,8 +65,7 @@ import javax.swing.JPanel;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
-class DesignPanel extends Panel{
-//	DesignPanelListener myListener_;
+class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 	/**The select rectangle's coordinates
 	 * (x1,y1) and (x2,y2)
 	 * **/
@@ -71,6 +74,14 @@ class DesignPanel extends Panel{
     private int selectRectX2_;
     private int selectRectY2_;
 	
+    
+    
+    /**
+     * mouse's coordinate
+     * **/
+    private int mouseX_,mouseY_;
+    
+    
 
     /**
      * When you drag components more than one, you need to calculate the offset,
@@ -186,6 +197,74 @@ class DesignPanel extends Panel{
       * Construct a new DesignPanel.  This is where the Petri Net
       * design will be drawn by the user.
     **/
+    JPopupMenu pMenu,tMenu,aMenu;
+    
+    
+    
+    
+    /**
+     * three Inner class to listen the menuItem clicked event,
+     * and pass the mouse coordinate to the edit dialog
+     * **/
+    
+    class placeEditListener implements ActionListener
+    {
+//    	int mouseX__, mouseY__;
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			EditPlace editPlaceDialog=new EditPlace();
+			editPlaceDialog.setPlaceEdited_(getPlace(mouseX_, mouseY_));
+			editPlaceDialog.setVisible(true);
+			
+		}
+//		public int getMouseX__() {
+//			return mouseX__;
+//		}
+//		public void setMouseX__(int mouseX__) {
+//			this.mouseX__ = mouseX__;
+//		}
+//		public int getMouseY__() {
+//			return mouseY__;
+//		}
+//		public void setMouseY__(int mouseY__) {
+//			this.mouseY__ = mouseY__;
+//		}
+    }
+    
+    
+    class transitionEditListener implements ActionListener
+    {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			EditTransition editTransitionDialog=new EditTransition();
+			editTransitionDialog.setTransitionEdited_(getTransition(mouseX_, mouseY_));
+			editTransitionDialog.setVisible(true);
+		}
+    	
+    }
+    
+    class ArcEditListener implements ActionListener
+    {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			EditArc editArcDialog=new EditArc();
+			
+		}
+    	
+    }
+    
+    
+    
+    
+    
+    
+    
+    
     @SuppressWarnings("deprecation")
 	public DesignPanel(PetriTool app) {
         petriTool_ = app;
@@ -226,7 +305,57 @@ class DesignPanel extends Panel{
         // Initialize values for simulation
         initialMarkingVector_ = new Vector();
         
+        /**
+         * Deleted the old code and changed it to new version
+         * The functions are the same as the original code
+         * Set the DesignPanel it self as its listener
+         * **/
+        this.addMouseListener(this);
+        this.addMouseMotionListener(this);
+        /**
+         * Initialize the place menu
+         * **/
+        pMenu=new JPopupMenu();
         
+		JMenuItem editPlace=new JMenuItem("Edit place");
+		
+		editPlace.addActionListener(new placeEditListener());
+		
+		JMenuItem deletePlace=new JMenuItem("delete");
+		
+		pMenu.add(editPlace);
+		pMenu.add(deletePlace);
+		
+		
+		/**
+		 * Initialize the transition menu
+		 * **/
+		tMenu=new JPopupMenu();
+		JMenuItem editTransition=new JMenuItem("Edit transition");
+		editTransition.addActionListener(new transitionEditListener());
+		
+		JMenuItem deleteTransition=new JMenuItem("delete");
+		
+		tMenu.add(editTransition);
+		tMenu.add(deleteTransition);
+		
+		/**
+		 * Initialize the arc menu
+		 * **/
+		aMenu=new JPopupMenu();
+		JMenuItem editArc=new JMenuItem("Edit arc");
+		editArc.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				JDialog editArc=new EditArc();
+				editArc.setVisible(true);
+			}
+		});
+		JMenuItem deleteArc=new JMenuItem("delete");
+		aMenu.add(editArc);
+		aMenu.add(deleteArc);
     }
 
     /**
@@ -761,6 +890,9 @@ class DesignPanel extends Panel{
         		}
         	}
         }
+        
+        
+        
 	}
     
 
@@ -1003,6 +1135,34 @@ class DesignPanel extends Panel{
         }
         return (null);
     }
+    
+    
+    
+    public Arc getArc(int x,int y)
+    {
+    	x+=dx;
+    	y+=dy;
+    	for (int i__ = 0; i__ < arcVector_.size(); i__++) 
+    	{
+            Arc tempArc__ = (Arc) arcVector_.elementAt(i__);
+            if(tempArc__.mouseDownAt(x, y,petriTool_.gridStep_)==true)
+            {
+            	return tempArc__;
+            }
+        }
+    	return null;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     /**
       * Return the Transition occupying grid square with
@@ -1669,334 +1829,14 @@ class DesignPanel extends Panel{
 	private Vector<Arc> arcsOutVector__=new Vector<>();
 	/**==============================**/
 	
-    /**
-      * Handles mouseDown events within the DesignPanel, which
-      * will trigger certain actions depending on the state of
-      * the ControlPanel and other previous events.
-    **/
-    public synchronized boolean mouseDown(Event evt, int x, int y) {
-        int gridStep__ = petriTool_.gridStep_;
-
-        // For scrollbar translation
-        x += dx;
-        y += dy;
-
-        int xOriginal__ = x;
-        int yOriginal__ = y;
-
-        // Align coordinates so that component is centered
-        // in a grid square
-        x = x - (x % gridStep__);
-        y = y - (y % gridStep__);
-
-        selectedButton_ = petriTool_.controlPanel_.getCurrentButton();
-        
-        selectRectX1_=x;
-        selectRectY1_=y; 
-        
-        
-        
-        if(mouseDraging_==false)
-        {
-        	if(validDimension(x,y))
-    		{
-    			if(gridSpaceOccupied(x,y))
-    			{
-    				mouseDraging_=true;
-    				placeDraged_=getPlace(x, y);
-    				tokenDraged_=getToken(x, y);
-    				transitionDraged_=getTransition(x, y);
-    				arcsOutVector_=arcStartsAt(x/ petriTool_.gridStep_, y/ petriTool_.gridStep_);
-    				arcsInVector_=arcEndsAt(x/petriTool_.gridStep_, y/petriTool_.gridStep_);
-    				oldPositionX_=x;
-    				oldPositionY_=y;
-    			}
-    		}	
-        }
-        
-        
-        if (selectedButton_.equals("Pointer")) {
-            if (petriTool_.captionInProgress_) {
-                if (validDimension(x, y)) {
-                    FontMetrics fm = getFontMetrics(petriTool_.captionFont_);
-                    int width__ = fm.stringWidth(petriTool_.captionText_);
-                    int height__ = fm.getHeight();
-                    if (validDimension(x+width__, y-height__)) {
-                        if (!gridSpaceOccupied(x, y)) {
-                            Caption caption__ = new Caption
-                                (x / gridStep__, y / gridStep__ +1,
-                                petriTool_.captionText_,
-                                petriTool_.captionFont_);
-                            caption__.setSelected(false);
-                            captionVector_.addElement(caption__);
-                            petriTool_.captionInProgress_ = false;
-                            petriTool_.captionText_ = "";
-                        }
-                        else {
-                            StatusMessage("Captions may not be drawn within 1 grid space of other elements");
-                        }
-                    }
-                    else {
-                        StatusMessage("Caption dimensions extend beyond border.");
-                    }
-                }
-                else {
-                    StatusMessage("Captions must be drawn within the border.");
-                }
-            }
-            else if (petriTool_.pasteInProgress_) {
-                if (pasteDesination(x,y)) {
-                    petriTool_.pasteInProgress_ = false;
-                    petriTool_.destroySimulation();
-                }
-            }
-            else if (placeOccupies(x, y, true)) {
-                if (tokenOccupies(x,y)) {
-                    if (selectPlaceOverToken(xOriginal__, yOriginal__)) {
-                        Place tempPlace__ = getPlace(x,y);
-                        tempPlace__.toggleSelected();
-                    }
-                    else {
-                        Token tempToken__ = getToken(x,y);
-                        tempToken__.toggleSelected();
-                    }
-                }
-                else {
-                    Place tempPlace__ = getPlace(x,y);
-                    tempPlace__.toggleSelected();
-                }
-            }
-            else if (transitionOccupies(x, y, true)) {
-                Transition tempTransition__ = getTransition(x,y);
-                tempTransition__.toggleSelected();
-            }
-            else if (tokenOccupies(x, y)) {
-                Token tempToken__ = getToken(x,y);
-                tempToken__.toggleSelected();
-            }
-            // Inform Captions and Arcs of mouseDown event
-            // so that they may determine if they were selected
-            for (int i__ = 0; i__ < captionVector_.size(); i__++) {
-                Caption tempCaption__ = (Caption) captionVector_.
-                                        elementAt(i__);
-                tempCaption__.mouseDownAt(xOriginal__, yOriginal__,
-                                          gridStep__);
-            }
-            for (int i__ = 0; i__ < arcVector_.size(); i__++) {
-                Arc tempArc__ = (Arc) arcVector_.elementAt(i__);
-                tempArc__.mouseDownAt(xOriginal__, yOriginal__,
-                                      gridStep__);
-            }
-        }
-        else if (selectedButton_.equals("Place")) {
-            if (validDimension(x, y)) {
-                if (!gridSpaceOccupied(x, y)) {
-                    placeVector_.addElement(new Place
-                        (x / gridStep__, y / gridStep__,petriTool_.getPlaceLabel()));
-                        petriTool_.destroySimulation();
-                        setInitialMarking();
-                }
-                else {
-                    StatusMessage("Places may not be drawn within 1 grid space of other elements");
-                }
-            }
-            else {
-                StatusMessage("Places must be drawn within the border.");
-            }
-        }
-        else if (selectedButton_.equals("Token")) {
-            if (validDimension(x, y)) {
-                if (placeOccupies(x, y, true)) {
-                    if (!tokenOccupies(x,y)) {
-                        int numTokens__ = petriTool_.componentPanel_.
-                            getNumTokens();
-                        Token tempToken__ = new Token
-                                (x / gridStep__, y / gridStep__,
-                                numTokens__);
-                        tokenVector_.addElement(tempToken__);
-                        petriTool_.destroySimulation();
-                        Place tempPlace__ = getPlace(x, y);
-                        tempPlace__.setToken(tempToken__);
-                        setInitialMarking();
-                    }
-                    else {
-                        StatusMessage("Tokens already occupy this Place.");
-                    }
-                }
-                else {
-                    StatusMessage("Tokens must be drawn within Places.");
-                }
-            }
-            else {
-                StatusMessage("Tokens must be drawn within the border.");
-            }
-        }
-        else if (selectedButton_.equals("Transition")) {
-            if (validDimension(x, y)) {
-                if (!gridSpaceOccupied(x, y)) {
-                    transitionVector_.addElement(new Transition
-                        (x / gridStep__, y / gridStep__,
-                         petriTool_.getTransitionLabel()));
-                    petriTool_.destroySimulation();
-                }
-                else {
-                    StatusMessage("Transitions may not be drawn within 1 grid space of other elements");
-                }
-            }
-            else {
-                StatusMessage("Transitions must be drawn within the border.");
-            }
-        }
-        else if (selectedButton_.equals("Arc")) {
-            if (validDimension(x, y)) {
-                // If no Arc started yet
-                if (newArc_ == null) {
-                    // Arcs must start at either a Place or Transition
-                    if (placeOccupies (x, y, true)) {
-                        newArc_ = new Arc (x / gridStep__, y / gridStep__);
-                        newArc_.setStartComponent("Place");
-                        arcVector_.addElement(newArc_);
-                        StatusMessage("Select next Arc coordinate.");
-                        return(true);
-                    }
-                    else if (transitionOccupies(x, y, true)) {
-                        newArc_ = new Arc (x / gridStep__, y / gridStep__);
-                        newArc_.setStartComponent("Transition");
-                        arcVector_.addElement(newArc_);
-                        StatusMessage("Select next Arc coordinate.");
-                        return (true);
-                    }
-                    else {
-                        StatusMessage("Arcs must start at either a Place or Transition.");
-                        return (true);
-                    }
-                }
-                else {
-                    // Cannot start and end on same component
-                    if (newArc_.getFirstXCoordinate() * gridStep__ == x &&
-                        newArc_.getFirstYCoordinate() * gridStep__  == y) {
-                            StatusMessage("Arcs cannot be drawn between the same component.");
-                            return (true);
-                    }
-
-
-                    // Determine if a Place or Transition occupy the coordinate
-                    if (placeOccupies (x, y, true)) {
-                        newArc_.setEndComponent("Place");
-                        newArc_.addCoordinates(x / gridStep__, y / gridStep__);
-                        newArc_.setTokensToEnable(petriTool_.componentPanel_.
-                            getTokensToEnable());
-                        String start__ = newArc_.getStartComponent();
-                        if (start__.equals("Place")) {
-                            StatusMessage("Arcs cannot be drawn between like components.");
-                            arcVector_.removeElementAt(arcVector_.size()-1);
-                            newArc_= null;
-                            return (true);
-                        }
-                        if (duplicateArc(newArc_)) {
-                            StatusMessage("An Arc is already placed there.");
-                            arcVector_.removeElementAt(arcVector_.size()-1);
-                            newArc_ = null;
-                            return (true);
-                        }
-
-                        // Arc completed, delete reference to newArc_
-                        newArc_ = null;
-                    }
-                    else if (transitionOccupies(x, y, true)) {
-                        newArc_.setEndComponent("Transition");
-                        newArc_.addCoordinates(x / gridStep__, y / gridStep__);
-                        newArc_.setTokensToEnable(petriTool_.componentPanel_.
-                            getTokensToEnable());
-                        String start__ = newArc_.getStartComponent();
-
-                        if (start__.equals("Transition")) {
-                            StatusMessage("Arcs cannot be drawn between like components.");
-                            arcVector_.removeElementAt(arcVector_.size()-1);
-                            newArc_= null;
-                            return (true);
-                        }
-
-                        if (duplicateArc(newArc_)) {
-                            StatusMessage("An Arc is already placed there.");
-                            arcVector_.removeElementAt(arcVector_.size()-1);
-                            newArc_ = null;
-                            return (true);
-                        }
-
-                        // Arc completed, delete reference to newArc_
-                        newArc_ = null;
-                    }
-                    else {
-                        newArc_.addCoordinates(x / gridStep__, y / gridStep__);
-                    }
-                }
-                petriTool_.destroySimulation();
-            }
-            else {
-                StatusMessage("Arcs must be drawn within the border.");
-            }
-        }
-
-        else if (selectedButton_.equals("Calc")) {
-
-        }
-        else if (selectedButton_.equals("Show")) {
-
-        }
-        else if (selectedButton_.equals("Prop")) {
-
-        }
-        else if (selectedButton_.equals("Help")) {
-
-        }
-        else {
-        }
-
-        return (true);
-    }
+    
 
     
     
     
     
 
-    /**
-      * Handle the event where the user releases the mouse button
-    **/
-    public synchronized boolean mouseUp(Event evt, int x, int y) {
-        /*int gridStep__ = petriTool_.gridStep_;
-
-        x += dx;
-        y += dy;
-
-        int xOriginal__ = x;
-        int yOriginal__ = y;
-
-        // Align coordinates so that component is
-        // centered in a grid square
-        x = x - (x % gridStep__);
-        y = y - (y % gridStep__);
-
-
-        */
-    	
-    	selectRectX1_=0;
-    	selectRectY1_=0;
-    	selectRectX2_=0;
-    	selectRectY2_=0;
-    	
-    	mouseDraging_=false;
-        update(getGraphics());
-        tokenDraged_=null;
-        transitionDraged_=null;
-        placeDraged_=null;
-        //arcIn_=null;
-        //arcOut_=null;
-        arcsInVector_=new Vector<>();
-        arcsOutVector_=new Vector<>();
-        return (true);
-    }
+   
 
     /**
       * Handle the event where the user drags the mouse
@@ -2194,11 +2034,520 @@ class DesignPanel extends Panel{
         return(false);
     }
 
-    @Override
-    public boolean mouseDrag(Event evt, int x, int y) {
-    	// TODO Auto-generated method stub
+
+    /**When drawing a dashed frame, determine which components are in the 
+     * box by passing in parameters**/
+    public boolean isInRect(int x1,int y1,int x2,int y2,int x,int y)
+    {
     	
-    	x+=dx;
+    	x1=x1/petriTool_.gridStep_;
+    	x2=x2/petriTool_.gridStep_;
+    	y1=y1/petriTool_.gridStep_;
+    	y2=y2/petriTool_.gridStep_;
+    	
+    	
+    	if(x1<x2&&y1<y2)
+    	{
+    		if(x>x1-1&&x<x2+1&&y>y1-1&&y<y2+1)
+    			return true;
+    	}
+    	else if(x2<x1&&y1<y2)
+    	{
+    		if(x>x2-1&&x<x1+1&&y>y1-1&&y<y2+1)
+    			return true;
+    	}
+    	else if(x1<x2&&y2<y1)
+    	{
+    		if(x>x1-1&&x<x2+1&&y>y2-1&&y<y1+1)
+    			return true;
+    	}
+    	else
+    	{
+    		if(x>x2-1&&x<x1+1&&y>y2-1&&y<y1+1)
+    			return true;
+    	}
+    	return false;
+    }	
+    
+    public void changePosTogether(int gridPosChangeX,int gridPosChangeY)
+    {
+		Iterator<Transition> transitionIterator=transitionVector_.iterator();
+		Iterator<Place> placeIterator=placeVector_.iterator();
+		Iterator<Token> tokenIterator=tokenVector_.iterator();
+		while(transitionIterator.hasNext())
+		{
+			Transition tempTransition=transitionIterator.next();
+			if(tempTransition.isSelected()&&tempTransition!=transitionDraged_)
+			{
+				int finalPosX=tempTransition.getXCoordinate()+gridPosChangeX;
+				int finalPosY=tempTransition.getYCoordinate()+gridPosChangeY;
+				arcsInVector__=arcEndsAt(tempTransition.getXCoordinate(), tempTransition.getYCoordinate());
+				arcsOutVector__=arcStartsAt(tempTransition.getXCoordinate(), tempTransition.getYCoordinate());
+				tempTransition.setxCoordinate_(finalPosX);
+				tempTransition.setyCoordinate_(finalPosY);
+				tempTransition.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.transitionLabels_);
+				if(!arcsInVector__.isEmpty())
+				{
+					Iterator<Arc> arcInItor=arcsInVector__.iterator();
+					while(arcInItor.hasNext())
+					{
+						Arc tempArc=arcInItor.next();
+						tempArc.setEndCoordinate(finalPosX, finalPosY);
+						tempArc.draw(getGraphics(), petriTool_.gridStep_,petriTool_.foregroundColor_ );
+					}
+				}
+				if(!arcsOutVector__.isEmpty())
+				{
+					Iterator<Arc> arcOutItor=arcsOutVector__.iterator();
+					while(arcOutItor.hasNext())
+					{
+						Arc tempArc=arcOutItor.next();
+						tempArc.setFirstCoordinate(finalPosX, finalPosY);
+						tempArc.draw(getGraphics(), petriTool_.gridStep_,petriTool_.foregroundColor_ );
+					}
+				}
+			}
+		}
+		while(placeIterator.hasNext())
+		{
+			Place tempPlace=placeIterator.next();
+			if(tempPlace.isSelected()&&tempPlace!=placeDraged_)
+			{
+				int finalPosX=tempPlace.getXCoordinate()+gridPosChangeX;
+				int finalPosY=tempPlace.getYCoordinate()+gridPosChangeY;
+				arcsInVector__=arcEndsAt(tempPlace.getXCoordinate(), tempPlace.getYCoordinate());
+				arcsOutVector__=arcStartsAt(tempPlace.getXCoordinate(), tempPlace.getYCoordinate());
+				tempPlace.setxCoordinate_(finalPosX);
+				tempPlace.setyCoordinate_(finalPosY);
+				tempPlace.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.placeLabels_);
+				if(!arcsInVector__.isEmpty())
+				{
+					Iterator<Arc> arcInItor=arcsInVector__.iterator();
+					while(arcInItor.hasNext())
+					{
+						Arc tempArc=arcInItor.next();
+						tempArc.setEndCoordinate(finalPosX, finalPosY);
+						tempArc.draw(getGraphics(), petriTool_.gridStep_,petriTool_.foregroundColor_ );
+					}
+				}
+				if(!arcsOutVector__.isEmpty())
+				{
+					Iterator<Arc> arcOutItor=arcsOutVector__.iterator();
+					while(arcOutItor.hasNext())
+					{
+						Arc tempArc=arcOutItor.next();
+						tempArc.setFirstCoordinate(finalPosX, finalPosY);
+						tempArc.draw(getGraphics(), petriTool_.gridStep_,petriTool_.foregroundColor_ );
+					}
+				}
+			}
+		}
+		while(tokenIterator.hasNext())
+		{
+			Token tempToken=tokenIterator.next();
+			if(tempToken.isSelected()&&tempToken!=tokenDraged_)
+			{
+				int finalPosX=tempToken.getXCoordinate()+gridPosChangeX;
+				int finalPosY=tempToken.getYCoordinate()+gridPosChangeY;
+				tempToken.setxCoordinate_(finalPosX);
+				tempToken.setyCoordinate_(finalPosY);
+				tempToken.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_);
+			}
+		}
+
+		/**Everytime the old coordinate value copys to new coordinator
+		 * Otherwise, they will not synchronize**/
+		oldPositionX_=newPositionX_;
+		oldPositionY_=newPositionY_;
+    }
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		int x=e.getX();
+		int y=e.getY();
+		x += dx;
+        y += dy;
+        int xOriginal__ = x;
+        int yOriginal__ = y;
+        x = x - (x % petriTool_.gridStep_);
+        y = y - (y % petriTool_.gridStep_);
+        mouseX_=x;
+        mouseY_=y;
+		if(e.getButton()==MouseEvent.BUTTON3)
+		{
+//			for (int i__ = 0; i__ < arcVector_.size(); i__++) {
+//                Arc tempArc__ = (Arc) arcVector_.elementAt(i__);
+//                tempArc__.mouseDownAt(xOriginal__, yOriginal__,
+//                                      petriTool_.gridStep_);
+//                if(tempArc__.isSelected()==true)
+//                {
+//                	aMenu.show(this, e.getX(), e.getY());
+//                }
+//            }
+			
+			if(getArc(x, y)!=null)
+			{
+				aMenu.show(this, e.getX(), e.getY());
+			}
+			
+			
+			
+			
+			if(getPlace(x, y)!=null/*&&selectedButton_=="Pointer"*/)
+			{
+				pMenu.show(this, e.getX(), e.getY());
+			}
+			if(getTransition(x, y)!=null/*&&selectedButton_=="Pointer"*/)
+			{
+				tMenu.show(this, e.getX(), e.getY());
+			}
+		}
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	
+	/**
+     * Handles mouseDown events within the DesignPanel, which
+     * will trigger certain actions depending on the state of
+     * the ControlPanel and other previous events.
+   **/
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+//		if(e.getButton()==e.BUTTON3)
+//			return;
+		int x=e.getX();
+		int y=e.getY();
+		int gridStep__ = petriTool_.gridStep_;
+
+        // For scrollbar translation
+        x += dx;
+        y += dy;
+
+        int xOriginal__ = x;
+        int yOriginal__ = y;
+
+        // Align coordinates so that component is centered
+        // in a grid square
+        x = x - (x % gridStep__);
+        y = y - (y % gridStep__);
+
+        selectedButton_ = petriTool_.controlPanel_.getCurrentButton();
+        
+        selectRectX1_=x;
+        selectRectY1_=y; 
+        
+        
+        
+        if(mouseDraging_==false)
+        {
+        	if(validDimension(x,y))
+    		{
+    			if(gridSpaceOccupied(x,y))
+    			{
+    				mouseDraging_=true;
+    				placeDraged_=getPlace(x, y);
+    				tokenDraged_=getToken(x, y);
+    				transitionDraged_=getTransition(x, y);
+    				arcsOutVector_=arcStartsAt(x/ petriTool_.gridStep_, y/ petriTool_.gridStep_);
+    				arcsInVector_=arcEndsAt(x/petriTool_.gridStep_, y/petriTool_.gridStep_);
+    				oldPositionX_=x;
+    				oldPositionY_=y;
+    			}
+    		}	
+        }
+        
+        
+        if (selectedButton_.equals("Pointer")) {
+            if (petriTool_.captionInProgress_) {
+                if (validDimension(x, y)) {
+                    FontMetrics fm = getFontMetrics(petriTool_.captionFont_);
+                    int width__ = fm.stringWidth(petriTool_.captionText_);
+                    int height__ = fm.getHeight();
+                    if (validDimension(x+width__, y-height__)) {
+                        if (!gridSpaceOccupied(x, y)) {
+                            Caption caption__ = new Caption
+                                (x / gridStep__, y / gridStep__ +1,
+                                petriTool_.captionText_,
+                                petriTool_.captionFont_);
+                            caption__.setSelected(false);
+                            captionVector_.addElement(caption__);
+                            petriTool_.captionInProgress_ = false;
+                            petriTool_.captionText_ = "";
+                        }
+                        else {
+                            StatusMessage("Captions may not be drawn within 1 grid space of other elements");
+                        }
+                    }
+                    else {
+                        StatusMessage("Caption dimensions extend beyond border.");
+                    }
+                }
+                else {
+                    StatusMessage("Captions must be drawn within the border.");
+                }
+            }
+            else if (petriTool_.pasteInProgress_) {
+                if (pasteDesination(x,y)) {
+                    petriTool_.pasteInProgress_ = false;
+                    petriTool_.destroySimulation();
+                }
+            }
+            else if (placeOccupies(x, y, true)) {
+                if (tokenOccupies(x,y)) {
+                    if (selectPlaceOverToken(xOriginal__, yOriginal__)) {
+                        Place tempPlace__ = getPlace(x,y);
+                        tempPlace__.toggleSelected();
+                    }
+                    else {
+                        Token tempToken__ = getToken(x,y);
+                        tempToken__.toggleSelected();
+                    }
+                }
+                else {
+                    Place tempPlace__ = getPlace(x,y);
+                    tempPlace__.toggleSelected();
+                }
+            }
+            else if (transitionOccupies(x, y, true)) {
+                Transition tempTransition__ = getTransition(x,y);
+                tempTransition__.toggleSelected();
+            }
+            else if (tokenOccupies(x, y)) {
+                Token tempToken__ = getToken(x,y);
+                tempToken__.toggleSelected();
+            }
+            // Inform Captions and Arcs of mouseDown event
+            // so that they may determine if they were selected
+            for (int i__ = 0; i__ < captionVector_.size(); i__++) {
+                Caption tempCaption__ = (Caption) captionVector_.
+                                        elementAt(i__);
+                tempCaption__.mouseDownAt(xOriginal__, yOriginal__,
+                                          gridStep__);
+            }
+            for (int i__ = 0; i__ < arcVector_.size(); i__++) {
+                Arc tempArc__ = (Arc) arcVector_.elementAt(i__);
+                tempArc__.mouseDownAt(xOriginal__, yOriginal__,
+                                      gridStep__);
+            }
+        }
+        else if (selectedButton_.equals("Place")) {
+            if (validDimension(x, y)) {
+                if (!gridSpaceOccupied(x, y)) {
+                    placeVector_.addElement(new Place
+                        (x / gridStep__, y / gridStep__,petriTool_.getPlaceLabel()));
+                        petriTool_.destroySimulation();
+                        setInitialMarking();
+                }
+                else {
+                    StatusMessage("Places may not be drawn within 1 grid space of other elements");
+                }
+            }
+            else {
+                StatusMessage("Places must be drawn within the border.");
+            }
+        }
+        else if (selectedButton_.equals("Token")) {
+            if (validDimension(x, y)) {
+                if (placeOccupies(x, y, true)) {
+                    if (!tokenOccupies(x,y)) {
+                        int numTokens__ = petriTool_.componentPanel_.
+                            getNumTokens();
+                        Token tempToken__ = new Token
+                                (x / gridStep__, y / gridStep__,
+                                numTokens__);
+                        tokenVector_.addElement(tempToken__);
+                        petriTool_.destroySimulation();
+                        Place tempPlace__ = getPlace(x, y);
+                        tempPlace__.setToken(tempToken__);
+                        setInitialMarking();
+                    }
+                    else {
+                        StatusMessage("Tokens already occupy this Place.");
+                    }
+                }
+                else {
+                    StatusMessage("Tokens must be drawn within Places.");
+                }
+            }
+            else {
+                StatusMessage("Tokens must be drawn within the border.");
+            }
+        }
+        else if (selectedButton_.equals("Transition")) {
+            if (validDimension(x, y)) {
+                if (!gridSpaceOccupied(x, y)) {
+                    transitionVector_.addElement(new Transition
+                        (x / gridStep__, y / gridStep__,
+                         petriTool_.getTransitionLabel()));
+                    petriTool_.destroySimulation();
+                }
+                else {
+                    StatusMessage("Transitions may not be drawn within 1 grid space of other elements");
+                }
+            }
+            else {
+                StatusMessage("Transitions must be drawn within the border.");
+            }
+        }
+        else if (selectedButton_.equals("Arc")) {
+            if (validDimension(x, y)) {
+                // If no Arc started yet
+                if (newArc_ == null) {
+                    // Arcs must start at either a Place or Transition
+                    if (placeOccupies (x, y, true)) {
+                        newArc_ = new Arc (x / gridStep__, y / gridStep__);
+                        newArc_.setStartComponent("Place");
+                        arcVector_.addElement(newArc_);
+                        StatusMessage("Select next Arc coordinate.");
+                        return;
+                    }
+                    else if (transitionOccupies(x, y, true)) {
+                        newArc_ = new Arc (x / gridStep__, y / gridStep__);
+                        newArc_.setStartComponent("Transition");
+                        arcVector_.addElement(newArc_);
+                        StatusMessage("Select next Arc coordinate.");
+                        return;
+                    }
+                    else {
+                        StatusMessage("Arcs must start at either a Place or Transition.");
+                        return;
+                    }
+                }
+                else {
+                    // Cannot start and end on same component
+                    if (newArc_.getFirstXCoordinate() * gridStep__ == x &&
+                        newArc_.getFirstYCoordinate() * gridStep__  == y) {
+                            StatusMessage("Arcs cannot be drawn between the same component.");
+                            return;
+                    }
+
+
+                    // Determine if a Place or Transition occupy the coordinate
+                    if (placeOccupies (x, y, true)) {
+                        newArc_.setEndComponent("Place");
+                        newArc_.addCoordinates(x / gridStep__, y / gridStep__);
+                        newArc_.setTokensToEnable(petriTool_.componentPanel_.
+                            getTokensToEnable());
+                        String start__ = newArc_.getStartComponent();
+                        if (start__.equals("Place")) {
+                            StatusMessage("Arcs cannot be drawn between like components.");
+                            arcVector_.removeElementAt(arcVector_.size()-1);
+                            newArc_= null;
+                            return;
+                        }
+                        if (duplicateArc(newArc_)) {
+                            StatusMessage("An Arc is already placed there.");
+                            arcVector_.removeElementAt(arcVector_.size()-1);
+                            newArc_ = null;
+                            return;
+                        }
+
+                        // Arc completed, delete reference to newArc_
+                        newArc_ = null;
+                    }
+                    else if (transitionOccupies(x, y, true)) {
+                        newArc_.setEndComponent("Transition");
+                        newArc_.addCoordinates(x / gridStep__, y / gridStep__);
+                        newArc_.setTokensToEnable(petriTool_.componentPanel_.
+                            getTokensToEnable());
+                        String start__ = newArc_.getStartComponent();
+
+                        if (start__.equals("Transition")) {
+                            StatusMessage("Arcs cannot be drawn between like components.");
+                            arcVector_.removeElementAt(arcVector_.size()-1);
+                            newArc_= null;
+                            return;
+                        }
+
+                        if (duplicateArc(newArc_)) {
+                            StatusMessage("An Arc is already placed there.");
+                            arcVector_.removeElementAt(arcVector_.size()-1);
+                            newArc_ = null;
+                            return;
+                        }
+
+                        // Arc completed, delete reference to newArc_
+                        newArc_ = null;
+                    }
+                    else {
+                        newArc_.addCoordinates(x / gridStep__, y / gridStep__);
+                    }
+                }
+                petriTool_.destroySimulation();
+            }
+            else {
+                StatusMessage("Arcs must be drawn within the border.");
+            }
+        }
+
+        else if (selectedButton_.equals("Calc")) {
+
+        }
+        else if (selectedButton_.equals("Show")) {
+
+        }
+        else if (selectedButton_.equals("Prop")) {
+
+        }
+        else if (selectedButton_.equals("Help")) {
+
+        }
+        else {
+        }
+
+        return;
+	}
+	
+	
+	
+	 /**
+     * Handle the event where the user releases the mouse button
+     **/
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+
+		
+		
+	   	selectRectX1_=0;
+    	selectRectY1_=0;
+    	selectRectX2_=0;
+    	selectRectY2_=0;
+    	
+    	mouseDraging_=false;
+        update(getGraphics());
+        tokenDraged_=null;
+        transitionDraged_=null;
+        placeDraged_=null;
+        //arcIn_=null;
+        //arcOut_=null;
+        arcsInVector_=new Vector<>();
+        arcsOutVector_=new Vector<>();
+        return;
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		int x=e.getX();
+		int y=e.getY();
+		x+=dx;
 		y+=dy;
 		int gridStep__ = petriTool_.gridStep_;
 		int xOriginal__ = x;
@@ -2329,135 +2678,14 @@ class DesignPanel extends Panel{
     	/**========================================================================**/
 		}
     	update(getGraphics());
-    	return true;
-    }
+    	return;
+	}
 
-
-    /**When drawing a dashed frame, determine which components are in the 
-     * box by passing in parameters**/
-    public boolean isInRect(int x1,int y1,int x2,int y2,int x,int y)
-    {
-    	
-    	x1=x1/petriTool_.gridStep_;
-    	x2=x2/petriTool_.gridStep_;
-    	y1=y1/petriTool_.gridStep_;
-    	y2=y2/petriTool_.gridStep_;
-    	
-    	
-    	if(x1<x2&&y1<y2)
-    	{
-    		if(x>x1-1&&x<x2+1&&y>y1-1&&y<y2+1)
-    			return true;
-    	}
-    	else if(x2<x1&&y1<y2)
-    	{
-    		if(x>x2-1&&x<x1+1&&y>y1-1&&y<y2+1)
-    			return true;
-    	}
-    	else if(x1<x2&&y2<y1)
-    	{
-    		if(x>x1-1&&x<x2+1&&y>y2-1&&y<y1+1)
-    			return true;
-    	}
-    	else
-    	{
-    		if(x>x2-1&&x<x1+1&&y>y2-1&&y<y1+1)
-    			return true;
-    	}
-    	return false;
-    }	
-    
-    public void changePosTogether(int gridPosChangeX,int gridPosChangeY)
-    {
-		Iterator<Transition> transitionIterator=transitionVector_.iterator();
-		Iterator<Place> placeIterator=placeVector_.iterator();
-		Iterator<Token> tokenIterator=tokenVector_.iterator();
-		while(transitionIterator.hasNext())
-		{
-			Transition tempTransition=transitionIterator.next();
-			if(tempTransition.isSelected()&&tempTransition!=transitionDraged_)
-			{
-				int finalPosX=tempTransition.getXCoordinate()+gridPosChangeX;
-				int finalPosY=tempTransition.getYCoordinate()+gridPosChangeY;
-				arcsInVector__=arcEndsAt(tempTransition.getXCoordinate(), tempTransition.getYCoordinate());
-				arcsOutVector__=arcStartsAt(tempTransition.getXCoordinate(), tempTransition.getYCoordinate());
-				tempTransition.setxCoordinate_(finalPosX);
-				tempTransition.setyCoordinate_(finalPosY);
-				tempTransition.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.transitionLabels_);
-				if(!arcsInVector__.isEmpty())
-				{
-					Iterator<Arc> arcInItor=arcsInVector__.iterator();
-					while(arcInItor.hasNext())
-					{
-						Arc tempArc=arcInItor.next();
-						tempArc.setEndCoordinate(finalPosX, finalPosY);
-						tempArc.draw(getGraphics(), petriTool_.gridStep_,petriTool_.foregroundColor_ );
-					}
-				}
-				if(!arcsOutVector__.isEmpty())
-				{
-					Iterator<Arc> arcOutItor=arcsOutVector__.iterator();
-					while(arcOutItor.hasNext())
-					{
-						Arc tempArc=arcOutItor.next();
-						tempArc.setFirstCoordinate(finalPosX, finalPosY);
-						tempArc.draw(getGraphics(), petriTool_.gridStep_,petriTool_.foregroundColor_ );
-					}
-				}
-			}
-		}
-		while(placeIterator.hasNext())
-		{
-			Place tempPlace=placeIterator.next();
-			if(tempPlace.isSelected()&&tempPlace!=placeDraged_)
-			{
-				int finalPosX=tempPlace.getXCoordinate()+gridPosChangeX;
-				int finalPosY=tempPlace.getYCoordinate()+gridPosChangeY;
-				arcsInVector__=arcEndsAt(tempPlace.getXCoordinate(), tempPlace.getYCoordinate());
-				arcsOutVector__=arcStartsAt(tempPlace.getXCoordinate(), tempPlace.getYCoordinate());
-				tempPlace.setxCoordinate_(finalPosX);
-				tempPlace.setyCoordinate_(finalPosY);
-				tempPlace.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.placeLabels_);
-				if(!arcsInVector__.isEmpty())
-				{
-					Iterator<Arc> arcInItor=arcsInVector__.iterator();
-					while(arcInItor.hasNext())
-					{
-						Arc tempArc=arcInItor.next();
-						tempArc.setEndCoordinate(finalPosX, finalPosY);
-						tempArc.draw(getGraphics(), petriTool_.gridStep_,petriTool_.foregroundColor_ );
-					}
-				}
-				if(!arcsOutVector__.isEmpty())
-				{
-					Iterator<Arc> arcOutItor=arcsOutVector__.iterator();
-					while(arcOutItor.hasNext())
-					{
-						Arc tempArc=arcOutItor.next();
-						tempArc.setFirstCoordinate(finalPosX, finalPosY);
-						tempArc.draw(getGraphics(), petriTool_.gridStep_,petriTool_.foregroundColor_ );
-					}
-				}
-			}
-		}
-		while(tokenIterator.hasNext())
-		{
-			Token tempToken=tokenIterator.next();
-			if(tempToken.isSelected()&&tempToken!=tokenDraged_)
-			{
-				int finalPosX=tempToken.getXCoordinate()+gridPosChangeX;
-				int finalPosY=tempToken.getYCoordinate()+gridPosChangeY;
-				tempToken.setxCoordinate_(finalPosX);
-				tempToken.setyCoordinate_(finalPosY);
-				tempToken.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_);
-			}
-		}
-
-		/**Everytime the old coordinate value copys to new coordinator
-		 * Otherwise, they will not synchronize**/
-		oldPositionX_=newPositionX_;
-		oldPositionY_=newPositionY_;
-    }
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
     
 }
 
