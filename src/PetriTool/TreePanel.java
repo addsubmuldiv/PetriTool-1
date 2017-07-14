@@ -4,6 +4,7 @@ import java.awt.FlowLayout;
 import javafx.geometry.Dimension2DBuilder;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
@@ -18,7 +19,7 @@ import javax.swing.JTree;
 import javax.swing.JScrollPane;
 
 
-public class TreePanel extends JTree {
+public class TreePanel extends JPanel implements TreeSelectionListener {
     
 	 /**
       * Used to access the system variables that are
@@ -26,6 +27,8 @@ public class TreePanel extends JTree {
     **/
     protected PetriTool petriTool_;
 	
+    private JTree tree;
+    
 	public TreePanel(PetriTool app) {
         
 		petriTool_ = app;
@@ -33,7 +36,7 @@ public class TreePanel extends JTree {
 		// ---------------------------------------------------------
         // Create a control tree
         // ---------------------------------------------------------
-        
+        this.setBackground(petriTool_.backgroundColor_);
         DefaultMutableTreeNode node1 = new DefaultMutableTreeNode("Deadlock Control");
         
         node1.add(new DefaultMutableTreeNode(new User("siphon control")));
@@ -51,50 +54,75 @@ public class TreePanel extends JTree {
         top.add(node1);
         top.add(node2);
         
-        final JTree tree = new JTree(top);
-       
-        this.add(tree);  
+        
+        
+        tree=new JTree(top);
+        tree.addTreeSelectionListener(this);
+        tree.setVisible(true);
+     //   tree.setSize(200,200);
+//        final JTree tree = new JTree(top);
+        this.add(tree);
+//        this.add(tree);  
                       
-//      tree.setSize(200,200);
+   //     tree.setSize(200,200);
         
-        repaint();
+//        repaint();
        
-        
+  //      this.setSize(200,200);
+        this.setVisible(true);
         
         
       
         
         // ADD the response events
-        tree.addTreeSelectionListener(new TreeSelectionListener() {
- 
-            @Override
-            public void valueChanged(TreeSelectionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
-                        .getLastSelectedPathComponent();
- 
-                if (node == null)
-                    return;
- 
-                Object object = node.getUserObject();
-                if (node.isLeaf()) {
-                    User user = (User) object;
-                    System.out.println("Your Choice is " + user.toString());
-                }
- 
-            }
-        });
+//        tree.addTreeSelectionListener(new TreeSelectionListener() {
+// 
+//            @Override
+//            public void valueChanged(TreeSelectionEvent e) {
+//                DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
+//                        .getLastSelectedPathComponent();
+// 
+//                if (node == null)
+//                    return;
+// 
+//                Object object = node.getUserObject();
+//                if (node.isLeaf()) {
+//                    User user = (User) object;
+//                    System.out.println("Your Choice is " + user.toString());
+//                }
+// 
+//            }
+//        });
     }
 
- class User {
-    private String name;
- 
-    public User(String n) {
-        name = n;
-    }
- 
-    // The important is in "toString", the text shown is the string in "toString"
-    public String toString() {
-        return name;
-    }
-}
+	class User 
+	{
+		private String name;
+	 
+		public User(String n) 
+		{
+			name = n;
+		}
+	 
+		// The important is in "toString", the text shown is the string in "toString"
+		public String toString() 
+		{
+			return name;
+		}
+ 	}
+
+ 	@Override
+	public void valueChanged(TreeSelectionEvent e) 
+	{
+		// TODO Auto-generated method stub
+ 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+ 		if (node == null)
+ 			return;
+ 		Object object = node.getUserObject();
+ 		if (node.isLeaf()) 
+ 		{
+ 			User user = (User) object;
+ 			System.out.println("Your Choice is " + user.toString());
+ 		}
+	}
 }

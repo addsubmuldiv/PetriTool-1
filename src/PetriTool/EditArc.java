@@ -7,32 +7,42 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import com.sun.istack.internal.FinalArrayList;
+
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class EditArc extends JDialog {
 	private JTextField textField_arcOption;
 
+	private Arc arcEdited_;
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		try {
-			EditArc dialog = new EditArc();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//	public static void main(String[] args) {
+//		try {
+//			EditArc dialog = new EditArc();
+//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//			dialog.setVisible(true);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+
+	public void setArcEdited_(Arc arcEdited_) {
+		this.arcEdited_ = arcEdited_;
 	}
 
 	/**
 	 * Create the dialog.
 	 */
-	public EditArc() {
+	public EditArc(final PetriTool petriTool_,final DesignPanel designPanel_) {
 		setTitle("Edit Arc");
 		setBounds(100, 100, 410, 244);
 		getContentPane().setLayout(null);
@@ -50,11 +60,25 @@ public class EditArc extends JDialog {
 		}
 		{
 			JButton btn_OK = new JButton("OK");
+			btn_OK.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					int arcNum=Integer.parseInt(textField_arcOption.getText().trim());
+					arcEdited_.setTokensToEnable(arcNum);
+					arcEdited_.draw(designPanel_.getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_);
+					designPanel_.repaint();
+					dispose();
+				}
+			});
 			btn_OK.setBounds(85, 143, 93, 23);
 			getContentPane().add(btn_OK);
 		}
 		{
 			JButton btn_Cancel = new JButton("Cancel");
+			btn_Cancel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+				}
+			});
 			btn_Cancel.setBounds(215, 143, 93, 23);
 			getContentPane().add(btn_Cancel);
 		}

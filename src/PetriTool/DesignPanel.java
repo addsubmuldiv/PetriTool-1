@@ -209,7 +209,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
     
     class placeEditListener implements ActionListener
     {
-//    	int mouseX__, mouseY__;
 		DesignPanel myself;
 		
 		public placeEditListener(DesignPanel designPanel) {
@@ -220,46 +219,88 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			EditPlace editPlaceDialog=new EditPlace(petriTool_, myself);
+			editPlaceDialog.setTokenEdited_(getToken(mouseX_, mouseY_));
 			editPlaceDialog.setPlaceEdited_(getPlace(mouseX_, mouseY_));
 			editPlaceDialog.setVisible(true);
-			
 		}
-//		public int getMouseX__() {
-//			return mouseX__;
-//		}
-//		public void setMouseX__(int mouseX__) {
-//			this.mouseX__ = mouseX__;
-//		}
-//		public int getMouseY__() {
-//			return mouseY__;
-//		}
-//		public void setMouseY__(int mouseY__) {
-//			this.mouseY__ = mouseY__;
-//		}
     }
     
-    
-    class transitionEditListener implements ActionListener
+    class placeDeleteListemer implements ActionListener
     {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			EditTransition editTransitionDialog=new EditTransition();
+			Place placeToDelete=getPlace(mouseX_, mouseY_);
+			placeVector_.removeElement(placeToDelete);
+			tokenVector_.removeElement(getToken(mouseX_, mouseY_));
+			repaint();
+		}
+    }
+    
+    class transitionEditListener implements ActionListener
+    {
+    	DesignPanel myself;
+    	
+    	public transitionEditListener(DesignPanel designPanel) {
+			// TODO Auto-generated constructor stub
+    		myself=designPanel;
+		}
+    	
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			EditTransition editTransitionDialog=new EditTransition(petriTool_,myself);
 			editTransitionDialog.setTransitionEdited_(getTransition(mouseX_, mouseY_));
 			editTransitionDialog.setVisible(true);
 		}
     	
     }
     
-    class ArcEditListener implements ActionListener
+    
+    
+    class transitionDeleteListener implements ActionListener
     {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			EditArc editArcDialog=new EditArc();
-			
+			Transition transitionToDelete=getTransition(mouseX_, mouseY_);
+			transitionVector_.removeElement(transitionToDelete);
+			repaint();
+		}
+    	
+    }
+    
+    
+    
+    
+    class ArcEditListener implements ActionListener
+    {
+    	DesignPanel myself;
+    	public ArcEditListener(DesignPanel designPanel) {
+			// TODO Auto-generated constructor stub
+    		myself=designPanel;
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			EditArc editArcDialog=new EditArc(petriTool_,myself);
+			editArcDialog.setArcEdited_(getArc(mouseX_, mouseY_));
+			editArcDialog.setVisible(true);
+		}
+    	
+    }
+    
+    class ArcDeleteListener implements ActionListener
+    {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			Arc arcToDelete=getArc(mouseX_, mouseY_);
+			arcVector_.removeElement(arcToDelete);
+			repaint();
 		}
     	
     }
@@ -329,6 +370,8 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 		
 		JMenuItem deletePlace=new JMenuItem("delete");
 		
+		deletePlace.addActionListener(new placeDeleteListemer());
+		
 		pMenu.add(editPlace);
 		pMenu.add(deletePlace);
 		
@@ -338,9 +381,11 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 		 * **/
 		tMenu=new JPopupMenu();
 		JMenuItem editTransition=new JMenuItem("Edit transition");
-		editTransition.addActionListener(new transitionEditListener());
+		editTransition.addActionListener(new transitionEditListener(this));
 		
 		JMenuItem deleteTransition=new JMenuItem("delete");
+		
+		deleteTransition.addActionListener(new transitionDeleteListener());
 		
 		tMenu.add(editTransition);
 		tMenu.add(deleteTransition);
@@ -350,16 +395,11 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 		 * **/
 		aMenu=new JPopupMenu();
 		JMenuItem editArc=new JMenuItem("Edit arc");
-		editArc.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				JDialog editArc=new EditArc();
-				editArc.setVisible(true);
-			}
-		});
+		editArc.addActionListener(new ArcEditListener(this));
 		JMenuItem deleteArc=new JMenuItem("delete");
+		
+		deleteArc.addActionListener(new ArcDeleteListener());
+		
 		aMenu.add(editArc);
 		aMenu.add(deleteArc);
     }
@@ -835,8 +875,8 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         	// Draw the Places
         	for (int i__ = 0; i__ < placeVector_.size(); i__++) {
         	    Place tempPlace__ = (Place) placeVector_.elementAt(i__);
-        	    tempPlace__.draw(g, step__, foregroundColor__,
-        	                     petriTool_.placeLabels_,"");
+        	    	tempPlace__.draw(g, step__, foregroundColor__,
+							 petriTool_.placeLabels_,"");
         	}
 	
         	// Draw the Transitions
@@ -844,7 +884,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         	    Transition tempTransition__ = (Transition) transitionVector_.
         	                                elementAt(i__);
         	    tempTransition__.draw(g, step__, foregroundColor__,
-        	                          petriTool_.transitionLabels_);
+        	                          petriTool_.transitionLabels_,"");
         	}
 	
         	// Draw the Tokens
@@ -875,7 +915,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         	if(tokenDraged_!=null)
         		tokenDraged_.draw(g, step__, foregroundColor__);
         	if(transitionDraged_!=null)
-        		transitionDraged_.draw(g, step__, foregroundColor__, petriTool_.transitionLabels_);
+        		transitionDraged_.draw(g, step__, foregroundColor__, petriTool_.transitionLabels_,"");
         	/*if(arcIn_!=null)
         		arcIn_.draw(g, step__, foregroundColor__);
         	if(arcOut_!=null)
@@ -2092,7 +2132,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 				arcsOutVector__=arcStartsAt(tempTransition.getXCoordinate(), tempTransition.getYCoordinate());
 				tempTransition.setxCoordinate_(finalPosX);
 				tempTransition.setyCoordinate_(finalPosY);
-				tempTransition.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.transitionLabels_);
+				tempTransition.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.transitionLabels_,"");
 				if(!arcsInVector__.isEmpty())
 				{
 					Iterator<Arc> arcInItor=arcsInVector__.iterator();
@@ -2702,7 +2742,8 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		// TODO Auto-generated method stub
-  }
+	}
+}
 
 
 
