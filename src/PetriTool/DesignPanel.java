@@ -210,10 +210,16 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
     class placeEditListener implements ActionListener
     {
 //    	int mouseX__, mouseY__;
-		@Override
+		DesignPanel myself;
+		
+		public placeEditListener(DesignPanel designPanel) {
+			// TODO Auto-generated constructor stub
+			myself=designPanel;
+		}
+		
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			EditPlace editPlaceDialog=new EditPlace();
+			EditPlace editPlaceDialog=new EditPlace(petriTool_, myself);
 			editPlaceDialog.setPlaceEdited_(getPlace(mouseX_, mouseY_));
 			editPlaceDialog.setVisible(true);
 			
@@ -319,7 +325,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         
 		JMenuItem editPlace=new JMenuItem("Edit place");
 		
-		editPlace.addActionListener(new placeEditListener());
+		editPlace.addActionListener(new placeEditListener(this));
 		
 		JMenuItem deletePlace=new JMenuItem("delete");
 		
@@ -829,7 +835,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         	for (int i__ = 0; i__ < placeVector_.size(); i__++) {
         	    Place tempPlace__ = (Place) placeVector_.elementAt(i__);
         	    tempPlace__.draw(g, step__, foregroundColor__,
-        	                     petriTool_.placeLabels_);
+        	                     petriTool_.placeLabels_,"");
         	}
 	
         	// Draw the Transitions
@@ -861,7 +867,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         else
         {
         	if(placeDraged_!=null)
-        		placeDraged_.draw(g, step__, foregroundColor__,petriTool_.placeLabels_);
+        		placeDraged_.draw(g, step__, foregroundColor__,petriTool_.placeLabels_,"");
        // 	g.setColor(foregroundColor__);
        //     g.drawOval(placeDraged_.xCoordinate_ * step__, placeDraged_.yCoordinate_ * step__,
         //               step__,step__);
@@ -2093,6 +2099,8 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 					{
 						Arc tempArc=arcInItor.next();
 						tempArc.setEndCoordinate(finalPosX, finalPosY);
+						tempArc.calculateSlopes();
+						tempArc.setArcDrawCoordinates();
 						tempArc.draw(getGraphics(), petriTool_.gridStep_,petriTool_.foregroundColor_ );
 					}
 				}
@@ -2103,6 +2111,8 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 					{
 						Arc tempArc=arcOutItor.next();
 						tempArc.setFirstCoordinate(finalPosX, finalPosY);
+						tempArc.calculateSlopes();
+						tempArc.setArcDrawCoordinates();
 						tempArc.draw(getGraphics(), petriTool_.gridStep_,petriTool_.foregroundColor_ );
 					}
 				}
@@ -2119,7 +2129,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 				arcsOutVector__=arcStartsAt(tempPlace.getXCoordinate(), tempPlace.getYCoordinate());
 				tempPlace.setxCoordinate_(finalPosX);
 				tempPlace.setyCoordinate_(finalPosY);
-				tempPlace.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.placeLabels_);
+				tempPlace.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.placeLabels_,"");
 				if(!arcsInVector__.isEmpty())
 				{
 					Iterator<Arc> arcInItor=arcsInVector__.iterator();
@@ -2664,7 +2674,11 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 				Iterator<Arc> arcInItor=arcsInVector_.iterator();
 				while(arcInItor.hasNext())
 				{
-					arcInItor.next().setEndCoordinate(x/gridStep__, y/gridStep__);
+					Arc arcInTemp=arcInItor.next();
+					arcInTemp.setEndCoordinate(x/gridStep__, y/gridStep__);
+					arcInTemp.calculateSlopes();
+					arcInTemp.setArcDrawCoordinates();
+					
 				}
 			}
 			if(!arcsOutVector_.isEmpty())
@@ -2672,7 +2686,10 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 				Iterator<Arc> arcOutItor=arcsOutVector_.iterator();
 				while(arcOutItor.hasNext())
 				{
-					arcOutItor.next().setFirstCoordinate(x/gridStep__, y/gridStep__);
+					Arc arcOutTemp=arcOutItor.next();
+					arcOutTemp.setFirstCoordinate(x/gridStep__, y/gridStep__);
+					arcOutTemp.calculateSlopes();
+					arcOutTemp.setArcDrawCoordinates();
 				}
 			}
     	/**========================================================================**/

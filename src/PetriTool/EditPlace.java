@@ -24,6 +24,10 @@ public class EditPlace extends JDialog {
 	 * **/
 	private Place placeEdited_;
 	
+	private PetriTool petriTool_;
+	
+	private DesignPanel designPanel_;
+	
 	public Place getPlaceEdited_() {
 		return placeEdited_;
 	}
@@ -35,22 +39,24 @@ public class EditPlace extends JDialog {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		try {
-			EditPlace dialog = new EditPlace();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void main(String[] args) {
+//		try {
+//			EditPlace dialog = new EditPlace(petriTool_);
+//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//			dialog.setVisible(true);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	/**
 	 * Create the dialog.
 	 */
-	public EditPlace() {
+	public EditPlace(PetriTool petriTool,DesignPanel designPanel) {
 		setTitle("Edit Place");
 		setBounds(100, 100, 410, 300);
+		petriTool_=petriTool;
+		designPanel_=designPanel;
 		getContentPane().setLayout(null);
 		{
 			JLabel lblNewLabel_placeName = new JLabel("Place Name:");
@@ -80,6 +86,12 @@ public class EditPlace extends JDialog {
 			JButton btn_OK = new JButton("OK");
 			btn_OK.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
+					String placeName=textField_placeName.getText();
+					placeEdited_.draw(designPanel_.getGraphics(), petriTool_.gridStep_,
+							petriTool_.foregroundColor_, false, placeName);
+					designPanel_.repaint();
+					
+					
 					
 				}
 			});
