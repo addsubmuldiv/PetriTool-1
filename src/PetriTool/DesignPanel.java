@@ -780,7 +780,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
     **/
     public void paint(Graphics g) {
     	
-    	float[] g2dDashWidth= {(float) 10.0,(float) 10.0};
+    	float[] g2dDashWidth= {(float) 5.0,(float) 5.0};
     	
     	Graphics2D g2d = (Graphics2D)getGraphics();
     	BasicStroke dashed = new BasicStroke(1.0f, 
@@ -788,6 +788,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
                 BasicStroke.JOIN_MITER, 
                 20.0f,g2dDashWidth,
                 0.0f);
+    
     	g2d.setStroke(dashed);
     	
     	
@@ -815,7 +816,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 	
        	// Draw the border
        	g.setColor (petriTool_.borderColor_);
-       	g.drawRect (step__ / 2, step__ / 2, step__ * width__,
+       	g.drawRect (step__ , step__ / 2, step__ * width__,
        	            step__ * height__);
        	if(!(placeDraged_!=null||transitionDraged_!=null||tokenDraged_!=null))
        		{
@@ -2701,10 +2702,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
-	}
-    
-}
+  }
 
 
 
