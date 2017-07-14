@@ -11,8 +11,13 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
+import java.awt.Window;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 
 public class EditPlace extends JDialog {
@@ -24,6 +29,16 @@ public class EditPlace extends JDialog {
 	 * **/
 	private Place placeEdited_;
 	
+	private Token tokenEdited_;
+	
+	public Token getTokenEdited_() {
+		return tokenEdited_;
+	}
+
+	public void setTokenEdited_(Token tokenEdited_) {
+		this.tokenEdited_ = tokenEdited_;
+	}
+
 	private PetriTool petriTool_;
 	
 	private DesignPanel designPanel_;
@@ -86,13 +101,28 @@ public class EditPlace extends JDialog {
 			JButton btn_OK = new JButton("OK");
 			btn_OK.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					String placeName=textField_placeName.getText();
+					String placeName=textField_placeName.getText().trim().toString();
+					if(placeName.length()==0)
+					{
+						JOptionPane.showMessageDialog(null, "Place name can't be empty!!");
+						return;
+					}
 					placeEdited_.draw(designPanel_.getGraphics(), petriTool_.gridStep_,
-							petriTool_.foregroundColor_, false, placeName);
+					petriTool_.foregroundColor_, false, placeName);
 					designPanel_.repaint();
-					
-					
-					
+					if(textField_tokenOption.getText().trim().length()!=0&&placeEdited_.getNumTokens()==0)
+					{
+						JOptionPane.showMessageDialog(null, "Sorry! You hava to add a token first!");
+						dispose();
+						return;
+					}
+					if(tokenEdited_!=null&&textField_tokenOption.getText().trim().length()!=0)
+					{	
+						tokenEdited_.setTokensRepresented(Integer.parseInt(textField_tokenOption.getText()));
+						tokenEdited_.draw(designPanel_.getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_);
+					}
+					designPanel_.repaint();
+					dispose();
 				}
 			});
 			btn_OK.setBounds(85, 185, 93, 23);
@@ -100,6 +130,14 @@ public class EditPlace extends JDialog {
 		}
 		{
 			JButton btn_Cancel = new JButton("Cancel");
+			btn_Cancel.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					dispose();
+				}
+			});
 			btn_Cancel.setBounds(215, 185, 93, 23);
 			getContentPane().add(btn_Cancel);
 		}
@@ -116,3 +154,6 @@ public class EditPlace extends JDialog {
 	}
 
 }
+
+
+

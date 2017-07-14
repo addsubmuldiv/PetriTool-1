@@ -7,11 +7,18 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import org.omg.CORBA.PRIVATE_MEMBER;
+
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class EditTransition extends JDialog {
 	private JTextField textField_transitionName;
@@ -29,20 +36,22 @@ public class EditTransition extends JDialog {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		try {
-			EditTransition dialog = new EditTransition();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void main(String[] args) {
+//		try {
+//			EditTransition dialog = new EditTransition();
+//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//			dialog.setVisible(true);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	/**
 	 * Create the dialog.
 	 */
-	public EditTransition() {
+	public EditTransition(final PetriTool petriTool_,final DesignPanel designPanel_) {
+		
+		
 		setTitle("Edit Transition");
 		setBounds(100, 100, 410, 244);
 		getContentPane().setLayout(null);
@@ -60,11 +69,30 @@ public class EditTransition extends JDialog {
 		}
 		{
 			JButton btn_OK = new JButton("OK");
+			btn_OK.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					String transitionName=textField_transitionName.getText().trim().toString();
+					if(transitionName.length()==0)
+					{
+						JOptionPane.showMessageDialog(null, "Transition name can't be empty!!");
+						return;
+					}
+					transitionEdited_.draw(designPanel_.getGraphics(), petriTool_.gridStep_,
+							petriTool_.foregroundColor_, false, transitionName);
+							designPanel_.repaint();
+					dispose();
+				}
+			});
 			btn_OK.setBounds(85, 143, 93, 23);
 			getContentPane().add(btn_OK);
 		}
 		{
 			JButton btn_Cancel = new JButton("Cancel");
+			btn_Cancel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+				}
+			});
 			btn_Cancel.setBounds(215, 143, 93, 23);
 			getContentPane().add(btn_Cancel);
 		}

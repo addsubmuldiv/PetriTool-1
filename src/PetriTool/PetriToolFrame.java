@@ -224,8 +224,8 @@ class PetriToolFrame extends Frame {
         petriTool_.componentPanel_ = new ComponentPanel(petriTool_);
         middlePanel_.add("South", petriTool_.componentPanel_);
         
-        petriTool_.modulePanel_ = new JTree();
-        middlePanel_.add("West", petriTool_.modulePanel_);
+        petriTool_.treePanel_ = new TreePanel(petriTool_);
+        middlePanel_.add("West", petriTool_.treePanel_);
 
         this.add("Center", middlePanel_);
         petriTool_.statusPanel_ = new StatusPanel(petriTool_);
