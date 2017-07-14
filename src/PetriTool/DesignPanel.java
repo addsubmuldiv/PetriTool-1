@@ -645,7 +645,7 @@ class DesignPanel extends Panel{
     **/
     public void paint(Graphics g) {
     	
-    	float[] g2dDashWidth= {(float) 10.0,(float) 10.0};
+    	float[] g2dDashWidth= {(float) 5.0,(float) 5.0};
     	
     	Graphics2D g2d = (Graphics2D)getGraphics();
     	BasicStroke dashed = new BasicStroke(1.0f, 
@@ -653,6 +653,7 @@ class DesignPanel extends Panel{
                 BasicStroke.JOIN_MITER, 
                 20.0f,g2dDashWidth,
                 0.0f);
+    
     	g2d.setStroke(dashed);
     	
     	
@@ -680,7 +681,7 @@ class DesignPanel extends Panel{
 	
        	// Draw the border
        	g.setColor (petriTool_.borderColor_);
-       	g.drawRect (step__ / 2, step__ / 2, step__ * width__,
+       	g.drawRect (step__ , step__ / 2, step__ * width__,
        	            step__ * height__);
        	if(!(placeDraged_!=null||transitionDraged_!=null||tokenDraged_!=null))
        		{
@@ -2453,7 +2454,7 @@ class DesignPanel extends Panel{
 			}
 		}
 
-		/**Everytime the old coordinate value copys to new coordinator
+		/**Everytime the old coordinate value should copy to new coordinator.
 		 * Otherwise, they will not synchronize**/
 		oldPositionX_=newPositionX_;
 		oldPositionY_=newPositionY_;
