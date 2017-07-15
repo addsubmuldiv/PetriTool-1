@@ -440,6 +440,7 @@ class PetriToolFrame extends Frame {
         
         Menu controlmenu = new Menu("Control");
         Menu deadlockcontrol = new Menu("Deadlock Control");
+        
         Menu operationcontrol = new Menu ("Operation Control");
         controlmenu.add(deadlockcontrol);
         controlmenu.add(operationcontrol);
