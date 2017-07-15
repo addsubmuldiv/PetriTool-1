@@ -60,6 +60,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import com.sun.javafx.geom.transform.BaseTransform.Degree;
 
+import javafx.scene.control.Control;
+
 /**
   * A class representing the Frame containing the PetriTool
   * components including the MenuBar, ControlPanel, DesignPanel,
@@ -445,16 +447,22 @@ class PetriToolFrame extends Frame {
         controlmenu.add(operationcontrol);
         
         MenuItem siphoncontrol = new MenuItem("Siphon Control");
+
+        siphoncontrol.addActionListener(new ControlMethod(petriTool_));
         MenuItem blankcontrol = new MenuItem("blank");
+        blankcontrol.addActionListener(new ControlMethod(petriTool_));
+
         deadlockcontrol.add(siphoncontrol);
         deadlockcontrol.add(blankcontrol);
         
         MenuItem gemccontrol= new MenuItem("GMEC Control");
+
+        gemccontrol.addActionListener(new ControlMethod(petriTool_));
         operationcontrol.add(gemccontrol);		
         
         menubar.add(controlmenu);
-        
-      
+
+
   
         
         
@@ -1300,13 +1308,6 @@ class PetriToolFrame extends Frame {
         return false;
     }
 }
-
-
-
-
-
-
-
 
 
 
