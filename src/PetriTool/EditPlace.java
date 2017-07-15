@@ -118,8 +118,17 @@ public class EditPlace extends JDialog {
 					}
 					if(tokenEdited_!=null&&textField_tokenOption.getText().trim().length()!=0)
 					{	
-						tokenEdited_.setTokensRepresented(Integer.parseInt(textField_tokenOption.getText()));
-						tokenEdited_.draw(designPanel_.getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_);
+					/**use RegEx to test the text if it is actually an integer**/
+						if(textField_tokenOption.getText().trim().matches("^[1-9]*[1-9][0-9]*$"))
+						{
+							tokenEdited_.setTokensRepresented(Integer.parseInt(textField_tokenOption.getText()));
+							tokenEdited_.draw(designPanel_.getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_);
+						}
+						else
+						{
+							JOptionPane.showMessageDialog(null, "Token number should be a Integer");
+							return;
+						}
 					}
 					designPanel_.repaint();
 					dispose();

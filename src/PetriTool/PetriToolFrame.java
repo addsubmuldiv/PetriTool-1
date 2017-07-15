@@ -55,6 +55,8 @@ import java.io.IOException;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.sun.javafx.geom.transform.BaseTransform.Degree;
 
@@ -70,7 +72,7 @@ import com.sun.javafx.geom.transform.BaseTransform.Degree;
   * @see java.awt.Frame
   * @see java.awt.MenuItem
   * @see java.awt.MenuBar
-  * @see java.awt.Menu
+  * @see java.awt.Men5
   * @see java.awt.BorderLayout
   * @see java.awt.Font
   * @see java.awt.Event
@@ -243,10 +245,11 @@ class PetriToolFrame extends Frame {
         this.add("South", petriTool_.statusPanel_);
 
         setMenuBar(PetriToolMenuBar());
-        setSize(1200, 700);
+        setSize(1300, 700);
         setVisible(true);
         
         this.addWindowListener(new Win());
+
     }
 
     /**
