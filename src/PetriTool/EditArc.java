@@ -14,6 +14,8 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -62,10 +64,19 @@ public class EditArc extends JDialog {
 			JButton btn_OK = new JButton("OK");
 			btn_OK.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					int arcNum=Integer.parseInt(textField_arcOption.getText().trim());
-					arcEdited_.setTokensToEnable(arcNum);
-					arcEdited_.draw(designPanel_.getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_);
-					designPanel_.repaint();
+					String num=textField_arcOption.getText().trim();
+					if(num.matches("^[1-9]*[1-9][0-9]*$"))
+					{
+						int arcNum=Integer.parseInt(textField_arcOption.getText().trim());
+						arcEdited_.setTokensToEnable(arcNum);
+						arcEdited_.draw(designPanel_.getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_);
+						designPanel_.repaint();
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(null, "Please input a Integer");
+						return;
+					}
 					dispose();
 				}
 			});

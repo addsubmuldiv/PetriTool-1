@@ -830,8 +830,8 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
                 0.0f);
     
     	g2d.setStroke(dashed);
-    	
-    	
+    	//g2d's coordinate translate, if don't do this, the select rectangle will have some trouble
+    	g2d.translate(-dx, -dy);
     	g.translate(-dx, -dy);
        	adjustScrollbars();
         int step__ = petriTool_.gridStep_;
@@ -2132,6 +2132,15 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 				arcsOutVector__=arcStartsAt(tempTransition.getXCoordinate(), tempTransition.getYCoordinate());
 				tempTransition.setxCoordinate_(finalPosX);
 				tempTransition.setyCoordinate_(finalPosY);
+			/**if the red border is not big enough, set it bigger**/
+				if(finalPosX>petriTool_.gridWidth_)
+				{
+					petriTool_.gridWidth_=finalPosX;
+				}
+				if(finalPosY>petriTool_.gridHeight_)
+				{
+					petriTool_.gridHeight_=finalPosY;
+				}
 				tempTransition.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.transitionLabels_,"");
 				if(!arcsInVector__.isEmpty())
 				{
@@ -2170,6 +2179,15 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 				arcsOutVector__=arcStartsAt(tempPlace.getXCoordinate(), tempPlace.getYCoordinate());
 				tempPlace.setxCoordinate_(finalPosX);
 				tempPlace.setyCoordinate_(finalPosY);
+			/**if the red border is not big enough, set it bigger**/
+				if(finalPosX>petriTool_.gridWidth_)
+				{
+					petriTool_.gridWidth_=finalPosX;
+				}
+				if(finalPosY>petriTool_.gridHeight_)
+				{
+					petriTool_.gridHeight_=finalPosY;
+				}
 				tempPlace.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.placeLabels_,"");
 				if(!arcsInVector__.isEmpty())
 				{
@@ -2216,8 +2234,8 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 	public void mouseClicked(MouseEvent e) {
 		int x=e.getX();
 		int y=e.getY();
-		x += dx;
-        y += dy;
+//		x += dx;
+//        y += dy;
         int xOriginal__ = x;
         int yOriginal__ = y;
         x = x - (x % petriTool_.gridStep_);
@@ -2701,6 +2719,24 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 			/**Change all components' position who are selected**/
 			changePosTogether(gridPosChangedX__, gridPosChangedY__);
 
+			
+			/**if the red border is not big enough, set it bigger**/
+			if(x/gridStep__>petriTool_.gridWidth_)
+			{
+				petriTool_.gridWidth_=x/gridStep__;
+			}
+			if(y/gridStep__>petriTool_.gridHeight_)
+			{
+				petriTool_.gridHeight_=y/gridStep__;
+			}
+			
+			
+			
+			
+			
+			
+			
+			
 		/*	if(arcIn_!=null)
 			{
 				arcIn_.setEndCoordinate(x/gridStep__, y/gridStep__);
