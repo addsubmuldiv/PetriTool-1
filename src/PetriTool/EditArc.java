@@ -65,6 +65,7 @@ public class EditArc extends JDialog {
 			btn_OK.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					String num=textField_arcOption.getText().trim();
+					/**use RegEx to test the text if it is actually an integer**/
 					if(num.matches("^[1-9]*[1-9][0-9]*$"))
 					{
 						int arcNum=Integer.parseInt(textField_arcOption.getText().trim());
