@@ -1,5 +1,6 @@
 package PetriTool;
 import java.awt.FlowLayout;
+import java.awt.TextField;
 
 import javafx.geometry.Dimension2DBuilder;
 
@@ -11,6 +12,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import java.awt.event.InputEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.Container;
@@ -29,8 +31,11 @@ public class ControlTreePanel extends JPanel implements TreeSelectionListener {
 	
     private JTree tree;
     
+    
+    
 	public ControlTreePanel(PetriTool app) {
         
+		//Obtain the current petriTool object for future using.
 		petriTool_ = app;
 		
 		// ---------------------------------------------------------
@@ -50,7 +55,7 @@ public class ControlTreePanel extends JPanel implements TreeSelectionListener {
  
         DefaultMutableTreeNode top = new DefaultMutableTreeNode("Control");
  
-        top.add(new DefaultMutableTreeNode(new User("Single Control method")));
+       
         top.add(node1);
         top.add(node2);
         
@@ -59,58 +64,17 @@ public class ControlTreePanel extends JPanel implements TreeSelectionListener {
         tree=new JTree(top);
         tree.addTreeSelectionListener(this);
         tree.setVisible(true);
-     //   tree.setSize(200,200);
-//        final JTree tree = new JTree(top);
+   
         this.add(tree);
-//        this.add(tree);  
-                      
-   //     tree.setSize(200,200);
-        
-//        repaint();
-       
-  //      this.setSize(200,200);
+
         this.setVisible(true);
         
+       
         
-      
-        
-        // ADD the response events
-//        tree.addTreeSelectionListener(new TreeSelectionListener() {
-// 
-//            @Override
-//            public void valueChanged(TreeSelectionEvent e) {
-//                DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
-//                        .getLastSelectedPathComponent();
-// 
-//                if (node == null)
-//                    return;
-// 
-//                Object object = node.getUserObject();
-//                if (node.isLeaf()) {
-//                    User user = (User) object;
-//                    System.out.println("Your Choice is " + user.toString());
-//                }
-// 
-//            }
-//        });
-    }
-
-	class User 
-	{
-		private String name;
-	 
-		public User(String n) 
-		{
-			name = n;
-		}
-	 
-		// The important is in "toString", the text shown is the string in "toString"
-		public String toString() 
-		{
-			return name;
-		}
- 	}
-
+	}     
+       
+	
+	
  	@Override
 	public void valueChanged(TreeSelectionEvent e) 
 	{
@@ -124,5 +88,24 @@ public class ControlTreePanel extends JPanel implements TreeSelectionListener {
  			User user = (User) object;
  			System.out.println("Your Choice is " + user.toString());
  		}
+ 		
 	}
+
+ 	class User 
+	{
+		private String name;
+	 
+		public User(String n) 
+		{
+			name = n;
+		}
+	 
+		// The important is in "toString", the text shown is the string in "toString"
+		public String toString() 
+		{
+			return name;
+		}
+ 	
+	}
+	
 }

@@ -52,6 +52,7 @@ import java.util.Vector;
 import java.lang.StringIndexOutOfBoundsException;
 import java.io.IOException;
 
+import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 
@@ -146,6 +147,16 @@ class PetriToolFrame extends Frame {
 
     /** Menu for Help operations **/
     Menu help;
+    
+    /** Menu for Control operations **/
+    Menu control;
+    
+    
+    /** Menu for Communication operations **/
+    Menu communication;
+    
+    /** Menu for process mining operations **/
+    Menu mining;
 
     /** List of ImageButton names in the ControlPanel **/
     String[] buttonList = {"New", "Open", "Save", "Save_as", "Print", "Zoomin", "Zoomout","Pointer", "Place", "Token",
@@ -268,7 +279,11 @@ class PetriToolFrame extends Frame {
         menubar = new MenuBar();
         this.setMenuBar(menubar);
 
-       // Create the file menu.  Add items to it.  Add to menubar.
+       
+        
+        
+        // Create the file menu.  Add items to it.  Add to menubar.
+               
         file = new Menu("File");
         menuItemsToDisable_.addElement (menuItem_ = new MenuItem ("New") );
         file.add(menuItem_);
@@ -303,16 +318,16 @@ class PetriToolFrame extends Frame {
 
         // Create the Edit menu.  Add items to it.  Add to menubar.
         edit = new Menu("Edit");
-        menuItemsToDisable_.addElement (cutMenuItem_ = new MenuItem ("Cut\tCtrl+X"));
+        menuItemsToDisable_.addElement (cutMenuItem_ = new MenuItem ("Cut \tCtrl+X"));
         edit.add(cutMenuItem_);
         //cutMenuItem_.setEnabled(false);
-        menuItemsToDisable_.addElement (copyMenuItem_ = new MenuItem ("Copy\tCtrl+C"));
+        menuItemsToDisable_.addElement (copyMenuItem_ = new MenuItem ("Copy \tCtrl+C"));
         edit.add(copyMenuItem_);
         //copyMenuItem_.setEnabled(false);
-        menuItemsToDisable_.addElement (pasteMenuItem_ = new MenuItem ("Paste\tCtrl+V"));
+        menuItemsToDisable_.addElement (pasteMenuItem_ = new MenuItem ("Paste \tCtrl+V"));
         edit.add(pasteMenuItem_);
         //pasteMenuItem_.setEnabled(false);
-        menuItemsToDisable_.addElement (deleteMenuItem_ = new MenuItem ("Delete\tDel"));
+        menuItemsToDisable_.addElement (deleteMenuItem_ = new MenuItem ("Delete \tDel"));
         edit.add(deleteMenuItem_);
         //deleteMenuItem_.setEnabled(false);
 
@@ -326,8 +341,8 @@ class PetriToolFrame extends Frame {
         view.add(new MenuItem("Fit To Window"));
         view.add(new MenuItem("View Entire Grid"));
         view.addSeparator();
-        view.add(new MenuItem("Zoom In\tCtrl-Z"));
-        view.add(new MenuItem("Zoom Out\tCtrl-Q"));
+        view.add(new MenuItem("Zoom In \tCtrl-Z"));
+        view.add(new MenuItem("Zoom Out \tCtrl-Q"));
         menubar.add(view);
 
         // Create the Draw menu.  Add items to it.  Add to menubar.
@@ -413,6 +428,47 @@ class PetriToolFrame extends Frame {
         analysis.add(new MenuItem("Search Reachability Tree"));
         menubar.add(analysis);
 
+       
+        
+        
+        // Create the Control menu.  Add items to it.  Add to menubar.
+       control = new Menu("Control");
+       control.add(new MenuItem("Deadlock Control"));
+        
+        Menu controlmenu = new Menu("Control");
+        Menu deadlockcontrol = new Menu("Deadlock Control");
+        Menu operationcontrol = new Menu ("Operation Control");
+        controlmenu.add(deadlockcontrol);
+        controlmenu.add(operationcontrol);
+        
+        MenuItem siphoncontrol = new MenuItem("Siphon Control");
+        MenuItem blankcontrol = new MenuItem("blank");
+        deadlockcontrol.add(siphoncontrol);
+        deadlockcontrol.add(blankcontrol);
+        
+        MenuItem gemccontrol= new MenuItem("GMEC Control");
+        operationcontrol.add(gemccontrol);		
+        
+        menubar.add(controlmenu);
+        
+      
+  
+        
+        
+        
+     // Create the Communication menu.  Add items to it.  Add to menubar.
+        communication = new Menu("Comunication");
+        communication.add(new MenuItem("Wifi"));
+        communication.add(new MenuItem("RS232"));
+        menubar.add(communication);
+        
+        // Create the Processing menu.  Add items to it.  Add to menubar.
+        mining = new Menu("Mining");
+        mining.add(new MenuItem("alpha mining"));
+        mining.add(new MenuItem("delta mining"));
+        menubar.add(mining);
+
+        
         // Create Help menu; add an item; add to menubar
         help = new Menu("Help");
         help.add(new MenuItem("About"));
@@ -421,8 +477,7 @@ class PetriToolFrame extends Frame {
 
          // Display the help menu in a special reserved place.
         menubar.setHelpMenu(help);
-
-
+        
         return(menubar);
     }
 
