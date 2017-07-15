@@ -19,7 +19,7 @@ import javax.swing.JTree;
 import javax.swing.JScrollPane;
 
 
-public class TreePanel extends JPanel implements TreeSelectionListener {
+public class ControlTreePanel extends JPanel implements TreeSelectionListener {
     
 	 /**
       * Used to access the system variables that are
@@ -29,7 +29,7 @@ public class TreePanel extends JPanel implements TreeSelectionListener {
 	
     private JTree tree;
     
-	public TreePanel(PetriTool app) {
+	public ControlTreePanel(PetriTool app) {
         
 		petriTool_ = app;
 		

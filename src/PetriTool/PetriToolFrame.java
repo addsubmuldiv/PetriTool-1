@@ -148,11 +148,11 @@ class PetriToolFrame extends Frame {
     Menu help;
 
     /** List of ImageButton names in the ControlPanel **/
-    String[] buttonList = {"Pointer", "Place", "Token",
+    String[] buttonList = {"New", "Open", "Save", "Save_as", "Print", "Zoomin", "Zoomout","Pointer", "Place", "Token",
                            "Transition", "Arc", "Text",
                            "Reset", "RevStep", "ForStep",
                            "Run", "Stop", "Calc", "Show",
-                           "Prop", "Help"};
+                           "Prop", "Help", "Wifi", "RS232", "alpha_mining"};
 
     /** Directory where the current design will to be saved **/
     String saveFileDirectory_ = null;
@@ -224,8 +224,8 @@ class PetriToolFrame extends Frame {
         petriTool_.componentPanel_ = new ComponentPanel(petriTool_);
         middlePanel_.add("South", petriTool_.componentPanel_);
         
-        petriTool_.treePanel_ = new TreePanel(petriTool_);
-        middlePanel_.add("West", petriTool_.treePanel_);
+        petriTool_.controlTreePanel_ = new ControlTreePanel(petriTool_);
+        middlePanel_.add("West", petriTool_.controlTreePanel_);
 
         this.add("Center", middlePanel_);
         petriTool_.statusPanel_ = new StatusPanel(petriTool_);
