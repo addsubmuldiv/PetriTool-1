@@ -447,19 +447,22 @@ class PetriToolFrame extends Frame {
         controlmenu.add(operationcontrol);
         
         MenuItem siphoncontrol = new MenuItem("Siphon Control");
+
         siphoncontrol.addActionListener(new ControlMethod(petriTool_));
         MenuItem blankcontrol = new MenuItem("blank");
         blankcontrol.addActionListener(new ControlMethod(petriTool_));
+
         deadlockcontrol.add(siphoncontrol);
         deadlockcontrol.add(blankcontrol);
         
         MenuItem gemccontrol= new MenuItem("GMEC Control");
+
         gemccontrol.addActionListener(new ControlMethod(petriTool_));
         operationcontrol.add(gemccontrol);		
         
         menubar.add(controlmenu);
 
-      
+
   
         
         
@@ -1305,13 +1308,6 @@ class PetriToolFrame extends Frame {
         return false;
     }
 }
-
-
-
-
-
-
-
 
 
 
