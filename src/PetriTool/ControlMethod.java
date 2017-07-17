@@ -98,6 +98,7 @@ public class ControlMethod implements ActionListener,TreeSelectionListener{
 			int yCoordinate;
 			do {
 				xCoordinate=random.nextInt(petriTool_.gridWidth_);
+				
 				yCoordinate=random.nextInt(petriTool_.gridHeight_);
 			}while(designPanel_.gridSpaceOccupied(xCoordinate*petriTool_.gridStep_, yCoordinate*petriTool_.gridStep_));
 			Place newPlace=new Place(xCoordinate,yCoordinate,petriTool_.getPlaceLabel());
