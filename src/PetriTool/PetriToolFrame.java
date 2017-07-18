@@ -167,7 +167,7 @@ class PetriToolFrame extends Frame {
                            "Transition", "Arc", "Text",
                            "Reset", "RevStep", "ForStep",
                            "Run", "Stop", "Calc", "Show",
-                           "Prop", "Help", "Wifi", "RS232", "alpha_mining"};
+                           "Prop", "Help", "connect", "alpha_mining"};
 
     /** Directory where the current design will to be saved **/
     String saveFileDirectory_ = null;
@@ -470,8 +470,7 @@ class PetriToolFrame extends Frame {
         
      // Create the Communication menu.  Add items to it.  Add to menubar.
         communication = new Menu("Comunication");
-        communication.add(new MenuItem("Wifi"));
-        communication.add(new MenuItem("RS232"));
+        communication.add(new MenuItem("Connect with device"));
         menubar.add(communication);
         
         // Create the Processing menu.  Add items to it.  Add to menubar.
