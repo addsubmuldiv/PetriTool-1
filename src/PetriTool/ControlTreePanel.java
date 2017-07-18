@@ -21,7 +21,8 @@ import javax.swing.JTree;
 import javax.swing.JScrollPane;
 
 
-public class ControlTreePanel extends JPanel implements TreeSelectionListener {
+public class ControlTreePanel extends JPanel
+{
     
 	 /**
       * Used to access the system variables that are
@@ -62,7 +63,8 @@ public class ControlTreePanel extends JPanel implements TreeSelectionListener {
         
         
         tree=new JTree(top);
-        tree.addTreeSelectionListener(this);
+//        tree.addTreeSelectionListener(this);
+        tree.addTreeSelectionListener(new ControlMethod(petriTool_,tree));
         tree.setVisible(true);
    
         this.add(tree);
@@ -75,21 +77,21 @@ public class ControlTreePanel extends JPanel implements TreeSelectionListener {
        
 	
 	
- 	@Override
-	public void valueChanged(TreeSelectionEvent e) 
-	{
-		// TODO Auto-generated method stub
- 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
- 		if (node == null)
- 			return;
- 		Object object = node.getUserObject();
- 		if (node.isLeaf()) 
- 		{
- 			User user = (User) object;
- 			System.out.println("Your Choice is " + user.toString());
- 		}
- 		
-	}
+// 	@Override
+//	public void valueChanged(TreeSelectionEvent e) 
+//	{
+//		// TODO Auto-generated method stub
+// 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+// 		if (node == null)
+// 			return;
+// 		Object object = node.getUserObject();
+// 		if (node.isLeaf()) 
+// 		{
+// 			User user = (User) object;
+// 			System.out.println("Your Choice is " + user.toString());
+// 		}
+// 		
+//	}
 
  	class User 
 	{
