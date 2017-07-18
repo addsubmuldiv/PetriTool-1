@@ -121,16 +121,16 @@ public class ControlMethod implements ActionListener,TreeSelectionListener{
 	public void blank()
 	{
 		JOptionPane.showMessageDialog(null, "Blank method is invoked!");
-		outputInterface();
+		output();
 	}
 	
 	public void GMECcontrol()
 	{
 		JOptionPane.showMessageDialog(null, "GMEC control method is invoked!");
-		outputInterface();
+		output();
 	}
 
-	public void outputInterface()
+	public void output()
 	{
 		JOptionPane.showMessageDialog(null, "Output is ……");
 	}

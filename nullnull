@@ -15,7 +15,6 @@ true,1
 true,true,16
 #
 # PLACES: x, y, label
-Place: 15,8,0
 #
 # TRANSITIONS: x, y, label
 #

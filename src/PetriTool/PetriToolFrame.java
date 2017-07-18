@@ -41,6 +41,7 @@ import java.awt.Event;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -167,7 +168,7 @@ class PetriToolFrame extends Frame {
                            "Transition", "Arc", "Text",
                            "Reset", "RevStep", "ForStep",
                            "Run", "Stop", "Calc", "Show",
-                           "Prop", "Help", "Wifi", "RS232", "alpha_mining"};
+                           "Prop", "Help", "ConnectToDevice", "alpha_mining", "delta_mining"};
 
     /** Directory where the current design will to be saved **/
     String saveFileDirectory_ = null;
@@ -468,9 +469,10 @@ class PetriToolFrame extends Frame {
         
         
      // Create the Communication menu.  Add items to it.  Add to menubar.
-        communication = new Menu("Comunication");
-        communication.add(new MenuItem("Wifi"));
-        communication.add(new MenuItem("RS232"));
+        communication = new Menu("Communication");
+        MenuItem connectToDevice=new MenuItem("Connect to device");
+        connectToDevice.addActionListener(new CommunicationMethod(petriTool_));
+        communication.add(connectToDevice);
         menubar.add(communication);
         
         // Create the Processing menu.  Add items to it.  Add to menubar.
