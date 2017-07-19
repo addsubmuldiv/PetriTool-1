@@ -41,6 +41,7 @@ import java.awt.Event;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -163,11 +164,11 @@ class PetriToolFrame extends Frame {
     Menu mining;
 
     /** List of ImageButton names in the ControlPanel **/
-    String[] buttonList = {"New", "Open", "Save", "Save_as", "Print", "Zoomin", "Zoomout","Pointer", "Place", "Token",
+    String[] buttonList = {"New", "Open", "Save", "Save_as", "Print", "Zoom_in", "Zoom_out","Pointer", "Place", "Token",
                            "Transition", "Arc", "Text",
                            "Reset", "RevStep", "ForStep",
                            "Run", "Stop", "Calc", "Show",
-                           "Prop", "Help", "connect", "alpha_mining"};
+                           "Prop", "Help", "ConnectToDevice", "alpha_mining", "delta_mining"};
 
     /** Directory where the current design will to be saved **/
     String saveFileDirectory_ = null;
@@ -214,7 +215,7 @@ class PetriToolFrame extends Frame {
     **/
     protected boolean userWantsSearch_ = false;
 
-    /**
+	/**
       * Construct a new PetriToolFrame, instantiating a ControlPanel
       * placed North, a StatusPanel placed in the South, and a
       * DesignPanel placed in teh center.  A MenuBar is also created
@@ -346,8 +347,8 @@ class PetriToolFrame extends Frame {
         view.add(new MenuItem("Fit To Window"));
         view.add(new MenuItem("View Entire Grid"));
         view.addSeparator();
-        view.add(new MenuItem("Zoom In \tCtrl-Z"));
-        view.add(new MenuItem("Zoom Out \tCtrl-Q"));
+        view.add(new MenuItem("Zoom In\tCtrl-Z"));
+        view.add(new MenuItem("Zoom Out\tCtrl-Q"));
         menubar.add(view);
 
         // Create the Draw menu.  Add items to it.  Add to menubar.
@@ -469,14 +470,20 @@ class PetriToolFrame extends Frame {
         
         
      // Create the Communication menu.  Add items to it.  Add to menubar.
-        communication = new Menu("Comunication");
-        communication.add(new MenuItem("Connect with device"));
+        communication = new Menu("Communication");
+        MenuItem connectToDevice=new MenuItem("Connect to device");
+        connectToDevice.addActionListener(new CommunicationMethod(petriTool_));
+        communication.add(connectToDevice);
         menubar.add(communication);
         
         // Create the Processing menu.  Add items to it.  Add to menubar.
         mining = new Menu("Mining");
-        mining.add(new MenuItem("alpha mining"));
-        mining.add(new MenuItem("delta mining"));
+        MenuItem alpahMining=new MenuItem("alpha mining");
+        MenuItem deltaMining=new MenuItem("delta mining");
+        alpahMining.addActionListener(new MiningMethod(petriTool_));
+        deltaMining.addActionListener(new MiningMethod(petriTool_));
+        mining.add(alpahMining);
+        mining.add(deltaMining);
         menubar.add(mining);
 
         
@@ -821,49 +828,51 @@ class PetriToolFrame extends Frame {
                 d.setVisible(true);
             }
             else if (label.equals("New")) {
-                // If the help button is active, display help file
-                if (helpWanted()) {
-                    try {
-                        helpDialog_ = new FileViewer("help/New.help");
-                    }
-                    catch (IOException e) {
-                        StatusMessage("Error opening help file.");
-                    }
-                    return (true);
-                }
-
-                // If help button not active, carry out action
-                YesNoDialog d = new NewDesignDialog(this);
-                d.setVisible(true);
+//                // If the help button is active, display help file
+//                if (helpWanted()) {
+//                    try {
+//                        helpDialog_ = new FileViewer("help/New.help");
+//                    }
+//                    catch (IOException e) {
+//                        StatusMessage("Error opening help file.");
+//                    }
+//                    return (true);
+//                }
+//
+//                // If help button not active, carry out action
+//                YesNoDialog d = new NewDesignDialog(this);
+//                d.setVisible(true);
+            	selectNew();
             }
             else if (label.equals("Open")) {
-                // If the help button is active, display help file
-                if (helpWanted()) {
-                    try {
-                        helpDialog_ = new FileViewer("help/Open.help");
-                    }
-                    catch (IOException e) {
-                        StatusMessage("Error opening help file.");
-                    }
-                    return (true);
-                }
-
-                // If help button not active, carry out action
-                // Create a file selection dialog box
-                openFileDialog_ = new FileDialog(this, "Open", FileDialog.LOAD);
-                openFileDialog_.setDirectory(".");
-                openFileDialog_.setFile("*.pnt");
-                openFileDialog_.setVisible(true);  // blocks until user selects a file
-                if (openFileDialog_.getFile() != null) {
-                    saveFileName_ = openFileDialog_.getFile();
-                    saveFileDirectory_ = openFileDialog_.getDirectory();
-                    petriTool_.newDesign();
-                    petriTool_.designPanel_.openDesign (saveFileDirectory_ +
-                            saveFileName_);
-
-                    // Enable saveMenuItem_ now that we have a name
-                    saveMenuItem_.setEnabled(true);
-                }
+//                // If the help button is active, display help file
+//                if (helpWanted()) {
+//                    try {
+//                        helpDialog_ = new FileViewer("help/Open.help");
+//                    }
+//                    catch (IOException e) {
+//                        StatusMessage("Error opening help file.");
+//                    }
+//                    return (true);
+//                }
+//
+//                // If help button not active, carry out action
+//                // Create a file selection dialog box
+//                openFileDialog_ = new FileDialog(this, "Open", FileDialog.LOAD);
+//                openFileDialog_.setDirectory(".");
+//                openFileDialog_.setFile("*.pnt");
+//                openFileDialog_.setVisible(true);  // blocks until user selects a file
+//                if (openFileDialog_.getFile() != null) {
+//                    saveFileName_ = openFileDialog_.getFile();
+//                    saveFileDirectory_ = openFileDialog_.getDirectory();
+//                    petriTool_.newDesign();
+//                    petriTool_.designPanel_.openDesign (saveFileDirectory_ +
+//                            saveFileName_);
+//
+//                    // Enable saveMenuItem_ now that we have a name
+//                    saveMenuItem_.setEnabled(true);
+//                }
+            	selectOpen();
             }
             else if (label.equals("Close")) {
                 // If the help button is active, display help file
@@ -921,62 +930,64 @@ class PetriToolFrame extends Frame {
                 }
             }
             else if (label.equals("Save")) {
-                // If the help button is active, display help file
-                if (helpWanted()) {
-                    try {
-                        helpDialog_ = new FileViewer("help/Save.help");
-                    }
-                    catch (IOException e) {
-                        StatusMessage("Error opening help file.");
-                    }
-                    return (true);
-                }
-
-                // If help button not active, carry out action
-                petriTool_.designPanel_.saveDesign
-                        (saveFileDirectory_ + saveFileName_);
+//                // If the help button is active, display help file
+//                if (helpWanted()) {
+//                    try {
+//                        helpDialog_ = new FileViewer("help/Save.help");
+//                    }
+//                    catch (IOException e) {
+//                        StatusMessage("Error opening help file.");
+//                    }
+//                    return (true);
+//                }
+//
+//                // If help button not active, carry out action
+//                petriTool_.designPanel_.saveDesign
+//                        (saveFileDirectory_ + saveFileName_);
+            	selectSave();
             }
             else if (label.equals("Save As")) {
-                // If the help button is active, display help file
-                if (helpWanted()) {
-                    try {
-                        helpDialog_ = new FileViewer("help/Save_As.help");
-                    }
-                    catch (IOException e) {
-                        StatusMessage("Error opening help file.");
-                    }
-                    return (true);
-                }
-
-                // If help button not active, carry out action
-                // Create a file selection dialog box
-                saveFileDialog_ = new FileDialog(this, "Save As", FileDialog.SAVE);
-                saveFileDialog_.setDirectory(".");
-                saveFileDialog_.setFile("*.pnt");
-                saveFileDialog_.setVisible(true);  // blocks until user selects a file
-                if (saveFileDialog_.getFile() != null) {
-                    saveFileName_ = saveFileDialog_.getFile();
-                    saveFileDirectory_ = saveFileDialog_.getDirectory();
-
-                    // Due to annomilies within the FileDialog class
-                    // which tacks on an extra *.* to getFile(), and
-                    // FilenameFilter not being implemented...
-                    String tempString__ = saveFileName_;
-                    int index__ = tempString__.lastIndexOf('*');
-                    index__ -= 3;
-                    try {
-                        saveFileName_ = tempString__.substring(0, index__);
-                        petriTool_.designPanel_.saveDesign (saveFileDirectory_ +
-                            saveFileName_);
-
-                        // Enable saveMenuItem_ now that we have a name
-                        saveMenuItem_.setEnabled(true);
-                    }
-                    catch (StringIndexOutOfBoundsException e) {
-                        StatusMessage("Error saving file, bad file name " +
-                                      tempString__);
-                    }
-                }
+//                // If the help button is active, display help file
+//                if (helpWanted()) {
+//                    try {
+//                        helpDialog_ = new FileViewer("help/Save_As.help");
+//                    }
+//                    catch (IOException e) {
+//                        StatusMessage("Error opening help file.");
+//                    }
+//                    return (true);
+//                }
+//
+//                // If help button not active, carry out action
+//                // Create a file selection dialog box
+//                saveFileDialog_ = new FileDialog(this, "Save As", FileDialog.SAVE);
+//                saveFileDialog_.setDirectory(".");
+//                saveFileDialog_.setFile("*.pnt");
+//                saveFileDialog_.setVisible(true);  // blocks until user selects a file
+//                if (saveFileDialog_.getFile() != null) {
+//                    saveFileName_ = saveFileDialog_.getFile();
+//                    saveFileDirectory_ = saveFileDialog_.getDirectory();
+//
+//                    // Due to annomilies within the FileDialog class
+//                    // which tacks on an extra *.* to getFile(), and
+//                    // FilenameFilter not being implemented...
+//                    String tempString__ = saveFileName_;
+//                    int index__ = tempString__.lastIndexOf('*');
+//                    index__ -= 3;
+//                    try {
+//                        saveFileName_ = tempString__.substring(0, index__);
+//                        petriTool_.designPanel_.saveDesign (saveFileDirectory_ +
+//                            saveFileName_);
+//
+//                        // Enable saveMenuItem_ now that we have a name
+//                        saveMenuItem_.setEnabled(true);
+//                    }
+//                    catch (StringIndexOutOfBoundsException e) {
+//                        StatusMessage("Error saving file, bad file name " +
+//                                      tempString__);
+//                    }
+//                }
+            	selectSaveAs();
             }
             else if (label.equals("Print Setup")) {
                 // If the help button is active, display help file
@@ -993,18 +1004,19 @@ class PetriToolFrame extends Frame {
                 StatusMessage("Print Setup option not yet implemented.");
             }
             else if (label.equals("Print")) {
-                // If the help button is active, display help file
-                if (helpWanted()) {
-                    try {
-                        helpDialog_ = new FileViewer("help/Print.help");
-                    }
-                    catch (IOException e) {
-                        StatusMessage("Error opening help file.");
-                    }
-                    return (true);
-                }
-                // If help button is not active, carry out action
-                StatusMessage("Print option not yet implemented.");
+//                // If the help button is active, display help file
+//                if (helpWanted()) {
+//                    try {
+//                        helpDialog_ = new FileViewer("help/Print.help");
+//                    }
+//                    catch (IOException e) {
+//                        StatusMessage("Error opening help file.");
+//                    }
+//                    return (true);
+//                }
+//                // If help button is not active, carry out action
+//                StatusMessage("Print option not yet implemented.");
+            	selectPrint();
             }
             else if (label.equals("Cut\tCtrl+X")) {
                 // If the help button is active, display help file
@@ -1170,50 +1182,53 @@ class PetriToolFrame extends Frame {
                 repaint();
             }
             else if (label.equals("Zoom Out\tCtrl-Q")) {
-                // If the help button is active, display help file
-                if (helpWanted()) {
-                    try {
-                        helpDialog_ = new FileViewer("help/ZoomOut.help");
-                    }
-                    catch (IOException e) {
-                        StatusMessage("Error opening help file.");
-                    }
-                    return (true);
-                }
-
-                // If help button not active, carry out action
-                if (petriTool_.gridStep_ / 2 <= petriTool_.MIN_GRID_SIZE) {
-                    StatusMessage("Cannot zoom out any further.");
-                }
-                else {
-                    StatusMessage("Zoom Out");
-                    petriTool_.setGridStep(petriTool_.gridStep_ / 2);
-                    petriTool_.designPanel_.adjustFonts(-2);
-                    petriTool_.designPanel_.repaint();
-                }
+//                // If the help button is active, display help file
+//                if (helpWanted()) {
+//                    try {
+//                        helpDialog_ = new FileViewer("help/ZoomOut.help");
+//                    }
+//                    catch (IOException e) {
+//                        StatusMessage("Error opening help file.");
+//                    }
+//                    return (true);
+//                }
+//
+//                // If help button not active, carry out action
+//                if (petriTool_.gridStep_ / 2 <= petriTool_.MIN_GRID_SIZE) {
+//                    StatusMessage("Cannot zoom out any further.");
+//                }
+//                else {
+//                    StatusMessage("Zoom Out");
+//                    petriTool_.setGridStep(petriTool_.gridStep_ / 2);
+//                    petriTool_.designPanel_.adjustFonts(-2);
+//                    petriTool_.designPanel_.repaint();
+//                }
+            	selectZoomOut();
             }
             else if (label.equals("Zoom In\tCtrl-Z")) {
-                // If the help button is active, display help file
-                if (helpWanted()) {
-                    try {
-                        helpDialog_ = new FileViewer("help/ZoomIn.help");
-                    }
-                    catch (IOException e) {
-                        StatusMessage("Error opening help file.");
-                    }
-                    return (true);
-                }
-
-                // If help button not active, carry out action
-                if (petriTool_.gridStep_ / 2 >= petriTool_.MAX_GRID_SIZE) {
-                    StatusMessage("Cannot zoom in any further.");
-                }
-                else {
-                    StatusMessage("Zoom In");
-                    petriTool_.setGridStep(petriTool_.gridStep_ * 2);
-                    petriTool_.designPanel_.adjustFonts(2);
-                    petriTool_.designPanel_.repaint();
-                }
+//                // If the help button is active, display help file
+//                if (helpWanted()) {
+//                    try {
+//                        helpDialog_ = new FileViewer("help/ZoomIn.help");
+//                    }
+//                    catch (IOException e) {
+//                        StatusMessage("Error opening help file.");
+//                    }
+//                    return (true);
+//                }
+//
+//                // If help button not active, carry out action
+//                if (petriTool_.gridStep_ / 2 >= petriTool_.MAX_GRID_SIZE) {
+//                    StatusMessage("Cannot zoom in any further.");
+//                }
+//                else {
+//                    StatusMessage("Zoom In");
+//                    petriTool_.setGridStep(petriTool_.gridStep_ * 2);
+//                    petriTool_.designPanel_.adjustFonts(2);
+//                    petriTool_.designPanel_.repaint();
+//                }
+            	System.out.println("good!!!!!!!");
+            	selectZoomIn();
             }
             else if (label.equals("Place")) {
                 petriTool_.controlPanel_.updateButtons("Place");
@@ -1307,6 +1322,199 @@ class PetriToolFrame extends Frame {
         }
         return false;
     }
+    
+    
+    public boolean selectNew()
+    {
+        // If the help button is active, display help file
+        if (helpWanted()) {
+            try {
+                helpDialog_ = new FileViewer("help/New.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            return (true);
+        }
+
+        // If help button not active, carry out action
+        YesNoDialog d = new NewDesignDialog(this);
+        d.setVisible(true);
+        return false;
+    }
+    
+    public boolean selectOpen()
+    {
+    	 // If the help button is active, display help file
+        if (helpWanted()) {
+            try {
+                helpDialog_ = new FileViewer("help/Open.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            return (true);
+        }
+
+        // If help button not active, carry out action
+        // Create a file selection dialog box
+        openFileDialog_ = new FileDialog(this, "Open", FileDialog.LOAD);
+        openFileDialog_.setDirectory(".");
+        openFileDialog_.setFile("*.pnt");
+        openFileDialog_.setVisible(true);  // blocks until user selects a file
+        if (openFileDialog_.getFile() != null) {
+            saveFileName_ = openFileDialog_.getFile();
+            saveFileDirectory_ = openFileDialog_.getDirectory();
+            petriTool_.newDesign();
+            petriTool_.designPanel_.openDesign (saveFileDirectory_ +
+                    saveFileName_);
+
+            // Enable saveMenuItem_ now that we have a name
+            saveMenuItem_.setEnabled(true);
+        }
+        return false;
+    }
+    
+    
+    
+    public boolean selectSave()
+    {
+        // If the help button is active, display help file
+        if (helpWanted()) {
+            try {
+                helpDialog_ = new FileViewer("help/Save.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            return (true);
+        }
+
+        // If help button not active, carry out action
+        petriTool_.designPanel_.saveDesign
+                (saveFileDirectory_ + saveFileName_);
+        return false;
+    }
+    
+    
+    
+    
+    public boolean selectSaveAs()
+    {
+        // If the help button is active, display help file
+        if (helpWanted()) {
+            try {
+                helpDialog_ = new FileViewer("help/Save_As.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            return (true);
+        }
+
+        // If help button not active, carry out action
+        // Create a file selection dialog box
+        saveFileDialog_ = new FileDialog(this, "Save As", FileDialog.SAVE);
+        saveFileDialog_.setDirectory(".");
+        saveFileDialog_.setFile("*.pnt");
+        saveFileDialog_.setVisible(true);  // blocks until user selects a file
+        if (saveFileDialog_.getFile() != null) {
+            saveFileName_ = saveFileDialog_.getFile();
+            saveFileDirectory_ = saveFileDialog_.getDirectory();
+
+            // Due to annomilies within the FileDialog class
+            // which tacks on an extra *.* to getFile(), and
+            // FilenameFilter not being implemented...
+            String tempString__ = saveFileName_;
+            int index__ = tempString__.lastIndexOf('*');
+            index__ -= 3;
+            try {
+                saveFileName_ = tempString__.substring(0, index__);
+                petriTool_.designPanel_.saveDesign (saveFileDirectory_ +
+                    saveFileName_);
+
+                // Enable saveMenuItem_ now that we have a name
+                saveMenuItem_.setEnabled(true);
+            }
+            catch (StringIndexOutOfBoundsException e) {
+                StatusMessage("Error saving file, bad file name " +
+                              tempString__);
+            }
+        }
+        return false;
+    }
+    
+    
+    public boolean selectPrint()
+    {
+        // If the help button is active, display help file
+        if (helpWanted()) {
+            try {
+                helpDialog_ = new FileViewer("help/Print.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            return (true);
+        }
+        // If help button is not active, carry out action
+        StatusMessage("Print option not yet implemented.");
+        return false;
+    }
+    
+    
+    public boolean selectZoomIn()
+    {
+        // If the help button is active, display help file
+        if (helpWanted()) {
+            try {
+                helpDialog_ = new FileViewer("help/ZoomIn.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            return (true);
+        }
+
+        // If help button not active, carry out action
+        if (PetriTool.gridStep_ / 2 >= PetriTool.MAX_GRID_SIZE) {
+            StatusMessage("Cannot zoom in any further.");
+        }
+        else {
+            StatusMessage("Zoom In");
+            PetriTool.setGridStep(PetriTool.gridStep_ * 2);
+            petriTool_.designPanel_.adjustFonts(2);
+            petriTool_.designPanel_.repaint();
+        }
+        return true;
+    }
+    
+    public boolean selectZoomOut()
+    {
+        // If the help button is active, display help file
+        if (helpWanted()) {
+            try {
+                helpDialog_ = new FileViewer("help/ZoomOut.help");
+            }
+            catch (IOException e) {
+                StatusMessage("Error opening help file.");
+            }
+            return (true);
+        }
+
+        // If help button not active, carry out action
+        if (petriTool_.gridStep_ / 2 <= petriTool_.MIN_GRID_SIZE) {
+            StatusMessage("Cannot zoom out any further.");
+        }
+        else {
+            StatusMessage("Zoom Out");
+            petriTool_.setGridStep(petriTool_.gridStep_ / 2);
+            petriTool_.designPanel_.adjustFonts(-2);
+            petriTool_.designPanel_.repaint();
+        }
+        return false;
+    }
+    
 }
 
 
