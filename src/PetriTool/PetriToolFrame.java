@@ -46,6 +46,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.print.Book;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.awt.FileDialog;
 import java.awt.CheckboxMenuItem;
 import java.awt.Panel;
@@ -300,7 +304,8 @@ class PetriToolFrame extends Frame {
         menuItemsToDisable_.addElement (menuItem_ = new MenuItem ("Close") );
         file.add(menuItem_);
 
-
+        file.addSeparator();
+        
         saveMenuItem_ = new MenuItem ("Save");
         saveMenuItem_.setEnabled(false); // disable until a filename is
                                  // chosen with Save As
@@ -309,11 +314,11 @@ class PetriToolFrame extends Frame {
         file.add(saveMenuItem_);
 
         menuItemsToDisable_.addElement (menuItem_ = new MenuItem ("Save As"));
+            
         file.add(menuItem_);
-
+        
         file.addSeparator();
-        menuItemsToDisable_.addElement (menuItem_ = new MenuItem ("Print Setup"));
-        file.add(menuItem_);
+        
         menuItemsToDisable_.addElement (menuItem_ = new MenuItem ("Print"));
         file.add(menuItem_);
 
@@ -989,20 +994,6 @@ class PetriToolFrame extends Frame {
 //                }
             	selectSaveAs();
             }
-            else if (label.equals("Print Setup")) {
-                // If the help button is active, display help file
-                if (helpWanted()) {
-                    try {
-                        helpDialog_ = new FileViewer("help/PrintSetup.help");
-                    }
-                    catch (IOException e) {
-                        StatusMessage("Error opening help file.");
-                    }
-                    return (true);
-                }
-                // If help button is not active, carry out action
-                StatusMessage("Print Setup option not yet implemented.");
-            }
             else if (label.equals("Print")) {
 //                // If the help button is active, display help file
 //                if (helpWanted()) {
@@ -1307,12 +1298,14 @@ class PetriToolFrame extends Frame {
             }
             else if (label.equals("About")) {
                 InfoDialog d;
-                d = new InfoDialog(this, "About Rick's Petri Net Tool",
-                    "Author: Rick Brink\n" +
-                    "Date:   July 1, 1996\n" +
-                    "\n       Copyright (c) 1996\n" +
-                    "Rochester Institute of Technology");
+                d = new InfoDialog(this, "About EventPhoenix's Petri Net Tool",
+                    "Author: BluePhoenix Group\n" +
+                    "Date:   July 1, 2017\n" +
+                    "\nCopyright (c) 2017\n" +
+                    "Huaqiao University");
                 d.setVisible(true);
+               
+               
             }
             else if (label.equals("Select Item")) {
                 petriTool_.controlPanel_.updateButtons("Help");
@@ -1419,17 +1412,20 @@ class PetriToolFrame extends Frame {
         saveFileDialog_.setFile("*.pnt");
         saveFileDialog_.setVisible(true);  // blocks until user selects a file
         if (saveFileDialog_.getFile() != null) {
+        	
             saveFileName_ = saveFileDialog_.getFile();
             saveFileDirectory_ = saveFileDialog_.getDirectory();
-
+                       
             // Due to annomilies within the FileDialog class
             // which tacks on an extra *.* to getFile(), and
             // FilenameFilter not being implemented...
-            String tempString__ = saveFileName_;
-            int index__ = tempString__.lastIndexOf('*');
-            index__ -= 3;
+           String tempString__ = saveFileName_;
+           
+          /* int index__ = tempString__.lastIndexOf('*');
+            index__ -= 3;*/
+                       
             try {
-                saveFileName_ = tempString__.substring(0, index__);
+  //              saveFileName_ = tempString__.substring(0, index__);
                 petriTool_.designPanel_.saveDesign (saveFileDirectory_ +
                     saveFileName_);
 
@@ -1437,8 +1433,8 @@ class PetriToolFrame extends Frame {
                 saveMenuItem_.setEnabled(true);
             }
             catch (StringIndexOutOfBoundsException e) {
-                StatusMessage("Error saving file, bad file name " +
-                              tempString__);
+                StatusMessage("Error saving file, bad file name "  
+                             + tempString__);
             }
         }
         return false;
@@ -1458,7 +1454,26 @@ class PetriToolFrame extends Frame {
             return (true);
         }
         // If help button is not active, carry out action
-        StatusMessage("Print option not yet implemented.");
+               
+        PrinterJob job_ = PrinterJob.getPrinterJob();
+        PageFormat pageFormat = job_.defaultPage();
+        job_.setPrintable(new PrintControl());
+
+        try {
+             // Show the printDialog for the user to confirm the print job. 
+             boolean  printOk = job_.printDialog();
+             
+             if(printOk)
+            {
+                 job_.print(); 
+            }
+
+         }catch (PrinterException e) {
+         e.printStackTrace();
+        }
+        
+        
+                
         return false;
     }
     
