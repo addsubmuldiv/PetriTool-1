@@ -21,18 +21,20 @@ public class MiningMethod implements ActionListener,Observer{
 		// TODO Auto-generated method stub
 		MenuItem item=(MenuItem) e.getSource();
 		String source=item.getLabel();
+		selectMethod(source);
 	}
 
 	@Override
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub
 		String source=(String)arg;
+		selectMethod(source);
 	}
 	
 	public void selectMethod(String source)
 	{
 		switch (source) {
-		case "alpah mining":
+		case "alpha mining":
 			alphaMining();
 			break;
 		case "delta mining":
@@ -46,12 +48,17 @@ public class MiningMethod implements ActionListener,Observer{
 	public void alphaMining()
 	{
 		JOptionPane.showMessageDialog(null, "alpha mining");
+		output();
 	}
 	
 	public void deltaMining()
 	{
-		
+		JOptionPane.showMessageDialog(null, "delta mining");
+		output();
 	}
 	
-	
+	public void output()
+	{
+		JOptionPane.showMessageDialog(null, "output is ...");
+	}
 }
