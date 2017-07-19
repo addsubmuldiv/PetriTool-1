@@ -114,10 +114,10 @@ public class ControlPanel extends Panel {
     /** String name of the currently selected button **/
     protected String currentButton_ = new String("");
     
-    private CommunitionObservable communitionObservable_;
-    
-    /**an inner class just be used to call the button observer**/
-    public class CommunitionObservable extends Observable
+    private CommunicationObservable communicationObservable_;
+    private MiningObservable miningObservable_;
+   /**an inner class just be used to call the button observer**/
+    public class CommunicationObservable extends Observable
     {
     	private	boolean called=false;
     	
@@ -128,12 +128,28 @@ public class ControlPanel extends Panel {
 			this.called = called;
 			setChanged();
 		}
-		@Override
-    	public void notifyObservers() {
-    		// TODO Auto-generated method stub
-    		super.notifyObservers();
-    	}	
     }
+    
+    
+   /**an inner class just be used to call the button observer**/
+    public class MiningObservable extends Observable
+    {
+    	private boolean called=false;
+
+		public boolean isCalled() {
+			return called;
+		}
+
+		public void setCalled(boolean called) {
+			this.called = called;
+			setChanged();
+		}
+    	
+    }
+    
+    
+    
+    
 
     /**
       * Construct a new ControlPanel, given a list of button
@@ -191,9 +207,11 @@ public class ControlPanel extends Panel {
 	    }
         
         
-        communitionObservable_=new CommunitionObservable();
-        communitionObservable_.addObserver(new CommunicationMethod(petriTool_));
-
+        communicationObservable_=new CommunicationObservable();
+        communicationObservable_.addObserver(new CommunicationMethod(petriTool_));
+        
+        miningObservable_=new MiningObservable();
+        miningObservable_.addObserver(new MiningMethod(petriTool_));
 	}
 
     /**
@@ -750,8 +768,8 @@ public void userWantsZoomout() {
     public void userWantsConnectToDevice() {
            
            currentButton_ = "ConnectToDevice";
-           communitionObservable_.setCalled(true);
-           communitionObservable_.notifyObservers();
+           communicationObservable_.setCalled(true);
+           communicationObservable_.notifyObservers();
            StatusMessage("Connect to device");
            
     } 
@@ -767,6 +785,8 @@ public void userWantsZoomout() {
     public void userWantsalphamining() {
            
            currentButton_ = "alpha_mining";
+           miningObservable_.setCalled(true);
+           miningObservable_.notifyObservers("alpha mining");
            StatusMessage("We can dig a model from the log by alpha mining algorithm.");
            
     }  
@@ -778,6 +798,8 @@ public void userWantsZoomout() {
     public void userWantsdeltamining() {
            
            currentButton_ = "delta_mining";
+           miningObservable_.setCalled(true);
+           miningObservable_.notifyObservers("delta mining");
            StatusMessage("We can dig a model from the log by delta mining algorithm.");
            
     }  

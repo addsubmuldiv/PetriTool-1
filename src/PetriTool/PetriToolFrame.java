@@ -478,8 +478,12 @@ class PetriToolFrame extends Frame {
         
         // Create the Processing menu.  Add items to it.  Add to menubar.
         mining = new Menu("Mining");
-        mining.add(new MenuItem("alpha mining"));
-        mining.add(new MenuItem("delta mining"));
+        MenuItem alpahMining=new MenuItem("alpha mining");
+        MenuItem deltaMining=new MenuItem("delta mining");
+        alpahMining.addActionListener(new MiningMethod(petriTool_));
+        deltaMining.addActionListener(new MiningMethod(petriTool_));
+        mining.add(alpahMining);
+        mining.add(deltaMining);
         menubar.add(mining);
 
         
