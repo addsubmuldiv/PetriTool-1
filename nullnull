@@ -15,12 +15,15 @@ true,1
 true,true,16
 #
 # PLACES: x, y, label
+Place: 10,9,0
 #
 # TRANSITIONS: x, y, label
+Transition: 23,6,0
 #
 # TOKENS: x, y, tokensRepresented
 #
 # ARCS: number Coordinates, x1, y1, ... xN, yN, x1Draw, y1Draw, ... xNDraw, yNDraw, region, tokensToEnable, start Component
+Arc: 2,10,9,23,6,1.0,0.5,0.0,0.5,3,1,Place
 #
 # CAPTIONS: x, y, actualSize, fontName, fontStyle, fontSize, ~^~captionText
 # END OF DESIGN FILE

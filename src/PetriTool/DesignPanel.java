@@ -60,7 +60,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Vector;
 import javax.swing.*;
-import javax.swing.JPanel;
 
 import java.util.Iterator;
 import java.util.StringTokenizer;
@@ -411,7 +410,8 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
     **/
     public void saveDesign(String filename) {
         StatusMessage("Saving to file " + filename);
-
+        
+               
         // Create an output steam
         try {
             fileOutputStream_ = new FileOutputStream(filename);
