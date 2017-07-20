@@ -32,6 +32,8 @@
 package PetriTool;
 
 import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.MenuItem;
 import java.awt.MenuBar;
 import java.awt.Menu;
@@ -1454,11 +1456,17 @@ class PetriToolFrame extends Frame {
             return (true);
         }
         // If help button is not active, carry out action
-               
+              
         PrinterJob job_ = PrinterJob.getPrinterJob();
         PageFormat pageFormat = job_.defaultPage();
-        job_.setPrintable(new PrintControl());
-
+        try {
+			job_.setPrintable(new PrintControl());
+		} catch (IOException e1) {
+			// TODO 自动生成的 catch 块
+			e1.printStackTrace();
+		}
+        Graphics gra;
+        
         try {
              // Show the printDialog for the user to confirm the print job. 
              boolean  printOk = job_.printDialog();
