@@ -1460,9 +1460,10 @@ class PetriToolFrame extends Frame {
         PrinterJob job_ = PrinterJob.getPrinterJob();
         PageFormat pageFormat = job_.defaultPage();
         try {
-			job_.setPrintable(new PrintControl());
+			job_.setPrintable(new PrintControl(petriTool_, petriTool_.designPanel_.placeVector_,  petriTool_.designPanel_.transitionVector_,
+					 petriTool_.designPanel_.tokenVector_,  petriTool_.designPanel_.arcVector_));
 		} catch (IOException e1) {
-			// TODO ×Ô¶¯Éú³ÉµÄ catch ¿é
+			// TODO ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½Éµï¿½ catch ï¿½ï¿½
 			e1.printStackTrace();
 		}
         Graphics gra;
