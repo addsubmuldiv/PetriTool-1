@@ -39,8 +39,8 @@ public class CommunicationMethod implements ActionListener,Observer{
 	
 	public void connectToDevice()
 	{
-		JOptionPane.showMessageDialog(null, "Connecting to Device...");
-		output();
+		SerialPortManagement serialPortManagement=new SerialPortManagement(petriTool_);
+		serialPortManagement.setVisible(true);
 	}
 	
 	
