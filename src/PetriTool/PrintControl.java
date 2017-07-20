@@ -16,6 +16,7 @@ import java.awt.print.PrinterException;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.smartcardio.ResponseAPDU;
@@ -33,30 +34,67 @@ public class PrintControl  implements Printable{
    
   // Graphics tempg;  
 
-   public PrintControl() throws IOException {
-	// TODO 自动生成的构造函数存根
+	PetriTool petriTool_;
+	Vector<Place> placeVector_;
+	Vector<Transition> transitionVector_;
+	Vector<Token> tokenVector_; 
+	Vector<Arc> arcVector_;
+	
+   public PrintControl(PetriTool petriTool_, Vector<Place> placeVector_, Vector<Transition> transitionVector_,
+		   Vector<Token> tokenVector_, Vector<Arc> arcVector_) throws IOException {
+	// TODO 
 	int width = 200;  
     int height = 400; 
 	
-    System.out.println("graphics is printing");
+//    System.out.println("graphics is printing");
 	
+	this.tokenVector_=tokenVector_;
+	this.transitionVector_=transitionVector_;
+	this.arcVector_=arcVector_;
+	this.placeVector_=placeVector_;
+	this.petriTool_=petriTool_;
 	
-	/*BufferedImage image = new BufferedImage(width, height,BufferedImage.TYPE_INT_RGB);
-	Graphics graphics2 = image.createGraphics();
-	//graphics2 = graphics;
-    // image.getGraphics();
-	//graphics.dispose();  
-    // 保存文件      
-    ImageIO.write(image, "png", new File("C:/Users/Jianhong YE/Desktop/新建文件夹 (2)/test.png"));*/ 
 }
 
 
 public int print(Graphics gra, PageFormat pf, int pageIndex) throws PrinterException {
-      
+	int step__=petriTool_.gridStep_;
+	Color foregroundColor__=petriTool_.foregroundColor_;
+	for (int i__ = 0; i__ < placeVector_.size(); i__++) {
+	    Place tempPlace__ = (Place) placeVector_.elementAt(i__);
+	    	tempPlace__.draw(gra, step__, foregroundColor__,
+					 petriTool_.placeLabels_,"");
+	}
+
+	// Draw the Transitions
+	for (int i__ = 0; i__ < transitionVector_.size(); i__++) {
+	    Transition tempTransition__ = (Transition) transitionVector_.
+	                                elementAt(i__);
+	    tempTransition__.draw(gra, step__, foregroundColor__,
+	                          petriTool_.transitionLabels_,"");
+	}
+
+	// Draw the Tokens
+	for (int i__ = 0; i__ < tokenVector_.size(); i__++) {
+	    Token tempToken__ = (Token) tokenVector_.elementAt(i__);
+	    tempToken__.draw(gra, step__, foregroundColor__);
+	}
+
+	// Draw the Arcs
+	for (int i__ = 0; i__ < arcVector_.size(); i__++) {
+	    Arc tempArc__ = (Arc) arcVector_.elementAt(i__);
+	    tempArc__.draw(gra, step__, foregroundColor__);
+	}
+
+//	// Draw the Captions
+//	for (int i__ = 0; i__ < captionVector_.size(); i__++) {
+//	    Caption tempCaption__ = (Caption) captionVector_.elementAt(i__);
+//	    tempCaption__.draw(gra, step__, petriTool_.captionColor_);
+//	}
 	 //  System.out.println("pageIndex="+pageIndex);
        Component c = null;
       //print string
-      String str = "中华民族是勤劳、勇敢和富有智慧的伟大民族。";
+//      String str = "asdlhsalkdj";
       
      /* System.out.println(gra);
       System.out.println(pf);
@@ -74,37 +112,37 @@ public int print(Graphics gra, PageFormat pf, int pageIndex) throws PrinterExcep
       
       
       //Print starting point coordinates
-      double x = pf.getImageableX();
-      double y = pf.getImageableY();
-       
-      switch(pageIndex){
-         case 0:
-           //Set the print font (font name, style, and size)
-           //As defined by the Java for five kinds of fonts：Serif、SansSerif、Monospaced、Dialog 和 DialogInput
-           Font font = new Font("Serif", Font.PLAIN, 9);
-           g2.setFont(font);//set font
-           float[]   dash1   =   {4.0f}; 
-           g2.setStroke(new   BasicStroke(0.5f,   BasicStroke.CAP_BUTT,   BasicStroke.JOIN_MITER,   4.0f,   dash1,   0.0f));
-
-           float heigth = font.getSize2D();//set font height
-       //    System.out.println("x="+x);
-                      
-        
-		   Image src = Toolkit.getDefaultToolkit().getImage("");
-           g2.drawImage(src,(int)x,(int)y,c);
-           int img_Height=src.getHeight(c);
-           int img_width=src.getWidth(c);
-           //System.out.println("img_Height="+img_Height+"img_width="+img_width) ;
-           
-           g2.drawString(str, (float)x, (float)y+1*heigth+img_Height);
-                      
-           g2.drawImage(src,(int)x,(int)(y+1*heigth+img_Height+11),c);
-           
-             
-         return PAGE_EXISTS;
-         default:
-         return NO_SUCH_PAGE;
-      }
+//      double x = pf.getImageableX();
+//      double y = pf.getImageableY();
+//       
+//      switch(pageIndex){
+//         case 0:
+//           //Set the print font (font name, style, and size)
+//           //As defined by the Java for five kinds of fonts锟斤拷Serif锟斤拷SansSerif锟斤拷Monospaced锟斤拷Dialog 锟斤拷 DialogInput
+//           Font font = new Font("Serif", Font.PLAIN, 9);
+//           g2.setFont(font);//set font
+//           float[]   dash1   =   {4.0f}; 
+//           g2.setStroke(new   BasicStroke(0.5f,   BasicStroke.CAP_BUTT,   BasicStroke.JOIN_MITER,   4.0f,   dash1,   0.0f));
+//
+//           float heigth = font.getSize2D();//set font height
+//       //    System.out.println("x="+x);
+//                      
+//        
+//		   Image src = Toolkit.getDefaultToolkit().getImage("");
+//           g2.drawImage(src,(int)x,(int)y,c);
+//           int img_Height=src.getHeight(c);
+//           int img_width=src.getWidth(c);
+//           //System.out.println("img_Height="+img_Height+"img_width="+img_width) ;
+//           
+////           g2.drawString(str, (float)x, (float)y+1*heigth+img_Height);
+//                      
+//           g2.drawImage(src,(int)x,(int)(y+1*heigth+img_Height+11),c);
+//           
+//             
+      		return PAGE_EXISTS;
+//         default:
+//         return NO_SUCH_PAGE;
+//      }
       
    }
 }
