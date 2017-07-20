@@ -17,8 +17,9 @@ import gnu.io.UnsupportedCommOperationException;
 import PetriTool.serialException.*;
 
 /**
- * 串口服务类，提供打开、关闭串口，读取、发送串口数据等服务（采用单例设计模式）
- * @author zhong
+ * Serial port service class, provide open, close serial port, 
+ * read, send serial port data and other services (use single case design mode)
+ * 
  *
  */
 public class SerialTool {
@@ -26,17 +27,17 @@ public class SerialTool {
     private static SerialTool serialTool = null;
     
     static {
-        //在该类被ClassLoader加载时就初始化一个SerialTool对象
+        //A SerialTool object is initialized when the class is loaded by a ClassLoader
         if (serialTool == null) {
             serialTool = new SerialTool();
         }
     }
     
-    //私有化SerialTool类的构造方法，不允许其他类生成SerialTool对象
+    //Set the constructor of SerialTool private to use singleton pattern
     private SerialTool() {}    
     
     /**
-     * 获取提供服务的SerialTool对象
+     * Gets the SerialTool object that provides the service
      * @return serialTool
      */
     public static SerialTool getSerialTool() {
@@ -48,17 +49,17 @@ public class SerialTool {
 
 
     /**
-     * 查找所有可用端口
-     * @return 可用端口名称列表
+     * Search the available ports
+     * @return A list of available ports 
      */
     public static final ArrayList<String> findPort() {
 
-        //获得当前所有可用串口
+        //Obtain all available ports now
         Enumeration<CommPortIdentifier> portList = CommPortIdentifier.getPortIdentifiers();    
         
         ArrayList<String> portNameList = new ArrayList<>();
 
-        //将可用串口名添加到List并返回该List
+        //Add the available port name to the list and return the list
         while (portList.hasMoreElements()) {
             String portName = portList.nextElement().getName();
             portNameList.add(portName);
@@ -69,32 +70,31 @@ public class SerialTool {
     }
     
     /**
-     * 打开串口
-     * @param portName 端口名称
-     * @param baudrate 波特率
-     * @return 串口对象
-     * @throws SerialPortParameterFailure 设置串口参数失败
-     * @throws NotASerialPort 端口指向设备不是串口类型
-     * @throws NoSuchPort 没有该端口对应的串口设备
-     * @throws PortInUse 端口已被占用
+     * open port 
+     * @param portName 
+     * @param baudrate 
+     * @return 
+     * @throws SerialPortParameterFailure 
+     * @throws NotASerialPort 
+     * @throws NoSuchPort 
+     * @throws PortInUse 
      */
     public static final SerialPort openPort(String portName, int baudrate) throws SerialPortParameterFailure, NotASerialPort, NoSuchPort, PortInUse {
 
         try {
 
-            //通过端口名识别端口
+            //Identify port by port name
             CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
 
-            //打开端口，并给端口名字和一个timeout（打开操作的超时时间）
+            //Open port and give it a name and a timeout(the timeout of the open port operation)
             CommPort commPort = portIdentifier.open(portName, 2000);
 
-            //判断是不是串口
             if (commPort instanceof SerialPort) {
                 
                 SerialPort serialPort = (SerialPort) commPort;
                 
                 try {                        
-                    //设置一下串口的波特率等参数
+                    //set the baud rate and other parameters
                     serialPort.setSerialPortParams(baudrate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);                              
                 } catch (UnsupportedCommOperationException e) {  
                     throw new SerialPortParameterFailure();
@@ -105,7 +105,6 @@ public class SerialTool {
             
             }        
             else {
-                //不是串口
                 throw new NotASerialPort();
             }
         } catch (NoSuchPortException e1) {
@@ -116,8 +115,8 @@ public class SerialTool {
     }
     
     /**
-     * 关闭串口
-     * @param serialport 待关闭的串口对象
+     * close serial port
+     * @param serialport waiting to be closed
      */
     public static void closePort(SerialPort serialPort) {
         if (serialPort != null) {
@@ -127,11 +126,11 @@ public class SerialTool {
     }
     
     /**
-     * 往串口发送数据
-     * @param serialPort 串口对象
-     * @param order    待发送数据
-     * @throws SendDataToSerialPortFailure 向串口发送数据失败
-     * @throws SerialPortOutputStreamCloseFailure 关闭串口对象的输出流出错
+     * Send data to the port
+     * @param serialPort    The destination of the data
+     * @param order    The data waiting to be send
+     * @throws SendDataToSerialPortFailure 	 data sent failed
+     * @throws SerialPortOutputStreamCloseFailure    Closing port occurs an exception
      */
     public static void sendToPort(SerialPort serialPort, byte[] order) throws SendDataToSerialPortFailure, SerialPortOutputStreamCloseFailure {
 
@@ -159,11 +158,11 @@ public class SerialTool {
     }
     
     /**
-     * 从串口读取数据
-     * @param serialPort 当前已建立连接的SerialPort对象
-     * @return 读取到的数据
-     * @throws ReadDataFromSerialPortFailure 从串口读取数据时出错
-     * @throws SerialPortInputStreamCloseFailure 关闭串口对象输入流出错
+     * Read data from port
+     * @param serialPort   The serial port that has connected
+     * @return data
+     * @throws ReadDataFromSerialPortFailure 
+     * @throws SerialPortInputStreamCloseFailure 
      */
     public static byte[] readFromPort(SerialPort serialPort) throws ReadDataFromSerialPortFailure, SerialPortInputStreamCloseFailure {
 
@@ -173,10 +172,10 @@ public class SerialTool {
         try {
             
             in = serialPort.getInputStream();
-            int bufflenth = in.available();        //获取buffer里的数据长度
+            int bufflenth = in.available();        //obtain the length of the data in the input stream
             
             while (bufflenth != 0) {                             
-                bytes = new byte[bufflenth];    //初始化byte数组为buffer中数据的长度
+                bytes = new byte[bufflenth];
                 in.read(bytes);
                 bufflenth = in.available();
             } 
@@ -191,28 +190,24 @@ public class SerialTool {
             } catch(IOException e) {
                 throw new SerialPortInputStreamCloseFailure();
             }
-
         }
-
         return bytes;
-
     }
     
     /**
-     * 添加监听器
-     * @param port     串口对象
-     * @param listener 串口监听器
-     * @throws TooManyListeners 监听类对象过多
+     * add listener
+     * @param port     
+     * @param listener 
+     * @throws TooManyListeners 
      */
     public static void addListener(SerialPort port, SerialPortEventListener listener) throws TooManyListeners {
 
         try {
             
-            //给串口添加监听器
             port.addEventListener(listener);
-            //设置当有数据到达时唤醒监听接收线程
+            //  Set when there is data coming rouse the reception thread 
             port.notifyOnDataAvailable(true);
-          //设置当通信中断时唤醒中断线程
+          //Set up interrupt threads when communication interrupts	
             port.notifyOnBreakInterrupt(true);
 
         } catch (TooManyListenersException e) {
