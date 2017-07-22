@@ -9,7 +9,16 @@ import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTabbedPane;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.border.TitledBorder;
+
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
+
+import PetriTool.serialException.*;
+import gnu.io.SerialPort;
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
+
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -23,20 +32,34 @@ import javax.swing.JTextArea;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DropMode;
 import javax.swing.ScrollPaneConstants;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.awt.event.ActionEvent;
 
 public class SerialPortManagement extends JFrame {
 
-	private JPanel contentPane;
-	private PetriTool petriTool_;
-	
-
+	private JPanel contentPane=null;
+	private PetriTool petriTool_=null;
+	private ArrayList<String> commList=null;
+	private SerialPort serialPort;
 	/**
 	 * Create the frame.
 	 */
 	public SerialPortManagement(PetriTool petriTool) {
+		this.commList=SerialTool.findPort();
+		initComponent();
+		setUI();
+        this.petriTool_=petriTool;
+	}
+
+
+
+
+
+	private void initComponent() {
 		setTitle("Connect to device");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 550, 600);
+		setBounds(100, 100, 600, 600);
 		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -44,63 +67,109 @@ public class SerialPortManagement extends JFrame {
 		contentPane.setLayout(null);
 		
 		JPanel panel_Control = new JPanel();
-		panel_Control.setBorder(new TitledBorder(null, "\u63A7\u5236", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_Control.setBounds(10, 10, 177, 541);
+		panel_Control.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Control", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel_Control.setBounds(10, 10, 234, 541);
 		contentPane.add(panel_Control);
 		panel_Control.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("串口选择：");
-		lblNewLabel.setBounds(10, 31, 65, 15);
+		JLabel lblNewLabel = new JLabel("Select port:");
+		lblNewLabel.setBounds(28, 34, 118, 15);
 		panel_Control.add(lblNewLabel);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9"}));
-		comboBox.setBounds(74, 28, 78, 21);
-		panel_Control.add(comboBox);
+		final JComboBox comboBox_Serial_Port = new JComboBox();
+		if (commList == null || commList.size()<1) {
+			JOptionPane.showMessageDialog(null, "There is no available serial port!", "Error", JOptionPane.INFORMATION_MESSAGE);
+		}
+		else {
+			for (String s : commList) {
+				comboBox_Serial_Port.addItem(s);
+			}
+		}
+		comboBox_Serial_Port.setBounds(120, 31, 78, 21);
+		panel_Control.add(comboBox_Serial_Port);
 		
-		JLabel label = new JLabel("波特率：");
-		label.setBounds(21, 79, 54, 15);
-		panel_Control.add(label);
+		JLabel lblBaudRate = new JLabel("Baud rate:");
+		lblBaudRate.setBounds(40, 82, 70, 15);
+		panel_Control.add(lblBaudRate);
 		
-		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"300", "600", "1200", "2400", "4800", "9600", "19200", "38400", "43000", "56000", "57600", "115200"}));
-		comboBox_1.setBounds(74, 76, 78, 21);
-		panel_Control.add(comboBox_1);
+		final JComboBox comboBox_Baud_Rate = new JComboBox();
+		comboBox_Baud_Rate.setModel(new DefaultComboBoxModel(new String[] {"300", "600", "1200", "2400", "4800", "9600", "19200", "38400", "43000", "56000", "57600", "115200"}));
+		comboBox_Baud_Rate.setBounds(120, 79, 78, 21);
+		panel_Control.add(comboBox_Baud_Rate);
 		
-		JLabel label_1 = new JLabel("停止位：");
-		label_1.setBounds(21, 127, 54, 15);
-		panel_Control.add(label_1);
+		JLabel lblStopBit = new JLabel("Stop bit:");
+		lblStopBit.setBounds(46, 130, 54, 15);
+		panel_Control.add(lblStopBit);
 		
-		JComboBox comboBox_2 = new JComboBox();
-		comboBox_2.setModel(new DefaultComboBoxModel(new String[] {"1", "2"}));
-		comboBox_2.setBounds(74, 124, 78, 21);
-		panel_Control.add(comboBox_2);
+		JComboBox comboBox_Stop_Bit = new JComboBox();
+		comboBox_Stop_Bit.setModel(new DefaultComboBoxModel(new String[] {"1", "2"}));
+		comboBox_Stop_Bit.setBounds(120, 127, 78, 21);
+		panel_Control.add(comboBox_Stop_Bit);
 		
-		JLabel label_2 = new JLabel("数据位：");
-		label_2.setBounds(21, 172, 54, 15);
-		panel_Control.add(label_2);
+		JLabel lblDataBits = new JLabel("Data bit:");
+		lblDataBits.setBounds(46, 175, 70, 15);
+		panel_Control.add(lblDataBits);
 		
-		JComboBox comboBox_3 = new JComboBox();
-		comboBox_3.setModel(new DefaultComboBoxModel(new String[] {"8", "7", "6", "5"}));
-		comboBox_3.setBounds(74, 169, 78, 21);
-		panel_Control.add(comboBox_3);
+		JComboBox comboBox_Data_Bit = new JComboBox();
+		comboBox_Data_Bit.setModel(new DefaultComboBoxModel(new String[] {"8", "7", "6", "5"}));
+		comboBox_Data_Bit.setBounds(120, 172, 78, 21);
+		panel_Control.add(comboBox_Data_Bit);
 		
-		JLabel label_3 = new JLabel("奇偶校验：");
-		label_3.setBounds(10, 218, 65, 15);
-		panel_Control.add(label_3);
+		JLabel lblOddevenCheck = new JLabel("Odd-even check:");
+		lblOddevenCheck.setBounds(10, 221, 100, 15);
+		panel_Control.add(lblOddevenCheck);
 		
-		JComboBox comboBox_4 = new JComboBox();
-		comboBox_4.setModel(new DefaultComboBoxModel(new String[] {"NONE", "ODD", "EVEN"}));
-		comboBox_4.setBounds(74, 215, 78, 21);
-		panel_Control.add(comboBox_4);
+		JComboBox comboBox_Odd_Even_Check = new JComboBox();
+		comboBox_Odd_Even_Check.setModel(new DefaultComboBoxModel(new String[] {"NONE", "ODD", "EVEN"}));
+		comboBox_Odd_Even_Check.setBounds(120, 218, 78, 21);
+		panel_Control.add(comboBox_Odd_Even_Check);
 		
-		JButton btn_Connect = new JButton("连接");
-		btn_Connect.setBounds(31, 276, 111, 36);
+		JButton btn_Connect = new JButton("Connect");
+		btn_Connect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String commNameStr=(String)comboBox_Serial_Port.getSelectedItem();
+				String baudRateStr=(String)comboBox_Baud_Rate.getSelectedItem();
+				//Check the serial port name
+				if (commNameStr == null || commNameStr.equals("")) {
+					JOptionPane.showMessageDialog(null, "There is no serial port", "Error", JOptionPane.INFORMATION_MESSAGE);			
+				}
+				else {
+					//Check the baud rate 
+					if (baudRateStr == null || baudRateStr.equals("")) {
+						JOptionPane.showMessageDialog(null, "Getting baud rate occurs a problem", "Error", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {
+						//if both serial port name and baud rate are correct
+						int bps = Integer.parseInt(baudRateStr);
+						try {
+							
+							//Get the port that specified
+							serialPort = SerialTool.openPort(commNameStr, bps);
+							//Add listener to the serial port
+							SerialTool.addListener(serialPort, new SerialListener());
+							//if the listener is added correctly
+							JOptionPane.showMessageDialog(null, "Listen succeed", "tip", JOptionPane.INFORMATION_MESSAGE);
+							
+						} catch (SerialPortParameterFailure | NotASerialPort | NoSuchPort | PortInUse | TooManyListeners e1) {
+							JOptionPane.showMessageDialog(null, e1, "Error", JOptionPane.INFORMATION_MESSAGE);
+						}
+					}
+				}	
+				
+				
+				
+				
+				
+				
+				
+			}
+		});
+		btn_Connect.setBounds(59, 281, 111, 36);
 		panel_Control.add(btn_Connect);
 		
 		JPanel panel_Send = new JPanel();
-		panel_Send.setBorder(new TitledBorder(null, "\u6570\u636E\u53D1\u9001", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_Send.setBounds(197, 10, 327, 195);
+		panel_Send.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Data sent", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel_Send.setBounds(254, 10, 327, 195);
 		contentPane.add(panel_Send);
 		panel_Send.setLayout(null);
 		
@@ -111,13 +180,13 @@ public class SerialPortManagement extends JFrame {
 		jScrollPane_Send.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		jScrollPane_Send.setBounds(10, 23, 307, 119);
 		panel_Send.add(jScrollPane_Send);
-		JButton btn_Send = new JButton("发送");
+		JButton btn_Send = new JButton("Send");
 		btn_Send.setBounds(108, 152, 111, 36);
 		panel_Send.add(btn_Send);
 		
 		JPanel panel_Receive = new JPanel();
-		panel_Receive.setBorder(new TitledBorder(null, "\u6570\u636E\u63A5\u6536", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_Receive.setBounds(197, 215, 327, 195);
+		panel_Receive.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Data reception", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel_Receive.setBounds(254, 215, 327, 195);
 		contentPane.add(panel_Receive);
 		panel_Receive.setLayout(null);
 		
@@ -131,8 +200,8 @@ public class SerialPortManagement extends JFrame {
 		panel_Receive.add(jScrollPane_Receive);
 		
 		JPanel panel_Identify = new JPanel();
-		panel_Identify.setBorder(new TitledBorder(null, "\u6807\u8BC6", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel_Identify.setBounds(197, 420, 327, 131);
+		panel_Identify.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Marking", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel_Identify.setBounds(254, 420, 327, 131);
 		contentPane.add(panel_Identify);
 		panel_Identify.setLayout(null);
 		
@@ -143,7 +212,14 @@ public class SerialPortManagement extends JFrame {
 		jScrollPane_Identify.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		jScrollPane_Identify.setBounds(10, 28, 310, 93);
 		panel_Identify.add(jScrollPane_Identify);
-		
+	}
+	
+	
+	
+	
+	
+	public void setUI()
+	{
 		/**Set the window style**/
 		String lookAndFeel = UIManager.getSystemLookAndFeelClassName();  
             try {
@@ -153,6 +229,21 @@ public class SerialPortManagement extends JFrame {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}  	
-        this.petriTool_=petriTool;
 	}
+	
+	
+	
+	
+	class SerialListener implements SerialPortEventListener
+	{
+
+		@Override
+		public void serialEvent(SerialPortEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+
 }

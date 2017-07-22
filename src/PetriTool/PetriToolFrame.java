@@ -1463,7 +1463,7 @@ class PetriToolFrame extends Frame {
 			job_.setPrintable(new PrintControl(petriTool_, petriTool_.designPanel_.placeVector_,  petriTool_.designPanel_.transitionVector_,
 					 petriTool_.designPanel_.tokenVector_,  petriTool_.designPanel_.arcVector_));
 		} catch (IOException e1) {
-			// TODO �Զ����ɵ� catch ��
+
 			e1.printStackTrace();
 		}
         Graphics gra;
