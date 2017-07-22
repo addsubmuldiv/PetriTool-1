@@ -246,7 +246,7 @@ public class SerialPortManagement extends JFrame {
 			}  	
 	}
 	
-	private String dataValid = "";	//有效数据（用来保存原始数据字符串去除最开头*号以后的字符串）
+	private String dataValid = "";	//the data will be showed in the textArea_Receive
 	
 	
 	
@@ -297,7 +297,7 @@ public class SerialPortManagement extends JFrame {
 							JOptionPane.showMessageDialog(null, "No valid data is obtained from reading data! Please check the equipment or procedure!", "Error", JOptionPane.INFORMATION_MESSAGE);
 							System.exit(0);
 						}else {
-							String dataOriginal = new String(data);	//将字节数组数据转换位为保存了原始数据的字符串
+							String dataOriginal = new String(data);	//Converts the byte array data to a string that holds the raw data
 							dataValid+=dataOriginal+"\n";
 							textArea_Receive.setText(dataValid);
 							repaint();
