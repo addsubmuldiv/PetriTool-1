@@ -2,6 +2,7 @@ package PetriTool;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Window;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -33,6 +34,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DropMode;
 import javax.swing.ScrollPaneConstants;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 
@@ -42,6 +45,7 @@ public class SerialPortManagement extends JFrame {
 	private PetriTool petriTool_=null;
 	private ArrayList<String> commList=null;
 	private SerialPort serialPort;
+	JTextArea textArea_Receive;
 	/**
 	 * Create the frame.
 	 */
@@ -50,6 +54,7 @@ public class SerialPortManagement extends JFrame {
 		initComponent();
 		setUI();
         this.petriTool_=petriTool;
+        this.addWindowListener(new Win());
 	}
 
 
@@ -58,7 +63,6 @@ public class SerialPortManagement extends JFrame {
 
 	private void initComponent() {
 		setTitle("Connect to device");
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 600, 600);
 		setResizable(false);
 		contentPane = new JPanel();
@@ -156,12 +160,6 @@ public class SerialPortManagement extends JFrame {
 					}
 				}	
 				
-				
-				
-				
-				
-				
-				
 			}
 		});
 		btn_Connect.setBounds(59, 281, 111, 36);
@@ -173,7 +171,7 @@ public class SerialPortManagement extends JFrame {
 		contentPane.add(panel_Send);
 		panel_Send.setLayout(null);
 		
-		JTextArea textArea_Send=new JTextArea();
+		final JTextArea textArea_Send=new JTextArea();
 		textArea_Send.setLineWrap(true);
 		JScrollPane jScrollPane_Send=new JScrollPane(textArea_Send);
 		jScrollPane_Send.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -181,6 +179,23 @@ public class SerialPortManagement extends JFrame {
 		jScrollPane_Send.setBounds(10, 23, 307, 119);
 		panel_Send.add(jScrollPane_Send);
 		JButton btn_Send = new JButton("Send");
+		btn_Send.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				/**Get the data you want to send to the port from textArea**/
+				String dataSendStr=textArea_Send.getText();
+				
+				/**Encoding the data as byte[]**/
+				byte[] dataSend=dataSendStr.getBytes();
+				try {
+					SerialTool.sendToPort(serialPort, dataSend);
+				} catch (SendDataToSerialPortFailure | SerialPortOutputStreamCloseFailure e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
+			}
+		});
 		btn_Send.setBounds(108, 152, 111, 36);
 		panel_Send.add(btn_Send);
 		
@@ -190,7 +205,7 @@ public class SerialPortManagement extends JFrame {
 		contentPane.add(panel_Receive);
 		panel_Receive.setLayout(null);
 		
-		JTextArea textArea_Receive = new JTextArea();
+		textArea_Receive = new JTextArea();
 		textArea_Receive.setLineWrap(true);
 		textArea_Receive.setEnabled(false);
 		JScrollPane jScrollPane_Receive=new JScrollPane(textArea_Receive);
@@ -231,6 +246,7 @@ public class SerialPortManagement extends JFrame {
 			}  	
 	}
 	
+	private String dataValid = "";	//有效数据（用来保存原始数据字符串去除最开头*号以后的字符串）
 	
 	
 	
@@ -238,12 +254,76 @@ public class SerialPortManagement extends JFrame {
 	{
 
 		@Override
-		public void serialEvent(SerialPortEvent arg0) {
+		public void serialEvent(SerialPortEvent serialPortEvent) {
 			// TODO Auto-generated method stub
-			
+			switch (serialPortEvent.getEventType()) {
+
+            case SerialPortEvent.BI: // 10 Communication interruption
+            	JOptionPane.showMessageDialog(null, "Communication interruption", "Error", JOptionPane.INFORMATION_MESSAGE);
+            	break;
+
+            case SerialPortEvent.OE: // 7 Overflow error
+
+            case SerialPortEvent.FE: // 9 Frame Error
+
+            case SerialPortEvent.PE: // 8 Parity check error
+
+            case SerialPortEvent.CD: // 6 Carrier detect
+
+            case SerialPortEvent.CTS: // 3 Remove pending delivery data
+
+            case SerialPortEvent.DSR: // 4 Ready to send the data
+
+            case SerialPortEvent.RI: // 5 Ringing indicating
+
+            case SerialPortEvent.OUTPUT_BUFFER_EMPTY: // 2 The output buffer is empty
+            	break;
+            
+            case SerialPortEvent.DATA_AVAILABLE: // 1 The serial port has available data
+            	
+            	//System.out.println("found data");
+				byte[] data = null;
+				
+				try {
+					if (serialPort == null) {
+						JOptionPane.showMessageDialog(null, "Serial port object is empty! Monitor failed!", "Error", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {
+						data = SerialTool.readFromPort(serialPort);	//Read data into byte array
+						//System.out.println(new String(data));
+						
+						//Customize the parsing process
+						if (data == null || data.length < 1) {	//Check whether the data is read correctly
+							JOptionPane.showMessageDialog(null, "No valid data is obtained from reading data! Please check the equipment or procedure!", "Error", JOptionPane.INFORMATION_MESSAGE);
+							System.exit(0);
+						}else {
+							String dataOriginal = new String(data);	//将字节数组数据转换位为保存了原始数据的字符串
+							dataValid+=dataOriginal+"\n";
+							textArea_Receive.setText(dataValid);
+							repaint();
+							}
+						}	
+				}catch (ReadDataFromSerialPortFailure | SerialPortInputStreamCloseFailure e) {
+					JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
 		}
-		
 	}
 	
-
+	
+	class Win extends WindowAdapter {
+		/**
+		 * The key to fix the can't close bug
+		 * **/
+	    public void windowClosing(WindowEvent e) 
+	    {
+	        e.getWindow().setVisible(false);
+	        SerialTool.closePort(serialPort);
+	        ((Window) e.getComponent()).dispose();
+	    }
+	}
 }
+
+
+
+
