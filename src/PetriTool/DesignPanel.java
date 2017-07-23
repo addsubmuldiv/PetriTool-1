@@ -2637,6 +2637,11 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
+		if(selectedButton_=="Arc")
+		{
+			JOptionPane.showMessageDialog(null, "Please select pointer first");
+			return;
+		}
 		int x=e.getX();
 		int y=e.getY();
 		x+=dx;
