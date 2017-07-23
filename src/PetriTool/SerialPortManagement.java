@@ -19,6 +19,7 @@ import PetriTool.serialException.*;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
+import javafx.scene.control.ComboBox;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -58,9 +59,10 @@ public class SerialPortManagement extends JFrame {
 	}
 
 
-
-
-
+	private JComboBox comboBox_Baud_Rate;
+	private JComboBox comboBox_Stop_Bit; 
+	private JComboBox comboBox_Data_Bit;
+	private JComboBox comboBox_Odd_Even_Check;
 	private void initComponent() {
 		setTitle("Connect to device");
 		setBounds(100, 100, 600, 600);
@@ -96,7 +98,7 @@ public class SerialPortManagement extends JFrame {
 		lblBaudRate.setBounds(40, 82, 70, 15);
 		panel_Control.add(lblBaudRate);
 		
-		final JComboBox comboBox_Baud_Rate = new JComboBox();
+		comboBox_Baud_Rate = new JComboBox();
 		comboBox_Baud_Rate.setModel(new DefaultComboBoxModel(new String[] {"300", "600", "1200", "2400", "4800", "9600", "19200", "38400", "43000", "56000", "57600", "115200"}));
 		comboBox_Baud_Rate.setBounds(120, 79, 78, 21);
 		panel_Control.add(comboBox_Baud_Rate);
@@ -105,7 +107,7 @@ public class SerialPortManagement extends JFrame {
 		lblStopBit.setBounds(46, 130, 54, 15);
 		panel_Control.add(lblStopBit);
 		
-		JComboBox comboBox_Stop_Bit = new JComboBox();
+		comboBox_Stop_Bit = new JComboBox();
 		comboBox_Stop_Bit.setModel(new DefaultComboBoxModel(new String[] {"1", "2"}));
 		comboBox_Stop_Bit.setBounds(120, 127, 78, 21);
 		panel_Control.add(comboBox_Stop_Bit);
@@ -114,7 +116,7 @@ public class SerialPortManagement extends JFrame {
 		lblDataBits.setBounds(46, 175, 70, 15);
 		panel_Control.add(lblDataBits);
 		
-		JComboBox comboBox_Data_Bit = new JComboBox();
+		comboBox_Data_Bit = new JComboBox();
 		comboBox_Data_Bit.setModel(new DefaultComboBoxModel(new String[] {"8", "7", "6", "5"}));
 		comboBox_Data_Bit.setBounds(120, 172, 78, 21);
 		panel_Control.add(comboBox_Data_Bit);
@@ -123,7 +125,7 @@ public class SerialPortManagement extends JFrame {
 		lblOddevenCheck.setBounds(10, 221, 100, 15);
 		panel_Control.add(lblOddevenCheck);
 		
-		JComboBox comboBox_Odd_Even_Check = new JComboBox();
+		comboBox_Odd_Even_Check = new JComboBox();
 		comboBox_Odd_Even_Check.setModel(new DefaultComboBoxModel(new String[] {"NONE", "ODD", "EVEN"}));
 		comboBox_Odd_Even_Check.setBounds(120, 218, 78, 21);
 		panel_Control.add(comboBox_Odd_Even_Check);
@@ -133,6 +135,7 @@ public class SerialPortManagement extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				String commNameStr=(String)comboBox_Serial_Port.getSelectedItem();
 				String baudRateStr=(String)comboBox_Baud_Rate.getSelectedItem();
+//				int dataBits=
 				//Check the serial port name
 				if (commNameStr == null || commNameStr.equals("")) {
 					JOptionPane.showMessageDialog(null, "There is no serial port", "Error", JOptionPane.INFORMATION_MESSAGE);			
@@ -148,7 +151,7 @@ public class SerialPortManagement extends JFrame {
 						try {
 							
 							//Get the port that specified
-							serialPort = SerialTool.openPort(commNameStr, bps);
+							serialPort = SerialTool.openPort(commNameStr, bps,getDataBits(),getStopBits(),getOddEvenCheck());
 							//Add listener to the serial port
 							SerialTool.addListener(serialPort, new SerialListener());
 							//if the listener is added correctly
@@ -245,6 +248,45 @@ public class SerialPortManagement extends JFrame {
 				e.printStackTrace();
 			}  	
 	}
+	
+	
+	private int getDataBits()
+	{
+		int dataBits=Integer.parseInt((String)comboBox_Data_Bit.getSelectedItem());
+		switch (dataBits) {
+		case 5: return SerialPort.DATABITS_5;
+		case 6: return SerialPort.DATABITS_6;
+		case 7: return SerialPort.DATABITS_7;
+		case 8: return SerialPort.DATABITS_8;
+		default:break;
+		}
+		return 0;
+	}
+	
+	private int getStopBits()
+	{
+		int stopBits=Integer.parseInt((String)comboBox_Stop_Bit.getSelectedItem());
+		switch (stopBits) {
+		case 1: return SerialPort.STOPBITS_1;
+		case 2: return SerialPort.STOPBITS_2;
+		default:break;
+		}
+		return 0;
+	}
+	
+	private int getOddEvenCheck()
+	{
+		String oddEvenCheck=(String)comboBox_Odd_Even_Check.getSelectedItem();
+		switch (oddEvenCheck) {
+		case "NONE": return serialPort.PARITY_NONE;
+		case "ODD": return serialPort.PARITY_ODD;
+		case "EVEN": return serialPort.PARITY_EVEN;
+		default:
+			break;
+		}
+		return 0;
+	}
+	
 	
 	private String dataValid = "";	//the data will be showed in the textArea_Receive
 	
