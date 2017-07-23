@@ -233,10 +233,27 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 			Place placeToDelete=getPlace(mouseX_, mouseY_);
 			placeVector_.removeElement(placeToDelete);
 			tokenVector_.removeElement(getToken(mouseX_, mouseY_));
+			deleteArcs();
 			repaint();
 		}
     }
-    
+    /**when delete a place or transition, delete the arcs link to them together**/
+    private void deleteArcs()
+    {
+    	Iterator<Arc> deleteArcIterator=arcVector_.iterator();
+		while(deleteArcIterator.hasNext())
+		{
+			Arc dArc=deleteArcIterator.next();
+			if((dArc.getFirstXCoordinate()==(mouseX_/petriTool_.gridStep_)
+					&&dArc.getFirstYCoordinate()==(mouseY_/petriTool_.gridStep_))
+					||
+					(dArc.getLastXCoordinate()==(mouseX_/petriTool_.gridStep_)
+					&&dArc.getLastYCoordinate()==(mouseY_/petriTool_.gridStep_)))
+			{
+				deleteArcIterator.remove();
+			}
+		}
+    }
     class transitionEditListener implements ActionListener
     {
     	DesignPanel myself;
@@ -266,6 +283,8 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 			// TODO Auto-generated method stub
 			Transition transitionToDelete=getTransition(mouseX_, mouseY_);
 			transitionVector_.removeElement(transitionToDelete);
+			arcVector_.removeElement(getArc(mouseX_, mouseY_));
+			deleteArcs();
 			repaint();
 		}
     	
@@ -937,9 +956,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         		}
         	}
         }
-        
-        
-        
 	}
     
 
