@@ -2271,9 +2271,29 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 				tMenu.show(this, e.getX(), e.getY());
 			}
 		}
-		
 	}
-
+	
+	
+	private void setAllNotSelected() {
+		// TODO Auto-generated method stub
+		setOneKindOfComponentsNotSelected(arcVector_);
+		setOneKindOfComponentsNotSelected(placeVector_);
+		setOneKindOfComponentsNotSelected(transitionVector_);
+		setOneKindOfComponentsNotSelected(tokenVector_);
+	}
+	
+	private void setOneKindOfComponentsNotSelected(Vector<PetriComponent> petriVector)
+	{
+		Iterator<PetriComponent> petriIterator=petriVector.iterator();
+		while(petriIterator.hasNext())
+		{
+			PetriComponent petriComponent=petriIterator.next();
+			petriComponent.setNotSelected();
+		}
+	}
+	
+	
+	
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -2296,7 +2316,10 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-
+		if(!gridSpaceOccupied(e.getX(), e.getY()))
+		{
+			setAllNotSelected();
+		}	
 //		if(e.getButton()==e.BUTTON3)
 //			return;
 		int x=e.getX();
