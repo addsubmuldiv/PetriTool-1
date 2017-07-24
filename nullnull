@@ -6,7 +6,7 @@ white,black,gray,red,blue
 # FONT: style, size, bold, italic
 Helvetica,10,false,false
 # GRID: step, show, height, width
-20,true,25,52
+20,true,25,50
 # SIMULATION: speed, historySize
 5,100
 # ANALYSIS: boundAnalysisTime, boundTime

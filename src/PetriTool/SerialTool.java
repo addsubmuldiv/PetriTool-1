@@ -79,7 +79,7 @@ public class SerialTool {
      * @throws NoSuchPort 
      * @throws PortInUse 
      */
-    public static final SerialPort openPort(String portName, int baudrate) throws SerialPortParameterFailure, NotASerialPort, NoSuchPort, PortInUse {
+    public static final SerialPort openPort(String portName, int baudrate,int dataBits,int stopBits,int oddEvenCheck) throws SerialPortParameterFailure, NotASerialPort, NoSuchPort, PortInUse {
 
         try {
 
@@ -95,7 +95,7 @@ public class SerialTool {
                 
                 try {                        
                     //set the baud rate and other parameters
-                    serialPort.setSerialPortParams(baudrate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);                              
+                    serialPort.setSerialPortParams(baudrate, dataBits, stopBits, oddEvenCheck);                              
                 } catch (UnsupportedCommOperationException e) {  
                     throw new SerialPortParameterFailure();
                 }

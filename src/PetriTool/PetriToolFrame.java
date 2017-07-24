@@ -254,7 +254,7 @@ class PetriToolFrame extends Frame {
         this.add("South", petriTool_.statusPanel_);
 
         setMenuBar(PetriToolMenuBar());
-        setSize(1300, 700);
+        setSize(1220, 700);
         setVisible(true);
         
         this.addWindowListener(new Win());

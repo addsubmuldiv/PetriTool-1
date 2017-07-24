@@ -233,10 +233,27 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 			Place placeToDelete=getPlace(mouseX_, mouseY_);
 			placeVector_.removeElement(placeToDelete);
 			tokenVector_.removeElement(getToken(mouseX_, mouseY_));
+			deleteArcs();
 			repaint();
 		}
     }
-    
+    /**when delete a place or transition, delete the arcs link to them together**/
+    private void deleteArcs()
+    {
+    	Iterator<Arc> deleteArcIterator=arcVector_.iterator();
+		while(deleteArcIterator.hasNext())
+		{
+			Arc dArc=deleteArcIterator.next();
+			if((dArc.getFirstXCoordinate()==(mouseX_/petriTool_.gridStep_)
+					&&dArc.getFirstYCoordinate()==(mouseY_/petriTool_.gridStep_))
+					||
+					(dArc.getLastXCoordinate()==(mouseX_/petriTool_.gridStep_)
+					&&dArc.getLastYCoordinate()==(mouseY_/petriTool_.gridStep_)))
+			{
+				deleteArcIterator.remove();
+			}
+		}
+    }
     class transitionEditListener implements ActionListener
     {
     	DesignPanel myself;
@@ -266,6 +283,8 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 			// TODO Auto-generated method stub
 			Transition transitionToDelete=getTransition(mouseX_, mouseY_);
 			transitionVector_.removeElement(transitionToDelete);
+			arcVector_.removeElement(getArc(mouseX_, mouseY_));
+			deleteArcs();
 			repaint();
 		}
     	
@@ -937,9 +956,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         		}
         	}
         }
-        
-        
-        
 	}
     
 
@@ -2271,9 +2287,29 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 				tMenu.show(this, e.getX(), e.getY());
 			}
 		}
-		
 	}
-
+	
+	
+	private void setAllNotSelected() {
+		// TODO Auto-generated method stub
+		setOneKindOfComponentsNotSelected(arcVector_);
+		setOneKindOfComponentsNotSelected(placeVector_);
+		setOneKindOfComponentsNotSelected(transitionVector_);
+		setOneKindOfComponentsNotSelected(tokenVector_);
+	}
+	
+	private void setOneKindOfComponentsNotSelected(Vector<PetriComponent> petriVector)
+	{
+		Iterator<PetriComponent> petriIterator=petriVector.iterator();
+		while(petriIterator.hasNext())
+		{
+			PetriComponent petriComponent=petriIterator.next();
+			petriComponent.setNotSelected();
+		}
+	}
+	
+	
+	
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -2296,7 +2332,10 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-
+		if(!gridSpaceOccupied(e.getX(), e.getY()))
+		{
+			setAllNotSelected();
+		}	
 //		if(e.getButton()==e.BUTTON3)
 //			return;
 		int x=e.getX();
@@ -2614,6 +2653,11 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
+		if(selectedButton_=="Arc")
+		{
+			JOptionPane.showMessageDialog(null, "Please select pointer first");
+			return;
+		}
 		int x=e.getX();
 		int y=e.getY();
 		x+=dx;
