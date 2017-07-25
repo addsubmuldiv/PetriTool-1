@@ -10,6 +10,6 @@ public class SerialPortOutputStreamCloseFailure extends Exception {
 
 	@Override
 	public String toString() {
-		return "�رմ��ڶ�����������OutputStream��ʱ����";
+		return "Error closing the output stream (OutputStream) of the serial port object!";
 	}
 }

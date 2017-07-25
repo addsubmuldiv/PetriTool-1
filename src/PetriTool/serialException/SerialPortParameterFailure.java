@@ -10,7 +10,7 @@ public class SerialPortParameterFailure extends Exception {
 
 	@Override
 	public String toString() {
-		return "���ô��ڲ���ʧ�ܣ��򿪴��ڲ���δ��ɣ�";
+		return "Failed to set serial port parameters!Uncompleted serial port operation!";
 	}
 	
 }

@@ -10,7 +10,7 @@ public class SerialPortInputStreamCloseFailure extends Exception {
 
 	@Override
 	public String toString() {
-		return "�رմ��ڶ�����������InputStream��ʱ����";
+		return "Error closing the serial object input stream (InputStream)!";
 	}
 	
 	

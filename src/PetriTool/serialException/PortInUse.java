@@ -10,7 +10,7 @@ public class PortInUse extends Exception {
 
 	@Override
 	public String toString() {
-		return "�˿��ѱ�ռ�ã��򿪴��ڲ���ʧ�ܣ�";
+		return "Port is occupied!Failed to open serial port operation!";
 	}
 	
 }

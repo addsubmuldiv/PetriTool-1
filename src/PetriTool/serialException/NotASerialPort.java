@@ -10,7 +10,7 @@ public class NotASerialPort extends Exception {
 
 	@Override
 	public String toString() {
-		return "�˿�ָ���豸���Ǵ������ͣ��򿪴��ڲ���ʧ�ܣ�";
+		return "Port pointing device is not serial type!Failed to open serial port operation!";
 	}
 	
 	

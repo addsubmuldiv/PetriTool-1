@@ -10,7 +10,7 @@ public class TooManyListeners extends Exception {
 
 	@Override
 	public String toString() {
-		return "���ڼ������������࣡��Ӳ���ʧ�ܣ�";
+		return "Excessive number of serial listening!Add operation failed!";
 	}
 	
 }

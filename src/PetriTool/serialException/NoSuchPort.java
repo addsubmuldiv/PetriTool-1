@@ -10,7 +10,7 @@ public class NoSuchPort extends Exception {
 
 	@Override
 	public String toString() {
-		return "û���ҵ���ö˿���ƥ��Ĵ����豸���򿪴��ڲ���ʧ�ܣ�";
+		return "No serial port device matching the port name is found!Failed to open serial port operation!";
 	}
 	
 }
