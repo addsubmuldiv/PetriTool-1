@@ -5,17 +5,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * ���𽫴����Exception�еĴ�����Ϣ��ȡ������ת�����ַ�����
  * @author zhong
- *
+ *Responsible for extracting the error information from the 
+ *incoming Exception and converting it to a string
  */
 public class ExceptionWriter {
 
-	/**
-	 * ��Exception�еĴ�����Ϣ��װ���ַ����в����ظ��ַ���
-	 * @param e ���������Exception
-	 * @return ������Ϣ�ַ���
-	 */
 	public static String getErrorInfoFromException(Exception e) { 
 	    	
 	    	StringWriter sw = null;
@@ -28,7 +23,7 @@ public class ExceptionWriter {
 	            return "\r\n" + sw.toString() + "\r\n";  
 	            
 	        } catch (Exception e2) {  
-	            return "��������δ��ȡ��������Ϣ�����������!";  
+	            return "Error!The error message has not been obtained, please check and try again!";  
 	        } finally {
 	        	try {
 	            	if (pw != null) {

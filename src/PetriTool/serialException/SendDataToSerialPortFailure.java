@@ -10,7 +10,7 @@ public class SendDataToSerialPortFailure extends Exception {
 
 	@Override
 	public String toString() {
-		return "�����ڷ�������ʧ�ܣ�";
+		return "Failed to send data to serial port!";
 	}
 	
 }

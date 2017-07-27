@@ -50,6 +50,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.print.Book;
 import java.awt.print.PageFormat;
+import java.awt.print.Paper;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.awt.FileDialog;
@@ -1385,9 +1386,24 @@ class PetriToolFrame extends Frame {
             return (true);
         }
 
-        // If help button not active, carry out action
-        petriTool_.designPanel_.saveDesign
-                (saveFileDirectory_ + saveFileName_);
+        saveFileDialog_ = new FileDialog(this, "Save", FileDialog.SAVE);
+        saveFileDialog_.setDirectory(".");
+        saveFileDialog_.setFile("*.jpg");
+        saveFileDialog_.setVisible(true);  // blocks until user selects a file
+        if (saveFileDialog_.getFile() != null) {
+        	
+            saveFileName_ = saveFileDialog_.getFile();
+            saveFileDirectory_ = saveFileDialog_.getDirectory();
+                       
+            // Due to annomilies within the FileDialog class
+            // which tacks on an extra *.* to getFile(), and
+            // FilenameFilter not being implemented...
+           String tempString__ = saveFileName_;
+           new ImageControl(petriTool_, petriTool_.designPanel_.placeVector_,  petriTool_.designPanel_.transitionVector_,
+					 petriTool_.designPanel_.tokenVector_,  petriTool_.designPanel_.arcVector_).
+           DrawImage(saveFileDirectory_+saveFileName_);
+           saveMenuItem_.setEnabled(true);
+        }
         return false;
     }
     
@@ -1458,15 +1474,24 @@ class PetriToolFrame extends Frame {
         // If help button is not active, carry out action
               
         PrinterJob job_ = PrinterJob.getPrinterJob();
-        PageFormat pageFormat = job_.defaultPage();
+        PageFormat pageFormat = new PageFormat();
+    	Paper paper=new Paper();
+        paper.setSize(petriTool_.gridWidth_*petriTool_.gridStep_,
+        		petriTool_.gridHeight_*petriTool_.gridStep_);
+        paper.setImageableArea(0, 0, petriTool_.gridWidth_*petriTool_.gridStep_,
+        		petriTool_.gridHeight_*petriTool_.gridStep_);
+        pageFormat.setPaper(paper);
+        pageFormat.setOrientation(pageFormat.PORTRAIT);
+        Book book=new Book();
         try {
-			job_.setPrintable(new PrintControl(petriTool_, petriTool_.designPanel_.placeVector_,  petriTool_.designPanel_.transitionVector_,
-					 petriTool_.designPanel_.tokenVector_,  petriTool_.designPanel_.arcVector_));
+			book.append(new PrintControl(petriTool_, petriTool_.designPanel_.placeVector_,  petriTool_.designPanel_.transitionVector_,
+					 petriTool_.designPanel_.tokenVector_,  petriTool_.designPanel_.arcVector_),pageFormat);
 		} catch (IOException e1) {
-
+			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-        Graphics gra;
+       
+        job_.setPageable(book);
         
         try {
              // Show the printDialog for the user to confirm the print job. 

@@ -10,7 +10,7 @@ public class ReadDataFromSerialPortFailure extends Exception {
 
 	@Override
 	public String toString() {
-		return "�Ӵ��ڶ�ȡ����ʱ����";
+		return "Error while reading data from serial port!";
 	}
 	
 }
