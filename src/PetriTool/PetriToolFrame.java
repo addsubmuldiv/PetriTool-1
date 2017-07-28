@@ -1422,12 +1422,12 @@ class PetriToolFrame extends Frame {
             }
             return (true);
         }
-
         // If help button not active, carry out action
         // Create a file selection dialog box
         saveFileDialog_ = new FileDialog(this, "Save As", FileDialog.SAVE);
         saveFileDialog_.setDirectory(".");
-        saveFileDialog_.setFile("*.pnt");
+        saveFileDialog_.setFile("*.xml");
+        
         saveFileDialog_.setVisible(true);  // blocks until user selects a file
         if (saveFileDialog_.getFile() != null) {
         	
@@ -1441,11 +1441,15 @@ class PetriToolFrame extends Frame {
            
           /* int index__ = tempString__.lastIndexOf('*');
             index__ -= 3;*/
-                       
+                      
+			if(saveFileName_.substring(saveFileName_.length()-4).equalsIgnoreCase(".xml"))
+				petriTool_.designPanel_.saveAsXmL(saveFileDirectory_+saveFileName_);
             try {
   //              saveFileName_ = tempString__.substring(0, index__);
-                petriTool_.designPanel_.saveDesign (saveFileDirectory_ +
-                    saveFileName_);
+            	System.out.println(saveFileName_.substring(saveFileName_.length()-4));
+            	if(saveFileName_.substring(saveFileName_.length()-4).equalsIgnoreCase(".pnt"))
+            		petriTool_.designPanel_.saveDesign (saveFileDirectory_ +
+            				saveFileName_);
 
                 // Enable saveMenuItem_ now that we have a name
                 saveMenuItem_.setEnabled(true);

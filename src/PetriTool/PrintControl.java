@@ -44,8 +44,8 @@ public class PrintControl  implements Printable{
    public PrintControl(PetriTool petriTool_, Vector<Place> placeVector_, Vector<Transition> transitionVector_,
 		   Vector<Token> tokenVector_, Vector<Arc> arcVector_) throws IOException {
 	// TODO 
-	int width = 200;  
-    int height = 400; 
+//	int width = 400;  
+//    int height = 400; 
 	
 //    System.out.println("graphics is printing");
 	
@@ -83,7 +83,7 @@ public int print(Graphics gra, PageFormat pf, int pageIndex) throws PrinterExcep
 			for (int i__ = 0; i__ < placeVector_.size(); i__++) {
 			Place tempPlace__ = (Place) placeVector_.elementAt(i__);
 				tempPlace__.draw(g2, step__, foregroundColor__,
-						 petriTool_.placeLabels_,"");
+						 petriTool_.placeLabels_);
 			}
 
 			// Draw the Transitions

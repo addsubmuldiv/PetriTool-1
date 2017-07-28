@@ -35,6 +35,9 @@ package PetriTool;
 import java.io.PrintStream;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
+import org.dom4j.Element;
+
 import java.util.NoSuchElementException;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -100,9 +103,16 @@ class Arc extends PetriComponent {
     /** The number of Tokens needed to enable this Arc **/
     protected int tokensToEnable_;
 
+    
+    private Place startPlace_;
+    
+    
     /** Handle to the Place that this Arc goes to, or null **/
     protected Place destinationPlace_;
 
+    
+    private Transition startTransition_;
+    
     /** Handle to the Transition that this Arc goes to, or null **/
     protected Transition destinationTransition_;
 
@@ -439,7 +449,72 @@ class Arc extends PetriComponent {
                             startComponent_);
     }
 
-    /**
+    
+    public void passToDOM(Element net)
+    {
+    	Element arc=net.addElement("arc");
+    	if(startComponent_.equals("Place"))
+    	{
+    		if(destinationTransition_==null)
+    			return;
+    		arc.addAttribute("id", "P"+startPlace_.label_+" to T"+destinationTransition_.label_);
+    		arc.addAttribute("source", startPlace_.getplaceName_());
+    		arc.addAttribute("target", "T"+destinationTransition_.label_);
+    	}
+    	else
+    	{
+    		if(destinationPlace_==null)
+    			return;
+    		arc.addAttribute("id", "T"+startTransition_.label_+ " to P"+destinationPlace_.label_);
+    		arc.addAttribute("source", "T"+startTransition_.label_);
+    		arc.addAttribute("target", destinationPlace_.getplaceName_());
+    	}
+    	
+    	Element inscription=arc.addElement("inscription");
+    	inscription.addElement("value").addText("Default,"+tokensToEnable_);
+    	Element tagged=arc.addElement("tagged");
+    	tagged.addElement("value").addText("false");
+    	
+    	for(int i=0;i<xCoordinateVector_.size();i++)
+    	{
+    		Element arcpath=arc.addElement("arcpath");
+    		String arcID="";
+    		if(i/10==0)
+    			arcID="00"+i;
+    		else if(i/100==0)
+    			arcID="0"+i;
+    		else if(i/1000==0)
+    			arcID=String.valueOf(i);	
+    		arcpath.addAttribute("id", arcID);
+    		arcpath.addAttribute("x", String.valueOf(((Integer)xCoordinateVector_.get(i)).intValue()*PetriTool.gridStep_));
+    		arcpath.addAttribute("y", String.valueOf(((Integer)yCoordinateVector_.get(i)).intValue()*PetriTool.gridStep_));
+    		arcpath.addAttribute("curvePoint", "false");
+    	}
+    	arc.addElement("type").addAttribute("value", "normal");
+
+    }
+    
+    
+    
+    
+    
+    public void setStartPlace_(Place startPlace_) {
+		this.startPlace_ = startPlace_;
+	}
+
+	public void setStartTransition_(Transition startTransition_) {
+		this.startTransition_ = startTransition_;
+	}
+
+	public void setDestinationPlace_(Place destinationPlace_) {
+		this.destinationPlace_ = destinationPlace_;
+	}
+
+	public void setDestinationTransition_(Transition destinationTransition_) {
+		this.destinationTransition_ = destinationTransition_;
+	}
+
+	/**
       * Draw the Arc to the screen.
     **/
     public void draw (Graphics g, int gridStep, Color arcColor) {
@@ -925,16 +1000,16 @@ class Arc extends PetriComponent {
     /**
       * Sets the destination object and destinationIsPlace_ accordingly
     **/
-    public void setDestination(String destination, PetriComponent
-                               destinationObject) {
-        if (destination.equals("Place")) {
-            destinationIsPlace_ = true;
-            destinationPlace_ = (Place) destinationObject;
-        }
-        else { // destination must be Transition
-            destinationIsPlace_ = false;
-            destinationTransition_ = (Transition) destinationObject;
-        }
-    }
+//    public void setDestination(String destination, PetriComponent
+//                               destinationObject) {
+//        if (destination.equals("Place")) {
+//            destinationIsPlace_ = true;
+//            destinationPlace_ = (Place) destinationObject;
+//        }
+//        else { // destination must be Transition
+//            destinationIsPlace_ = false;
+//            destinationTransition_ = (Transition) destinationObject;
+//        }
+//    }
 
 }

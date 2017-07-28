@@ -107,8 +107,9 @@ public class EditPlace extends JDialog {
 						JOptionPane.showMessageDialog(null, "Place name can't be empty!!");
 						return;
 					}
+					placeEdited_.setplaceName_(placeName);
 					placeEdited_.draw(designPanel_.getGraphics(), petriTool_.gridStep_,
-					petriTool_.foregroundColor_, false, placeName);
+					petriTool_.foregroundColor_, true);
 					designPanel_.repaint();
 					if(textField_tokenOption.getText().trim().length()!=0&&placeEdited_.getNumTokens()==0)
 					{

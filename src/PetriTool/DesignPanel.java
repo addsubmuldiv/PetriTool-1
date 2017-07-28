@@ -56,10 +56,18 @@ import java.awt.FontMetrics;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Vector;
 import javax.swing.*;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 
 import java.util.Iterator;
 import java.util.StringTokenizer;
@@ -500,6 +508,71 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         }
 
     }
+    
+    
+    
+    
+    public void saveAsXmL(String path)
+    {
+    	Document document=DocumentHelper.createDocument();
+    	document.setXMLEncoding("UTF-8");
+    	Element pnml = document.addElement("pnml");
+    	Element net=pnml.addElement("net");
+    	net.addAttribute("id", "Net-One");
+    	net.addAttribute("type", "P/T net");
+    	Element token=net.addElement("token");
+    	token.addAttribute("id", "Default");
+    	token.addAttribute("enable", "true");
+    	token.addAttribute("red", "0");
+    	token.addAttribute("green", "0");
+    	token.addAttribute("blue", "0");
+    	
+    	for(Object p: placeVector_)
+    	{
+    		Place place=(Place)p;
+    		place.passToDOM(net);
+    	}
+    	
+    	for(Object p: transitionVector_)
+    	{
+    		Transition place=(Transition)p;
+    		place.passToDOM(net);
+    	}
+  
+    	for(Object p:arcVector_)
+    	{
+    		Arc arc=(Arc)p;
+    		arc.passToDOM(net);
+    	}
+    	
+    	
+    	try
+    	(	
+    		FileOutputStream fos = new FileOutputStream(path);
+    		OutputStreamWriter osw = new OutputStreamWriter(fos,"UTF-8");
+        )
+    	{  
+			OutputFormat of = new OutputFormat();  
+			of.setEncoding("UTF-8");  
+			of.setIndent(true);  
+			of.setIndent("    ");  
+			of.setNewlines(true);  
+			XMLWriter writer = new XMLWriter(osw, of);  
+			writer.write(document);
+         } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     /**
       * Restore a design from a file.  The variables of a particular
@@ -895,7 +968,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         	for (int i__ = 0; i__ < placeVector_.size(); i__++) {
         	    Place tempPlace__ = (Place) placeVector_.elementAt(i__);
         	    	tempPlace__.draw(g, step__, foregroundColor__,
-							 petriTool_.placeLabels_,"");
+							 petriTool_.placeLabels_);
         	}
 	
         	// Draw the Transitions
@@ -927,7 +1000,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         else
         {
         	if(placeDraged_!=null)
-        		placeDraged_.draw(g, step__, foregroundColor__,petriTool_.placeLabels_,"");
+        		placeDraged_.draw(g, step__, foregroundColor__,petriTool_.placeLabels_);
        // 	g.setColor(foregroundColor__);
        //     g.drawOval(placeDraged_.xCoordinate_ * step__, placeDraged_.yCoordinate_ * step__,
         //               step__,step__);
@@ -2204,7 +2277,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 				{
 					petriTool_.gridHeight_=finalPosY;
 				}
-				tempPlace.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.placeLabels_,"");
+				tempPlace.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.placeLabels_);
 				if(!arcsInVector__.isEmpty())
 				{
 					Iterator<Arc> arcInItor=arcsInVector__.iterator();
@@ -2520,6 +2593,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
                     if (placeOccupies (x, y, true)) {
                         newArc_ = new Arc (x / gridStep__, y / gridStep__);
                         newArc_.setStartComponent("Place");
+                        newArc_.setStartPlace_(getPlace(x, y));
                         arcVector_.addElement(newArc_);
                         StatusMessage("Select next Arc coordinate.");
                         return;
@@ -2527,6 +2601,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
                     else if (transitionOccupies(x, y, true)) {
                         newArc_ = new Arc (x / gridStep__, y / gridStep__);
                         newArc_.setStartComponent("Transition");
+                        newArc_.setStartTransition_(getTransition(x, y));
                         arcVector_.addElement(newArc_);
                         StatusMessage("Select next Arc coordinate.");
                         return;
@@ -2548,6 +2623,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
                     // Determine if a Place or Transition occupy the coordinate
                     if (placeOccupies (x, y, true)) {
                         newArc_.setEndComponent("Place");
+                        newArc_.setDestinationPlace_(getPlace(x, y));
                         newArc_.addCoordinates(x / gridStep__, y / gridStep__);
                         newArc_.setTokensToEnable(petriTool_.componentPanel_.
                             getTokensToEnable());
@@ -2570,6 +2646,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
                     }
                     else if (transitionOccupies(x, y, true)) {
                         newArc_.setEndComponent("Transition");
+                        newArc_.setDestinationTransition_(getTransition(x, y));
                         newArc_.addCoordinates(x / gridStep__, y / gridStep__);
                         newArc_.setTokensToEnable(petriTool_.componentPanel_.
                             getTokensToEnable());

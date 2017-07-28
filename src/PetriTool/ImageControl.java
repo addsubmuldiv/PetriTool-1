@@ -62,7 +62,7 @@ public class ImageControl {
 		for (int i__ = 0; i__ < placeVector_.size(); i__++) {
 		Place tempPlace__ = (Place) placeVector_.elementAt(i__);
 			tempPlace__.draw(g2, step__, foregroundColor__,
-					 petriTool_.placeLabels_,"");
+					 petriTool_.placeLabels_);
 		}
 
 		// Draw the Transitions
