@@ -310,8 +310,7 @@ class PetriToolFrame extends Frame {
         file.addSeparator();
         
         saveMenuItem_ = new MenuItem ("Save");
-        saveMenuItem_.setEnabled(false); // disable until a filename is
-                                 // chosen with Save As
+        saveMenuItem_.setEnabled(true); 
         menuItemsToDisable_.addElement (saveMenuItem_);
 
         file.add(saveMenuItem_);
