@@ -58,16 +58,22 @@ import java.io.FileInputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Vector;
 import javax.swing.*;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+
+import com.sun.org.apache.xerces.internal.util.Status;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 import java.util.Iterator;
 import java.util.StringTokenizer;
@@ -568,6 +574,47 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
     
     
     
+    public void loadFromXML(String path)
+    {
+    	newDesign();
+    	StatusMessage("Loading from "+path);
+    	SAXReader reader=new SAXReader();
+    	try {
+			Document document=reader.read(new File(path));
+			Element pnml=document.getRootElement();
+			Element net=pnml.element("net");
+			java.util.List<Element> placeList=net.elements("place");
+			for(Iterator<Element> iterator=placeList.iterator();iterator.hasNext();)
+			{
+				Element place=iterator.next();
+				Place tempPlace=Place.loadFromDOM(place, petriTool_.getPlaceLabel(), petriTool_.gridStep_);
+				placeVector_.addElement(tempPlace);
+				if(tempPlace.token_!=null)
+					tokenVector_.addElement(tempPlace.token_);
+			}
+			
+			java.util.List<Element> transitionList=net.elements("transition");
+			for(Iterator<Element> iterator=transitionList.iterator();iterator.hasNext();)
+			{
+				Element transition=iterator.next();
+				Transition tempTransition=Transition.loadFromXML(transition, petriTool_.getTransitionLabel(), petriTool_.gridStep_);
+				transitionVector_.addElement(tempTransition);
+			}
+			
+			java.util.List<Element> arcList=net.elements("arc");
+			for(Iterator<Element> iterator=arcList.iterator();iterator.hasNext();)
+			{
+				Element arc=iterator.next();
+				Arc tempArc=Arc.loadFromXML(arc, this);
+				arcVector_.addElement(tempArc);
+			}
+			
+			
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
     
     
     
@@ -976,7 +1023,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         	    Transition tempTransition__ = (Transition) transitionVector_.
         	                                elementAt(i__);
         	    tempTransition__.draw(g, step__, foregroundColor__,
-        	                          petriTool_.transitionLabels_,"");
+        	                          petriTool_.transitionLabels_);
         	}
 	
         	// Draw the Tokens
@@ -1007,7 +1054,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         	if(tokenDraged_!=null)
         		tokenDraged_.draw(g, step__, foregroundColor__);
         	if(transitionDraged_!=null)
-        		transitionDraged_.draw(g, step__, foregroundColor__, petriTool_.transitionLabels_,"");
+        		transitionDraged_.draw(g, step__, foregroundColor__, petriTool_.transitionLabels_);
         	/*if(arcIn_!=null)
         		arcIn_.draw(g, step__, foregroundColor__);
         	if(arcOut_!=null)
@@ -2230,7 +2277,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 				{
 					petriTool_.gridHeight_=finalPosY;
 				}
-				tempTransition.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.transitionLabels_,"");
+				tempTransition.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.transitionLabels_);
 				if(!arcsInVector__.isEmpty())
 				{
 					Iterator<Arc> arcInItor=arcsInVector__.iterator();

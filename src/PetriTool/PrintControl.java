@@ -91,7 +91,7 @@ public int print(Graphics gra, PageFormat pf, int pageIndex) throws PrinterExcep
 				Transition tempTransition__ = (Transition) transitionVector_.
 											elementAt(i__);
 				tempTransition__.draw(g2, step__, foregroundColor__,
-									  petriTool_.transitionLabels_,"");
+									  petriTool_.transitionLabels_);
 			}
 
 			// Draw the Tokens

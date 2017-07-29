@@ -1356,14 +1356,18 @@ class PetriToolFrame extends Frame {
         // Create a file selection dialog box
         openFileDialog_ = new FileDialog(this, "Open", FileDialog.LOAD);
         openFileDialog_.setDirectory(".");
-        openFileDialog_.setFile("*.pnt");
+        openFileDialog_.setFile("*.xml");
         openFileDialog_.setVisible(true);  // blocks until user selects a file
         if (openFileDialog_.getFile() != null) {
             saveFileName_ = openFileDialog_.getFile();
             saveFileDirectory_ = openFileDialog_.getDirectory();
             petriTool_.newDesign();
-            petriTool_.designPanel_.openDesign (saveFileDirectory_ +
-                    saveFileName_);
+            
+            if(saveFileName_.substring(saveFileName_.length()-4).equalsIgnoreCase(".xml"))
+            	petriTool_.designPanel_.loadFromXML(saveFileDirectory_+saveFileName_);
+            if(saveFileName_.substring(saveFileName_.length()-4).equalsIgnoreCase(".pnt"))
+            	petriTool_.designPanel_.openDesign (saveFileDirectory_ +
+            			saveFileName_);
 
             // Enable saveMenuItem_ now that we have a name
             saveMenuItem_.setEnabled(true);

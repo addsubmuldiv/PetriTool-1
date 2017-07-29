@@ -113,6 +113,7 @@ public class EditPlace extends JDialog {
 					designPanel_.repaint();
 					if(textField_tokenOption.getText().trim().length()!=0&&placeEdited_.getNumTokens()==0)
 					{
+						System.out.println(placeEdited_.getNumTokens());
 						JOptionPane.showMessageDialog(null, "Sorry! You hava to add a token first!");
 						dispose();
 						return;

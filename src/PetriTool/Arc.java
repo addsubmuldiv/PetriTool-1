@@ -38,6 +38,8 @@ import java.util.Vector;
 
 import org.dom4j.Element;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -459,14 +461,14 @@ class Arc extends PetriComponent {
     			return;
     		arc.addAttribute("id", "P"+startPlace_.label_+" to T"+destinationTransition_.label_);
     		arc.addAttribute("source", startPlace_.getplaceName_());
-    		arc.addAttribute("target", "T"+destinationTransition_.label_);
+    		arc.addAttribute("target", destinationTransition_.getTransitionName_());
     	}
     	else
     	{
     		if(destinationPlace_==null)
     			return;
     		arc.addAttribute("id", "T"+startTransition_.label_+ " to P"+destinationPlace_.label_);
-    		arc.addAttribute("source", "T"+startTransition_.label_);
+    		arc.addAttribute("source", startTransition_.getTransitionName_());
     		arc.addAttribute("target", destinationPlace_.getplaceName_());
     	}
     	
@@ -779,6 +781,116 @@ class Arc extends PetriComponent {
         return;
     }
 
+    
+    
+    public static Arc loadFromXML(Element arc,DesignPanel designPanel)
+    {
+    	Arc newArc=new Arc();
+    	newArc.xCoordinateVector_=new Vector<>();
+    	newArc.yCoordinateVector_=new Vector<>();
+    	newArc.xDrawCoordinateVector_=new Vector<>();
+    	newArc.yDrawCoordinateVector_=new Vector<>();
+    	newArc.slopeVector_=new Vector<>();
+    	String arcID=arc.attribute("id").getText();
+    	if(arcID.startsWith("P"))
+    	{	
+    		newArc.setStartComponent("Place");
+    		newArc.setEndComponent("Transition");
+    	}
+    	else
+    	{
+    		newArc.setStartComponent("Transition");
+    		newArc.setEndComponent("Place");
+    		
+    	}
+    	
+    	String source=arc.attribute("source").getText();
+    	String target=arc.attribute("target").getText();
+    	
+    	if(newArc.startComponent_.equals("Place"))
+    	{
+    		for(Iterator<Place> iterator=designPanel.placeVector_.iterator();iterator.hasNext();)
+    		{
+    			Place tempPlace=iterator.next();
+    			if(tempPlace.placeName_.equals(source))
+    			{
+    				newArc.setStartPlace_(tempPlace);
+    			}
+    		}
+    		for(Iterator<Transition> iterator=designPanel.transitionVector_.iterator();iterator.hasNext();)
+    		{
+    			Transition tempTransition=iterator.next();
+    			if(tempTransition.transitionName_.equals(target))
+    			{
+    				newArc.setDestinationTransition_(tempTransition);
+    			}
+    		}
+    	}
+    	else
+    	{
+    		for(Iterator<Transition> iterator=designPanel.transitionVector_.iterator();iterator.hasNext();)
+    		{
+    			Transition tempTransition=iterator.next();
+    			if(tempTransition.transitionName_.equals(source))
+    			{
+    				newArc.setStartTransition_(tempTransition);
+    			}
+    		}
+    		for(Iterator<Place> iterator=designPanel.placeVector_.iterator();iterator.hasNext();)
+    		{
+    			Place tempPlace=iterator.next();
+    			if(tempPlace.placeName_.equals(target))
+    			{
+    				newArc.setDestinationPlace_(tempPlace);
+    			}
+    		}
+    	}
+    	String arcNumStr=arc.element("inscription").element("value").getText();
+    	int offsetOfArcNum=arcNumStr.indexOf(",");
+    	int arcNum=Integer.parseInt(arcNumStr.substring(offsetOfArcNum+1));
+    	newArc.setTokensToEnable(arcNum);
+    	
+    	List<Element> arcPaths=arc.elements("arcpath");
+    	for(Iterator<Element> iterator=arcPaths.iterator();iterator.hasNext();)
+    	{
+    		Element arcPath=iterator.next();
+    		int x=Integer.parseInt(arcPath.attribute("x").getText());
+    		int y=Integer.parseInt(arcPath.attribute("y").getText());
+    		newArc.xCoordinateVector_.addElement(x/designPanel.petriTool_.gridStep_);
+    		newArc.yCoordinateVector_.addElement(y/designPanel.petriTool_.gridStep_);
+    	}
+    	if(newArc.startComponent_.equals("Place"))
+    	{
+    		newArc.xCoordinateVector_.set(0, newArc.startPlace_.xCoordinate_);
+    		newArc.yCoordinateVector_.set(0, newArc.startPlace_.yCoordinate_);
+    		newArc.xCoordinateVector_.set(newArc.xCoordinateVector_.size()-1, newArc.destinationTransition_.xCoordinate_);
+    		newArc.yCoordinateVector_.set(newArc.yCoordinateVector_.size()-1, newArc.destinationTransition_.yCoordinate_);
+    	}
+    	else
+    	{
+  	    	newArc.xCoordinateVector_.set(0, newArc.startTransition_.xCoordinate_);
+    		newArc.yCoordinateVector_.set(0, newArc.startTransition_.yCoordinate_);
+    		newArc.xCoordinateVector_.set(newArc.xCoordinateVector_.size()-1, newArc.destinationPlace_.xCoordinate_);
+    		newArc.yCoordinateVector_.set(newArc.yCoordinateVector_.size()-1, newArc.destinationPlace_.yCoordinate_);
+    	}
+    	
+    	
+    	
+    	newArc.calculateSlopes();
+        newArc.setArcDrawCoordinates();
+    	return newArc;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     /**
       * Depending on the slope of the Arc, set the starting and
