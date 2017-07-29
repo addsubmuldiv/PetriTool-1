@@ -106,6 +106,7 @@ class PetriToolFrame extends Frame {
     /** MenuItem for the Save option **/
     MenuItem saveMenuItem_;
 
+    MenuItem saveAsPnt_;
     /**
       * Generic MenuItem for options that a specific handle is not
       * required for
@@ -310,8 +311,6 @@ class PetriToolFrame extends Frame {
         file.addSeparator();
         
         saveMenuItem_ = new MenuItem ("Save");
-        saveMenuItem_.setEnabled(false); // disable until a filename is
-                                 // chosen with Save As
         menuItemsToDisable_.addElement (saveMenuItem_);
 
         file.add(saveMenuItem_);
@@ -319,6 +318,28 @@ class PetriToolFrame extends Frame {
         menuItemsToDisable_.addElement (menuItem_ = new MenuItem ("Save As"));
             
         file.add(menuItem_);
+        
+        saveAsPnt_=new MenuItem("Save as pnt");
+        menuItemsToDisable_.addElement(saveAsPnt_);
+        file.add(saveAsPnt_);
+        saveAsPnt_.addActionListener((e)->{
+        	saveFileDialog_ = new FileDialog(this, "Save As", FileDialog.SAVE);
+            saveFileDialog_.setDirectory(".");
+            saveFileDialog_.setFile("*.pnt");
+            
+            saveFileDialog_.setVisible(true);  // blocks until user selects a file
+            if (saveFileDialog_.getFile() != null) {
+            	
+                saveFileName_ = saveFileDialog_.getFile();
+                saveFileDirectory_ = saveFileDialog_.getDirectory();
+                petriTool_.designPanel_.saveDesign (saveFileDirectory_ +
+        				saveFileName_);
+                
+            }
+        	
+        	
+        });
+        
         
         file.addSeparator();
         
@@ -1356,7 +1377,7 @@ class PetriToolFrame extends Frame {
         // Create a file selection dialog box
         openFileDialog_ = new FileDialog(this, "Open", FileDialog.LOAD);
         openFileDialog_.setDirectory(".");
-        openFileDialog_.setFile("*.xml");
+        openFileDialog_.setFile("*");
         openFileDialog_.setVisible(true);  // blocks until user selects a file
         if (openFileDialog_.getFile() != null) {
             saveFileName_ = openFileDialog_.getFile();
@@ -1428,7 +1449,7 @@ class PetriToolFrame extends Frame {
         }
         // If help button not active, carry out action
         // Create a file selection dialog box
-        saveFileDialog_ = new FileDialog(this, "Save As", FileDialog.SAVE);
+saveFileDialog_ = new FileDialog(this, "Save As", FileDialog.SAVE);
         saveFileDialog_.setDirectory(".");
         saveFileDialog_.setFile("*.xml");
         
