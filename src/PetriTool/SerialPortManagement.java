@@ -183,9 +183,10 @@ public class SerialPortManagement extends JFrame {
 		JScrollPane jScrollPane_Send=new JScrollPane(textArea_Send);
 		jScrollPane_Send.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		jScrollPane_Send.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		jScrollPane_Send.setBounds(10, 23, 307, 119);
+		jScrollPane_Send.setBounds(10, 23, 310, 119);
 		panel_Send.add(jScrollPane_Send);
-		JButton btn_Send = new JButton("Manual Send");
+		
+		JButton btn_Send = new JButton("Manual Test");
 		btn_Send.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -203,15 +204,19 @@ public class SerialPortManagement extends JFrame {
 			
 			}
 		});
-		btn_Send.setBounds(28, 152, 111, 36);
+		btn_Send.setBounds(30, 152, 110, 36);
 		panel_Send.add(btn_Send);
 		
 		// Add a button to get and send the data from the model automatically
 		
 		JButton btn_SendAuto = new JButton("Auto Send");
 		//Todo 
-		btn_SendAuto.setBounds(190, 152, 111, 36);
+		btn_SendAuto.setBounds(180, 152, 110, 36);
 		panel_Send.add(btn_SendAuto);
+		
+		
+	
+		
 				
 		//Receive data from device
 		
