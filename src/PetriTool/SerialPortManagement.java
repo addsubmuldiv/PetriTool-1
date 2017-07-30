@@ -74,9 +74,11 @@ public class SerialPortManagement extends JFrame {
 		
 		JPanel panel_Control = new JPanel();
 		panel_Control.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Control", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel_Control.setBounds(10, 10, 234, 541);
+		panel_Control.setBounds(5, 10, 234, 541);
 		contentPane.add(panel_Control);
 		panel_Control.setLayout(null);
+		
+		
 		
 		JLabel lblNewLabel = new JLabel("Select port:");
 		lblNewLabel.setBounds(28, 34, 118, 15);
@@ -130,6 +132,7 @@ public class SerialPortManagement extends JFrame {
 		comboBox_Odd_Even_Check.setBounds(120, 218, 78, 21);
 		panel_Control.add(comboBox_Odd_Even_Check);
 		
+		// Add a button to connect with device
 		JButton btn_Connect = new JButton("Connect");
 		btn_Connect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -168,6 +171,7 @@ public class SerialPortManagement extends JFrame {
 		btn_Connect.setBounds(59, 281, 111, 36);
 		panel_Control.add(btn_Connect);
 		
+		
 		JPanel panel_Send = new JPanel();
 		panel_Send.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Data sent", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panel_Send.setBounds(254, 10, 327, 195);
@@ -181,7 +185,7 @@ public class SerialPortManagement extends JFrame {
 		jScrollPane_Send.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		jScrollPane_Send.setBounds(10, 23, 307, 119);
 		panel_Send.add(jScrollPane_Send);
-		JButton btn_Send = new JButton("Send");
+		JButton btn_Send = new JButton("Manual Send");
 		btn_Send.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -199,8 +203,17 @@ public class SerialPortManagement extends JFrame {
 			
 			}
 		});
-		btn_Send.setBounds(108, 152, 111, 36);
+		btn_Send.setBounds(28, 152, 111, 36);
 		panel_Send.add(btn_Send);
+		
+		// Add a button to get and send the data from the model automatically
+		
+		JButton btn_SendAuto = new JButton("Auto Send");
+		//Todo 
+		btn_SendAuto.setBounds(190, 152, 111, 36);
+		panel_Send.add(btn_SendAuto);
+				
+		//Receive data from device
 		
 		JPanel panel_Receive = new JPanel();
 		panel_Receive.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Data reception", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
@@ -217,8 +230,10 @@ public class SerialPortManagement extends JFrame {
 		jScrollPane_Receive.setBounds(10, 29, 310, 137);
 		panel_Receive.add(jScrollPane_Receive);
 		
+		
+		
 		JPanel panel_Identify = new JPanel();
-		panel_Identify.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Marking", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel_Identify.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Running History", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panel_Identify.setBounds(254, 420, 327, 131);
 		contentPane.add(panel_Identify);
 		panel_Identify.setLayout(null);
