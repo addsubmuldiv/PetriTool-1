@@ -1449,7 +1449,7 @@ class PetriToolFrame extends Frame {
         }
         // If help button not active, carry out action
         // Create a file selection dialog box
-saveFileDialog_ = new FileDialog(this, "Save As", FileDialog.SAVE);
+        saveFileDialog_ = new FileDialog(this, "Save As", FileDialog.SAVE);
         saveFileDialog_.setDirectory(".");
         saveFileDialog_.setFile("*.xml");
         
