@@ -56,10 +56,24 @@ import java.awt.FontMetrics;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Vector;
 import javax.swing.*;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
+
+import com.sun.org.apache.xerces.internal.util.Status;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 import java.util.Iterator;
 import java.util.StringTokenizer;
@@ -500,6 +514,112 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         }
 
     }
+    
+    
+    
+    
+    public void saveAsXmL(String path)
+    {
+    	Document document=DocumentHelper.createDocument();
+    	document.setXMLEncoding("UTF-8");
+    	Element pnml = document.addElement("pnml");
+    	Element net=pnml.addElement("net");
+    	net.addAttribute("id", "Net-One");
+    	net.addAttribute("type", "P/T net");
+    	Element token=net.addElement("token");
+    	token.addAttribute("id", "Default");
+    	token.addAttribute("enable", "true");
+    	token.addAttribute("red", "0");
+    	token.addAttribute("green", "0");
+    	token.addAttribute("blue", "0");
+    	
+    	for(Object p: placeVector_)
+    	{
+    		Place place=(Place)p;
+    		place.passToDOM(net);
+    	}
+    	
+    	for(Object p: transitionVector_)
+    	{
+    		Transition place=(Transition)p;
+    		place.passToDOM(net);
+    	}
+  
+    	for(Object p:arcVector_)
+    	{
+    		Arc arc=(Arc)p;
+    		arc.passToDOM(net);
+    	}
+    	
+    	
+    	try
+    	(	
+    		FileOutputStream fos = new FileOutputStream(path);
+    		OutputStreamWriter osw = new OutputStreamWriter(fos,"UTF-8");
+        )
+    	{  
+			OutputFormat of = new OutputFormat();  
+			of.setEncoding("UTF-8");  
+			of.setIndent(true);  
+			of.setIndent("    ");  
+			of.setNewlines(true);  
+			XMLWriter writer = new XMLWriter(osw, of);  
+			writer.write(document);
+         } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    
+    
+    
+    public void loadFromXML(String path)
+    {
+    	newDesign();
+    	StatusMessage("Loading from "+path);
+    	SAXReader reader=new SAXReader();
+    	try {
+			Document document=reader.read(new File(path));
+			Element pnml=document.getRootElement();
+			Element net=pnml.element("net");
+			java.util.List<Element> placeList=net.elements("place");
+			for(Iterator<Element> iterator=placeList.iterator();iterator.hasNext();)
+			{
+				Element place=iterator.next();
+				Place tempPlace=Place.loadFromDOM(place, petriTool_.getPlaceLabel(), petriTool_.gridStep_);
+				placeVector_.addElement(tempPlace);
+				if(tempPlace.token_!=null)
+					tokenVector_.addElement(tempPlace.token_);
+			}
+			
+			java.util.List<Element> transitionList=net.elements("transition");
+			for(Iterator<Element> iterator=transitionList.iterator();iterator.hasNext();)
+			{
+				Element transition=iterator.next();
+				Transition tempTransition=Transition.loadFromXML(transition, petriTool_.getTransitionLabel(), petriTool_.gridStep_);
+				transitionVector_.addElement(tempTransition);
+			}
+			
+			java.util.List<Element> arcList=net.elements("arc");
+			for(Iterator<Element> iterator=arcList.iterator();iterator.hasNext();)
+			{
+				Element arc=iterator.next();
+				Arc tempArc=Arc.loadFromXML(arc, this);
+				arcVector_.addElement(tempArc);
+			}
+			
+			
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    
+    
+    
+    
 
     /**
       * Restore a design from a file.  The variables of a particular
@@ -895,7 +1015,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         	for (int i__ = 0; i__ < placeVector_.size(); i__++) {
         	    Place tempPlace__ = (Place) placeVector_.elementAt(i__);
         	    	tempPlace__.draw(g, step__, foregroundColor__,
-							 petriTool_.placeLabels_,"");
+							 petriTool_.placeLabels_);
         	}
 	
         	// Draw the Transitions
@@ -903,7 +1023,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         	    Transition tempTransition__ = (Transition) transitionVector_.
         	                                elementAt(i__);
         	    tempTransition__.draw(g, step__, foregroundColor__,
-        	                          petriTool_.transitionLabels_,"");
+        	                          petriTool_.transitionLabels_);
         	}
 	
         	// Draw the Tokens
@@ -927,14 +1047,14 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         else
         {
         	if(placeDraged_!=null)
-        		placeDraged_.draw(g, step__, foregroundColor__,petriTool_.placeLabels_,"");
+        		placeDraged_.draw(g, step__, foregroundColor__,petriTool_.placeLabels_);
        // 	g.setColor(foregroundColor__);
        //     g.drawOval(placeDraged_.xCoordinate_ * step__, placeDraged_.yCoordinate_ * step__,
         //               step__,step__);
         	if(tokenDraged_!=null)
         		tokenDraged_.draw(g, step__, foregroundColor__);
         	if(transitionDraged_!=null)
-        		transitionDraged_.draw(g, step__, foregroundColor__, petriTool_.transitionLabels_,"");
+        		transitionDraged_.draw(g, step__, foregroundColor__, petriTool_.transitionLabels_);
         	/*if(arcIn_!=null)
         		arcIn_.draw(g, step__, foregroundColor__);
         	if(arcOut_!=null)
@@ -2157,7 +2277,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 				{
 					petriTool_.gridHeight_=finalPosY;
 				}
-				tempTransition.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.transitionLabels_,"");
+				tempTransition.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.transitionLabels_);
 				if(!arcsInVector__.isEmpty())
 				{
 					Iterator<Arc> arcInItor=arcsInVector__.iterator();
@@ -2204,7 +2324,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 				{
 					petriTool_.gridHeight_=finalPosY;
 				}
-				tempPlace.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.placeLabels_,"");
+				tempPlace.draw(getGraphics(), petriTool_.gridStep_, petriTool_.foregroundColor_, petriTool_.placeLabels_);
 				if(!arcsInVector__.isEmpty())
 				{
 					Iterator<Arc> arcInItor=arcsInVector__.iterator();
@@ -2520,6 +2640,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
                     if (placeOccupies (x, y, true)) {
                         newArc_ = new Arc (x / gridStep__, y / gridStep__);
                         newArc_.setStartComponent("Place");
+                        newArc_.setStartPlace_(getPlace(x, y));
                         arcVector_.addElement(newArc_);
                         StatusMessage("Select next Arc coordinate.");
                         return;
@@ -2527,6 +2648,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
                     else if (transitionOccupies(x, y, true)) {
                         newArc_ = new Arc (x / gridStep__, y / gridStep__);
                         newArc_.setStartComponent("Transition");
+                        newArc_.setStartTransition_(getTransition(x, y));
                         arcVector_.addElement(newArc_);
                         StatusMessage("Select next Arc coordinate.");
                         return;
@@ -2548,6 +2670,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
                     // Determine if a Place or Transition occupy the coordinate
                     if (placeOccupies (x, y, true)) {
                         newArc_.setEndComponent("Place");
+                        newArc_.setDestinationPlace_(getPlace(x, y));
                         newArc_.addCoordinates(x / gridStep__, y / gridStep__);
                         newArc_.setTokensToEnable(petriTool_.componentPanel_.
                             getTokensToEnable());
@@ -2570,6 +2693,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
                     }
                     else if (transitionOccupies(x, y, true)) {
                         newArc_.setEndComponent("Transition");
+                        newArc_.setDestinationTransition_(getTransition(x, y));
                         newArc_.addCoordinates(x / gridStep__, y / gridStep__);
                         newArc_.setTokensToEnable(petriTool_.componentPanel_.
                             getTokensToEnable());

@@ -77,8 +77,9 @@ public class EditTransition extends JDialog {
 						JOptionPane.showMessageDialog(null, "Transition name can't be empty!!");
 						return;
 					}
+					transitionEdited_.setTransitionName_(transitionName);
 					transitionEdited_.draw(designPanel_.getGraphics(), petriTool_.gridStep_,
-							petriTool_.foregroundColor_, false, transitionName);
+							petriTool_.foregroundColor_, petriTool_.transitionLabels_);
 							designPanel_.repaint();
 					dispose();
 				}
