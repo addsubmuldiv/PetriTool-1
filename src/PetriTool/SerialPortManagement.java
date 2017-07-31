@@ -38,6 +38,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Vector;
 import java.awt.event.ActionEvent;
 
 public class SerialPortManagement extends JFrame {
@@ -47,6 +48,7 @@ public class SerialPortManagement extends JFrame {
 	private ArrayList<String> commList=null;
 	private SerialPort serialPort;
 	JTextArea textArea_Receive;
+	JTextArea textArea_Send;
 	/**
 	 * Create the frame.
 	 */
@@ -63,6 +65,13 @@ public class SerialPortManagement extends JFrame {
 	private JComboBox comboBox_Stop_Bit; 
 	private JComboBox comboBox_Data_Bit;
 	private JComboBox comboBox_Odd_Even_Check;
+	JButton btn_SendAuto;
+	JButton btn_Connect;
+	
+	boolean isConnected=false;
+	
+	private AutoSendListener autoSendListener=null;
+	
 	private void initComponent() {
 		setTitle("Connect to device");
 		setBounds(100, 100, 600, 600);
@@ -133,39 +142,54 @@ public class SerialPortManagement extends JFrame {
 		panel_Control.add(comboBox_Odd_Even_Check);
 		
 		// Add a button to connect with device
-		JButton btn_Connect = new JButton("Connect");
+		btn_Connect= new JButton("Connect");
 		btn_Connect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String commNameStr=(String)comboBox_Serial_Port.getSelectedItem();
 				String baudRateStr=(String)comboBox_Baud_Rate.getSelectedItem();
 //				int dataBits=
 				//Check the serial port name
-				if (commNameStr == null || commNameStr.equals("")) {
-					JOptionPane.showMessageDialog(null, "There is no serial port", "Error", JOptionPane.INFORMATION_MESSAGE);			
-				}
-				else {
-					//Check the baud rate 
-					if (baudRateStr == null || baudRateStr.equals("")) {
-						JOptionPane.showMessageDialog(null, "Getting baud rate occurs a problem", "Error", JOptionPane.INFORMATION_MESSAGE);
-					}
-					else {
-						//if both serial port name and baud rate are correct
-						int bps = Integer.parseInt(baudRateStr);
-						try {
-							
-							//Get the port that specified
-							serialPort = SerialTool.openPort(commNameStr, bps,getDataBits(),getStopBits(),getOddEvenCheck());
-							//Add listener to the serial port
-							SerialTool.addListener(serialPort, new SerialListener());
-							//if the listener is added correctly
-							JOptionPane.showMessageDialog(null, "Listen succeed", "tip", JOptionPane.INFORMATION_MESSAGE);
-							
-						} catch (SerialPortParameterFailure | NotASerialPort | NoSuchPort | PortInUse | TooManyListeners e1) {
-							JOptionPane.showMessageDialog(null, e1, "Error", JOptionPane.INFORMATION_MESSAGE);
+				switch(btn_Connect.getText())
+				{
+					case "Connect":
+						isConnected=true;
+						if (commNameStr == null || commNameStr.equals("")) {
+							JOptionPane.showMessageDialog(null, "There is no serial port", "Error", JOptionPane.INFORMATION_MESSAGE);			
 						}
-					}
-				}	
-				
+						else {
+							//Check the baud rate 
+							if (baudRateStr == null || baudRateStr.equals("")) {
+								JOptionPane.showMessageDialog(null, "Getting baud rate occurs a problem", "Error", JOptionPane.INFORMATION_MESSAGE);
+							}
+							else {
+								//if both serial port name and baud rate are correct
+								int bps = Integer.parseInt(baudRateStr);
+								try {
+									
+									//Get the port that specified
+									serialPort = SerialTool.openPort(commNameStr, bps,getDataBits(),getStopBits(),getOddEvenCheck());
+									//Add listener to the serial port
+									SerialTool.addListener(serialPort, new SerialListener());
+									//if the listener is added correctly
+									JOptionPane.showMessageDialog(null, "Listen succeed", "tip", JOptionPane.INFORMATION_MESSAGE);
+									btn_Connect.setText("Disconnect");
+								} catch (SerialPortParameterFailure | NotASerialPort | NoSuchPort | PortInUse | TooManyListeners e1) {
+									JOptionPane.showMessageDialog(null, e1, "Error", JOptionPane.INFORMATION_MESSAGE);
+								}
+							}
+						}
+						break;
+					case "Disconnect":
+						isConnected=false;
+						SerialTool.closePort(serialPort);
+						isAutoSendPressed=false;
+						btn_Connect.setText("Connect");
+						btn_SendAuto.setEnabled(true);
+						JOptionPane.showMessageDialog(null, "The serial port has been closed");
+						break;
+					default:
+						break;
+				}
 			}
 		});
 		btn_Connect.setBounds(59, 281, 111, 36);
@@ -178,7 +202,7 @@ public class SerialPortManagement extends JFrame {
 		contentPane.add(panel_Send);
 		panel_Send.setLayout(null);
 		
-		final JTextArea textArea_Send=new JTextArea();
+		textArea_Send=new JTextArea();
 		textArea_Send.setLineWrap(true);
 		JScrollPane jScrollPane_Send=new JScrollPane(textArea_Send);
 		jScrollPane_Send.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -209,7 +233,9 @@ public class SerialPortManagement extends JFrame {
 		
 		// Add a button to get and send the data from the model automatically
 		
-		JButton btn_SendAuto = new JButton("Auto Send");
+        autoSendListener=new AutoSendListener();
+		btn_SendAuto = new JButton("Auto Send");
+		btn_SendAuto.addActionListener(autoSendListener);
 		//Todo 
 		btn_SendAuto.setBounds(180, 152, 110, 36);
 		panel_Send.add(btn_SendAuto);
@@ -360,6 +386,12 @@ public class SerialPortManagement extends JFrame {
 							System.exit(0);
 						}else {
 							String dataOriginal = new String(data);	//Converts the byte array data to a string that holds the raw data
+							
+							if(isAutoSendPressed)
+							{
+								autoDataReceiveHandle(dataOriginal);
+							}
+							
 							dataValid+=dataOriginal+"\n";
 							textArea_Receive.setText(dataValid);
 							repaint();
@@ -369,6 +401,42 @@ public class SerialPortManagement extends JFrame {
 					JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
+		}
+		
+		
+		public void autoDataReceiveHandle(String dataOriginal)
+		{
+			Vector<Place> pVector=petriTool_.designPanel_.placeVector_;
+			Vector<Token> tVector=petriTool_.designPanel_.tokenVector_;
+			String[] dataArray=dataOriginal.split(" ");
+			for(int i=0;i<dataArray.length;i++)
+			{	
+				int tokenNum=Integer.parseInt(dataArray[i]);
+				if(tokenNum!=0)
+				{
+					Place place_=pVector.elementAt(i);
+					if(place_.token_==null)
+					{
+						Token newToken=new Token(place_.getXCoordinate(),
+								place_.getYCoordinate(), tokenNum);
+						place_.setToken(newToken);
+						tVector.addElement(newToken);
+					}
+					else
+					{
+						place_.token_.setTokensRepresented(tokenNum);
+					}
+					petriTool_.designPanel_.repaint();
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					petriTool_.controlPanel_.userWantsRun();
+				}
+			}
+		
 		}
 	}
 	
@@ -380,12 +448,53 @@ public class SerialPortManagement extends JFrame {
 	    public void windowClosing(WindowEvent e) 
 	    {
 	        e.getWindow().setVisible(false);
+	        isAutoSendPressed=false;
 	        SerialTool.closePort(serialPort);
 	        ((Window) e.getComponent()).dispose();
 	    }
 	}
-}
+	
+	private static boolean isAutoSendPressed=false;
+	
+	public static void setAutoSendPressed(boolean isAutoSendPressed) {
+		SerialPortManagement.isAutoSendPressed = isAutoSendPressed;
+	}
 
+	public static boolean isAutoSendPressed() {
+		return isAutoSendPressed;
+	}
+
+	class AutoSendListener implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			if(isConnected)
+			{
+				petriTool_.controlPanel_.userWantsRun();
+				isAutoSendPressed=true;
+				btn_SendAuto.setEnabled(false);
+			}
+		}
+		
+	}
+	
+	String dataToSend="";
+	
+	public void getDataAndSend(Object dataObject)
+	{
+		dataToSend+=(String)dataObject+'\n';
+		textArea_Send.setText(dataToSend);
+		/**Encoding the data as byte[]**/
+		byte[] dataSend=((String)dataObject).getBytes();
+		try {
+			SerialTool.sendToPort(serialPort, dataSend);
+		} catch (SendDataToSerialPortFailure | SerialPortOutputStreamCloseFailure e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
 
 
 
