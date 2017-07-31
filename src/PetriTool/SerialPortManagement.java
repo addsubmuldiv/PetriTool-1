@@ -454,6 +454,7 @@ public class SerialPortManagement extends JFrame {
 	    }
 	}
 	
+	
 	private static boolean isAutoSendPressed=false;
 	
 	public static void setAutoSendPressed(boolean isAutoSendPressed) {
@@ -464,6 +465,10 @@ public class SerialPortManagement extends JFrame {
 		return isAutoSendPressed;
 	}
 
+	
+	/**
+	 * Inner class that listen the AutoSend button has been pressed
+	 * **/
 	class AutoSendListener implements ActionListener
 	{
 		@Override
@@ -479,8 +484,11 @@ public class SerialPortManagement extends JFrame {
 		
 	}
 	
+	
+	/**The string that shows what you have sent**/
 	String dataToSend="";
 	
+	/**Get string and send it to the serial port**/
 	public void getDataAndSend(Object dataObject)
 	{
 		dataToSend+=(String)dataObject+'\n';
