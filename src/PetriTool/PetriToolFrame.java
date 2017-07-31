@@ -175,7 +175,7 @@ class PetriToolFrame extends Frame {
     String[] buttonList = {"New", "Open", "Save", "Save_as", "Print", "Zoom_in", "Zoom_out","Pointer", "Place", "Token",
                            "Transition", "Arc", "Text",
                            "Reset", "RevStep", "ForStep",
-                           "Run", "Stop", "Calc", "Show",
+                           "Run", "Pause", "Stop", "Calc", "Show",
                            "Prop", "Help", "ConnectToDevice", "alpha_mining", "delta_mining"};
 
     /** Directory where the current design will to be saved **/
@@ -1304,6 +1304,10 @@ class PetriToolFrame extends Frame {
                 petriTool_.controlPanel_.updateButtons("Run");
                 petriTool_.controlPanel_.userWantsRun();
             }
+            else if(label.equals("Pause")) {
+                petriTool_.controlPanel_.updateButtons("Pause");
+                petriTool_.controlPanel_.userWantsPause();
+            }
             else if (label.equals("Stop")) {
                 petriTool_.controlPanel_.updateButtons("Stop");
                 petriTool_.controlPanel_.userWantsStop();
@@ -1452,7 +1456,7 @@ class PetriToolFrame extends Frame {
         }
         // If help button not active, carry out action
         // Create a file selection dialog box
-saveFileDialog_ = new FileDialog(this, "Save As", FileDialog.SAVE);
+        saveFileDialog_ = new FileDialog(this, "Save As", FileDialog.SAVE);
         saveFileDialog_.setDirectory(".");
         saveFileDialog_.setFile("*.xml");
         

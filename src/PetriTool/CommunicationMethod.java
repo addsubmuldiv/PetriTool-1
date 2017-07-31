@@ -13,6 +13,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class CommunicationMethod implements ActionListener,Observer{
 
 	PetriTool petriTool_;
+	static SerialPortManagement serialPortManagement;
 	public CommunicationMethod(PetriTool petriTool) {
 		// TODO Auto-generated constructor stub
 		this.petriTool_=petriTool;
@@ -39,7 +40,7 @@ public class CommunicationMethod implements ActionListener,Observer{
 	
 	public void connectToDevice()
 	{
-		SerialPortManagement serialPortManagement=new SerialPortManagement(petriTool_);
+		serialPortManagement=new SerialPortManagement(petriTool_);
 		serialPortManagement.setVisible(true);
 	}
 	

@@ -609,6 +609,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 				arcVector_.addElement(tempArc);
 			}
 			
+			setInitialMarking();
 			
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block

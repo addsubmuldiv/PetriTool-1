@@ -114,6 +114,9 @@ public class ControlPanel extends Panel {
     /** String name of the currently selected button **/
     protected String currentButton_ = new String("");
     
+    
+    protected static CommunicationMethod communication_;
+    
     private CommunicationObservable communicationObservable_;
     private MiningObservable miningObservable_;
    /**an inner class just be used to call the button observer**/
@@ -206,9 +209,12 @@ public class ControlPanel extends Panel {
 	        this.add((ImageButton) imageButtonList_.elementAt(i__));
 	    }
         
-        
+        /**
+         * Use the observable pattern
+         * **/
+        communication_=new CommunicationMethod(petriTool_);
         communicationObservable_=new CommunicationObservable();
-        communicationObservable_.addObserver(new CommunicationMethod(petriTool_));
+        communicationObservable_.addObserver(communication_);
         
         miningObservable_=new MiningObservable();
         miningObservable_.addObserver(new MiningMethod(petriTool_));
@@ -263,7 +269,7 @@ public class ControlPanel extends Panel {
         ImageButton tempButton__;
         for (int i__ = 0; i__ < numButtons_; i__++) {
             tempButton__ = (ImageButton) imageButtonList_.elementAt(i__);
-            if (!tempButton__.getName().equals("Stop")) {
+            if (!tempButton__.getName().equals("Stop")&&!tempButton__.getName().equals("Pause")) {
                 tempButton__.disable();
             }
         }
@@ -597,6 +603,26 @@ public void userWantsZoomout() {
         }
     }
 
+    
+    public void userWantsPause()
+    {
+        currentButton_ = "Pause";
+        popUpButton("Pause");
+        enableButtons();
+        
+        if (petriTool_.simulationInitialized_) {
+            petriTool_.petriSimulation_.pauseSimulation();
+        }
+        else if (petriTool_.analysisRunning_) {
+            petriTool_.reachabilityTree_.stopAnalysis();
+        }
+        else {
+            StatusMessage("There is no simulation or analysis currently running.");
+        }
+    }
+    
+    
+    
     /**
       * Enable the Stop Simulation button in the control panel
     **/
@@ -866,6 +892,9 @@ public void userWantsZoomout() {
         }
         else if (buttonName.equals("Run")) {
             userWantsRun();
+        }
+        else if(buttonName.equals("Pause")) {
+        	userWantsPause();
         }
         else if (buttonName.equals("Stop")) {
             userWantsStop();
