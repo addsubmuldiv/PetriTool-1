@@ -2,6 +2,7 @@ package PetriTool;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.TextField;
 import java.awt.Window;
 
 import javax.swing.JFrame;
@@ -40,6 +41,8 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Vector;
 import java.awt.event.ActionEvent;
+import javax.swing.JRadioButton;
+import javax.swing.ImageIcon;
 
 public class SerialPortManagement extends JFrame {
 
@@ -49,6 +52,12 @@ public class SerialPortManagement extends JFrame {
 	private SerialPort serialPort;
 	JTextArea textArea_Receive;
 	JTextArea textArea_Send;
+	
+	
+	
+	ArrayList<Module> moduleList=new ArrayList<>();
+	
+	
 	/**
 	 * Create the frame.
 	 */
@@ -59,7 +68,47 @@ public class SerialPortManagement extends JFrame {
         this.petriTool_=petriTool;
         this.addWindowListener(new Win());
 	}
+	/**
+	 * Module set class
+	 * **/
+	int moduleYCoordinate;
+	class Module
+	{
+		JRadioButton jButton;
+		
+		JTextField moduleName;
+		
+		JTextField placeDistinction_1;
+		
+		public Module()
+		{
+			moduleList.add(this);
+		}
+		
+		public void setModule(JRadioButton jButton,JTextField moduleName,JTextField placeDistinction) {
+			this.jButton = jButton;
+			this.moduleName = moduleName;
+			this.placeDistinction_1 = placeDistinction;
+		}
 
+		private void moduleInit()
+		{
+			moduleYCoordinate+=27;
+			jButton=new JRadioButton("");
+			jButton.setBounds(18, moduleYCoordinate, 21, 21);
+			
+			moduleName=new JTextField();
+			moduleName.setBounds(51, moduleYCoordinate, 88, 21);
+			
+			placeDistinction_1=new JTextField();
+			placeDistinction_1.setBounds(149, moduleYCoordinate, 144, 21);
+			
+			modulePanel.add(jButton);
+			modulePanel.add(moduleName);
+			modulePanel.add(placeDistinction_1);
+			
+		}
+	}
 
 	private JComboBox comboBox_Baud_Rate;
 	private JComboBox comboBox_Stop_Bit; 
@@ -67,14 +116,14 @@ public class SerialPortManagement extends JFrame {
 	private JComboBox comboBox_Odd_Even_Check;
 	JButton btn_SendAuto;
 	JButton btn_Connect;
-	
+	JPanel modulePanel;
 	boolean isConnected=false;
 	
 	private AutoSendListener autoSendListener=null;
 	
 	private void initComponent() {
 		setTitle("Connect to device");
-		setBounds(100, 100, 600, 600);
+		setBounds(100, 100, 900, 600);
 		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -82,8 +131,8 @@ public class SerialPortManagement extends JFrame {
 		contentPane.setLayout(null);
 		
 		JPanel panel_Control = new JPanel();
-		panel_Control.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Control", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panel_Control.setBounds(5, 10, 234, 541);
+		panel_Control.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Control", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		contentPane.add(panel_Control);
 		panel_Control.setLayout(null);
 		
@@ -197,8 +246,8 @@ public class SerialPortManagement extends JFrame {
 		
 		
 		JPanel panel_Send = new JPanel();
+		panel_Send.setBounds(610, 10, 274, 353);
 		panel_Send.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Data sent", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel_Send.setBounds(254, 10, 327, 195);
 		contentPane.add(panel_Send);
 		panel_Send.setLayout(null);
 		
@@ -207,7 +256,7 @@ public class SerialPortManagement extends JFrame {
 		JScrollPane jScrollPane_Send=new JScrollPane(textArea_Send);
 		jScrollPane_Send.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		jScrollPane_Send.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		jScrollPane_Send.setBounds(10, 23, 310, 119);
+		jScrollPane_Send.setBounds(10, 22, 254, 258);
 		panel_Send.add(jScrollPane_Send);
 		
 		JButton btn_Send = new JButton("Manual Test");
@@ -228,7 +277,7 @@ public class SerialPortManagement extends JFrame {
 			
 			}
 		});
-		btn_Send.setBounds(30, 152, 110, 36);
+		btn_Send.setBounds(20, 290, 100, 36);
 		panel_Send.add(btn_Send);
 		
 		// Add a button to get and send the data from the model automatically
@@ -237,7 +286,7 @@ public class SerialPortManagement extends JFrame {
 		btn_SendAuto = new JButton("Auto Send");
 		btn_SendAuto.addActionListener(autoSendListener);
 		//Todo 
-		btn_SendAuto.setBounds(180, 152, 110, 36);
+		btn_SendAuto.setBounds(151, 290, 100, 36);
 		panel_Send.add(btn_SendAuto);
 		
 		
@@ -247,8 +296,8 @@ public class SerialPortManagement extends JFrame {
 		//Receive data from device
 		
 		JPanel panel_Receive = new JPanel();
+		panel_Receive.setBounds(610, 373, 274, 178);
 		panel_Receive.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Data reception", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel_Receive.setBounds(254, 215, 327, 195);
 		contentPane.add(panel_Receive);
 		panel_Receive.setLayout(null);
 		
@@ -258,24 +307,165 @@ public class SerialPortManagement extends JFrame {
 		JScrollPane jScrollPane_Receive=new JScrollPane(textArea_Receive);
 		jScrollPane_Receive.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		jScrollPane_Receive.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		jScrollPane_Receive.setBounds(10, 29, 310, 137);
+		jScrollPane_Receive.setBounds(10, 29, 254, 137);
 		panel_Receive.add(jScrollPane_Receive);
 		
+		JPanel panel = new JPanel();
+		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Computer to PLC Singals", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel.setBounds(249, 10, 351, 281);
+		contentPane.add(panel);
+		panel.setLayout(null);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setBounds(10, 22, 331, 205);
+		panel.add(scrollPane);
+		
+		modulePanel = new JPanel();
+		scrollPane.setViewportView(modulePanel);
+		modulePanel.setLayout(null);
+		
+		moduleName_0 = new JTextField();
+		moduleName_0.setBounds(51, 9, 88, 21);
+		modulePanel.add(moduleName_0);
+		moduleName_0.setColumns(10);
+		
+		JRadioButton rdbtn_0 = new JRadioButton("");
+		rdbtn_0.setBounds(18, 9, 21, 21);
+		modulePanel.add(rdbtn_0);
 		
 		
-		JPanel panel_Identify = new JPanel();
-		panel_Identify.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Running History", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel_Identify.setBounds(254, 420, 327, 131);
-		contentPane.add(panel_Identify);
-		panel_Identify.setLayout(null);
+		placeDistinction_0 = new JTextField();
+		placeDistinction_0.setBounds(149, 9, 144, 21);
+		modulePanel.add(placeDistinction_0);
+		placeDistinction_0.setColumns(10);
 		
-		JTextArea textArea_Identify = new JTextArea();
-		textArea_Identify.setLineWrap(true);
-		JScrollPane jScrollPane_Identify=new JScrollPane(textArea_Identify);
-		jScrollPane_Identify.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		jScrollPane_Identify.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		jScrollPane_Identify.setBounds(10, 28, 310, 93);
-		panel_Identify.add(jScrollPane_Identify);
+		JRadioButton rdbtn_1 = new JRadioButton("");
+		rdbtn_1.setBounds(18, 36, 21, 21);
+		modulePanel.add(rdbtn_1);
+		
+		moduleName_1 = new JTextField();
+		moduleName_1.setBounds(51, 36, 88, 21);
+		modulePanel.add(moduleName_1);
+		moduleName_1.setColumns(10);
+		
+		JRadioButton rdbtn_2 = new JRadioButton("");
+		rdbtn_2.setBounds(18, 63, 21, 21);
+		modulePanel.add(rdbtn_2);
+		
+		moduleYCoordinate=rdbtn_2.getY();
+		
+		placeDistinction_1 = new JTextField();
+		placeDistinction_1.setColumns(10);
+		placeDistinction_1.setBounds(149, 36, 144, 21);
+		modulePanel.add(placeDistinction_1);
+		
+		moduleName_2 = new JTextField();
+		moduleName_2.setColumns(10);
+		moduleName_2.setBounds(51, 63, 88, 21);
+		modulePanel.add(moduleName_2);
+		
+		placeDistinction_2 = new JTextField();
+		placeDistinction_2.setColumns(10);
+		placeDistinction_2.setBounds(149, 63, 144, 21);
+		modulePanel.add(placeDistinction_2);
+		
+		JButton btnNewButton = new JButton("Up");
+		btnNewButton.setBounds(10, 237, 57, 23);
+		panel.add(btnNewButton);
+		
+		JButton btnDown = new JButton("Down");
+		btnDown.setBounds(77, 237, 62, 23);
+		panel.add(btnDown);
+		
+		JButton button_1 = new JButton("Add");
+		button_1.setBounds(149, 237, 51, 23);
+		panel.add(button_1);
+		
+		JButton btnDelete = new JButton("Delete");
+		btnDelete.setBounds(210, 237, 70, 23);
+		panel.add(btnDelete);
+		
+		JButton btnOk = new JButton("OK");
+		btnOk.setBounds(290, 237, 51, 23);
+		panel.add(btnOk);
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setLayout(null);
+		panel_1.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "PLC to Computer Singals", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel_1.setBounds(249, 301, 351, 250);
+		contentPane.add(panel_1);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane_1.setBounds(10, 22, 331, 178);
+		panel_1.add(scrollPane_1);
+		
+		JPanel panel_2 = new JPanel();
+		panel_2.setLayout(null);
+		scrollPane_1.setViewportView(panel_2);
+		
+		textField_6 = new JTextField();
+		textField_6.setColumns(10);
+		textField_6.setBounds(51, 9, 88, 21);
+		panel_2.add(textField_6);
+		
+		JRadioButton radioButton = new JRadioButton("");
+		radioButton.setBounds(18, 9, 21, 21);
+		panel_2.add(radioButton);
+		
+		textField_7 = new JTextField();
+		textField_7.setColumns(10);
+		textField_7.setBounds(149, 9, 144, 21);
+		panel_2.add(textField_7);
+		
+		JRadioButton radioButton_1 = new JRadioButton("");
+		radioButton_1.setBounds(18, 36, 21, 21);
+		panel_2.add(radioButton_1);
+		
+		textField_8 = new JTextField();
+		textField_8.setColumns(10);
+		textField_8.setBounds(51, 36, 88, 21);
+		panel_2.add(textField_8);
+		
+		JRadioButton radioButton_2 = new JRadioButton("");
+		radioButton_2.setBounds(18, 63, 21, 21);
+		panel_2.add(radioButton_2);
+		
+		textField_9 = new JTextField();
+		textField_9.setColumns(10);
+		textField_9.setBounds(149, 36, 144, 21);
+		panel_2.add(textField_9);
+		
+		textField_10 = new JTextField();
+		textField_10.setColumns(10);
+		textField_10.setBounds(51, 63, 88, 21);
+		panel_2.add(textField_10);
+		
+		textField_11 = new JTextField();
+		textField_11.setColumns(10);
+		textField_11.setBounds(149, 63, 144, 21);
+		panel_2.add(textField_11);
+		
+		JButton button = new JButton("Up");
+		button.setBounds(10, 210, 57, 23);
+		panel_1.add(button);
+		
+		JButton button_2 = new JButton("Down");
+		button_2.setBounds(77, 210, 62, 23);
+		panel_1.add(button_2);
+		
+		JButton button_3 = new JButton("Add");
+		button_3.setBounds(149, 210, 51, 23);
+		panel_1.add(button_3);
+		
+		JButton button_4 = new JButton("Delete");
+		button_4.setBounds(210, 210, 70, 23);
+		panel_1.add(button_4);
+		
+		JButton button_5 = new JButton("OK");
+		button_5.setBounds(290, 210, 51, 23);
+		panel_1.add(button_5);
 	}
 	
 	
@@ -487,6 +677,18 @@ public class SerialPortManagement extends JFrame {
 	
 	/**The string that shows what you have sent**/
 	String dataToSend="";
+	private JTextField moduleName_0;
+	private JTextField placeDistinction_0;
+	private JTextField moduleName_1;
+	private JTextField placeDistinction_1;
+	private JTextField moduleName_2;
+	private JTextField placeDistinction_2;
+	private JTextField textField_6;
+	private JTextField textField_7;
+	private JTextField textField_8;
+	private JTextField textField_9;
+	private JTextField textField_10;
+	private JTextField textField_11;
 	
 	/**Get string and send it to the serial port**/
 	public void getDataAndSend(Object dataObject)
