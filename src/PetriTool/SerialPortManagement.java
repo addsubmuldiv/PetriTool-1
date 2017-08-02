@@ -26,12 +26,15 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DropMode;
 import javax.swing.ScrollPaneConstants;
@@ -39,10 +42,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Vector;
 import java.awt.event.ActionEvent;
 import javax.swing.JRadioButton;
 import javax.swing.ImageIcon;
+import static java.util.stream.Collectors.*;
+
+
+
 
 public class SerialPortManagement extends JFrame {
 
@@ -53,10 +61,12 @@ public class SerialPortManagement extends JFrame {
 	JTextArea textArea_Receive;
 	JTextArea textArea_Send;
 	
+	public final int ROW_SPACE=27;
+	
+	ArrayList<Module> moduleListC2P;
 	
 	
-	ArrayList<Module> moduleList=new ArrayList<>();
-	
+	ButtonGroup radioGroupC2P=new ButtonGroup();
 	
 	/**
 	 * Create the frame.
@@ -71,44 +81,66 @@ public class SerialPortManagement extends JFrame {
 	/**
 	 * Module set class
 	 * **/
-	int moduleYCoordinate;
-	class Module
-	{
-		JRadioButton jButton;
-		
-		JTextField moduleName;
-		
-		JTextField placeDistinction_1;
-		
-		public Module()
+	int moduleYCoordinateC2P=9;
+	class ModuleC2P extends Module
+	{			
+		public ModuleC2P()
 		{
-			moduleList.add(this);
-		}
-		
-		public void setModule(JRadioButton jButton,JTextField moduleName,JTextField placeDistinction) {
-			this.jButton = jButton;
-			this.moduleName = moduleName;
-			this.placeDistinction_1 = placeDistinction;
-		}
-
-		private void moduleInit()
-		{
-			moduleYCoordinate+=27;
+			yCoordinate=moduleYCoordinateC2P;
 			jButton=new JRadioButton("");
-			jButton.setBounds(18, moduleYCoordinate, 21, 21);
+			jButton.setBounds(18, moduleYCoordinateC2P, 21, 21);
 			
 			moduleName=new JTextField();
-			moduleName.setBounds(51, moduleYCoordinate, 88, 21);
+			moduleName.setBounds(51, moduleYCoordinateC2P, 88, 21);
 			
-			placeDistinction_1=new JTextField();
-			placeDistinction_1.setBounds(149, moduleYCoordinate, 144, 21);
+			placeDistinction=new JTextField();
+			placeDistinction.setBounds(149, moduleYCoordinateC2P, 144, 21);
 			
-			modulePanel.add(jButton);
-			modulePanel.add(moduleName);
-			modulePanel.add(placeDistinction_1);
+			modulePanelC2P.add(jButton);
+			modulePanelC2P.add(moduleName);
+			modulePanelC2P.add(placeDistinction);
 			
+			radioGroupC2P.add(jButton);
+
+			moduleYCoordinateC2P+=ROW_SPACE;
+			if(moduleYCoordinateC2P>scrollPaneC2P.getHeight())
+			{
+				modulePanelC2P.setPreferredSize(new Dimension(scrollPaneC2P.getWidth(), moduleYCoordinateC2P));
+				modulePanelC2P.revalidate();
+			}
+			repaint();
 		}
 	}
+	
+	
+	
+	abstract class Module 
+	{
+		protected JRadioButton jButton;
+		
+		protected JTextField moduleName;
+		
+		protected JTextField placeDistinction;
+
+		protected int yCoordinate;
+		
+		
+		
+		public int getyCoordinate() {
+			return yCoordinate;
+		}
+
+
+
+		public void setLocation(int y)
+		{
+			this.jButton.setLocation(jButton.getX(),y);
+			this.moduleName.setLocation(moduleName.getX(),y);
+			this.placeDistinction.setLocation(placeDistinction.getX(),y);
+			yCoordinate=y;
+		}
+	}
+	
 
 	private JComboBox comboBox_Baud_Rate;
 	private JComboBox comboBox_Stop_Bit; 
@@ -116,7 +148,10 @@ public class SerialPortManagement extends JFrame {
 	private JComboBox comboBox_Odd_Even_Check;
 	JButton btn_SendAuto;
 	JButton btn_Connect;
-	JPanel modulePanel;
+	
+	
+	JScrollPane scrollPaneC2P;
+	JPanel modulePanelC2P;
 	boolean isConnected=false;
 	
 	private AutoSendListener autoSendListener=null;
@@ -316,79 +351,129 @@ public class SerialPortManagement extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(10, 22, 331, 205);
-		panel.add(scrollPane);
+		scrollPaneC2P = new JScrollPane();
+		scrollPaneC2P.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPaneC2P.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPaneC2P.setBounds(10, 22, 331, 205);
+		panel.add(scrollPaneC2P);
 		
-		modulePanel = new JPanel();
-		scrollPane.setViewportView(modulePanel);
-		modulePanel.setLayout(null);
-		
-		moduleName_0 = new JTextField();
-		moduleName_0.setBounds(51, 9, 88, 21);
-		modulePanel.add(moduleName_0);
-		moduleName_0.setColumns(10);
-		
-		JRadioButton rdbtn_0 = new JRadioButton("");
-		rdbtn_0.setBounds(18, 9, 21, 21);
-		modulePanel.add(rdbtn_0);
+		modulePanelC2P = new JPanel();
+		scrollPaneC2P.setViewportView(modulePanelC2P);
+		modulePanelC2P.setLayout(null);
 		
 		
-		placeDistinction_0 = new JTextField();
-		placeDistinction_0.setBounds(149, 9, 144, 21);
-		modulePanel.add(placeDistinction_0);
-		placeDistinction_0.setColumns(10);
+		moduleListC2P=new ArrayList<>();
+		moduleListC2P.add(new ModuleC2P());
+		moduleListC2P.add(new ModuleC2P());
+		moduleListC2P.add(new ModuleC2P());
 		
-		JRadioButton rdbtn_1 = new JRadioButton("");
-		rdbtn_1.setBounds(18, 36, 21, 21);
-		modulePanel.add(rdbtn_1);
 		
-		moduleName_1 = new JTextField();
-		moduleName_1.setBounds(51, 36, 88, 21);
-		modulePanel.add(moduleName_1);
-		moduleName_1.setColumns(10);
 		
-		JRadioButton rdbtn_2 = new JRadioButton("");
-		rdbtn_2.setBounds(18, 63, 21, 21);
-		modulePanel.add(rdbtn_2);
 		
-		moduleYCoordinate=rdbtn_2.getY();
 		
-		placeDistinction_1 = new JTextField();
-		placeDistinction_1.setColumns(10);
-		placeDistinction_1.setBounds(149, 36, 144, 21);
-		modulePanel.add(placeDistinction_1);
 		
-		moduleName_2 = new JTextField();
-		moduleName_2.setColumns(10);
-		moduleName_2.setBounds(51, 63, 88, 21);
-		modulePanel.add(moduleName_2);
 		
-		placeDistinction_2 = new JTextField();
-		placeDistinction_2.setColumns(10);
-		placeDistinction_2.setBounds(149, 63, 144, 21);
-		modulePanel.add(placeDistinction_2);
 		
-		JButton btnNewButton = new JButton("Up");
-		btnNewButton.setBounds(10, 237, 57, 23);
-		panel.add(btnNewButton);
 		
-		JButton btnDown = new JButton("Down");
-		btnDown.setBounds(77, 237, 62, 23);
-		panel.add(btnDown);
+		JButton btnUpC2P = new JButton("Up");
+		btnUpC2P.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for(int i=0;i<moduleListC2P.size();i++)
+				{
+					if(moduleListC2P.get(i).jButton.isSelected())
+					{	
+						if(i==0)
+						{
+							return;
+						}
+						Module tempModule=moduleListC2P.get(i);
+						tempModule.setLocation(tempModule.getyCoordinate()-ROW_SPACE);
+						Module lastModule=moduleListC2P.get(i-1);
+						lastModule.setLocation(lastModule.getyCoordinate()+ROW_SPACE);
+						
+						moduleListC2P.set(i, lastModule);
+						moduleListC2P.set(i-1, tempModule);
+						break;
+					}
+				}
+				repaint();
+			}
+		});
+		btnUpC2P.setBounds(10, 237, 57, 23);
+		panel.add(btnUpC2P);
 		
-		JButton button_1 = new JButton("Add");
-		button_1.setBounds(149, 237, 51, 23);
-		panel.add(button_1);
+		JButton btnDownC2P = new JButton("Down");
+		btnDownC2P.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for(int i=0;i<moduleListC2P.size();i++)
+				{
+					if(moduleListC2P.get(i).jButton.isSelected())
+					{	
+						if(i==moduleListC2P.size()-1)
+						{
+							return;
+						}
+						Module tempModule=moduleListC2P.get(i);
+						tempModule.setLocation(tempModule.getyCoordinate()+ROW_SPACE);
+						Module nextModule=moduleListC2P.get(i+1);
+						nextModule.setLocation(nextModule.getyCoordinate()-ROW_SPACE);
+						
+						moduleListC2P.set(i, nextModule);
+						moduleListC2P.set(i+1, tempModule);
+						break;
+					}
+				}
+				repaint();
+			}
+		});
+		btnDownC2P.setBounds(77, 237, 62, 23);
+		panel.add(btnDownC2P);
 		
-		JButton btnDelete = new JButton("Delete");
-		btnDelete.setBounds(210, 237, 70, 23);
-		panel.add(btnDelete);
+		JButton btnAddC2P = new JButton("Add");
+		btnAddC2P.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				moduleListC2P.add(new ModuleC2P());
+			}
+		});
+		btnAddC2P.setBounds(149, 237, 51, 23);
+		panel.add(btnAddC2P);
 		
-		JButton btnOk = new JButton("OK");
-		btnOk.setBounds(290, 237, 51, 23);
-		panel.add(btnOk);
+		JButton btnDeleteC2P = new JButton("Delete");
+		btnDeleteC2P.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for(int i=0;i<moduleListC2P.size();i++)
+				{
+					if(moduleListC2P.get(i).jButton.isSelected())
+					{
+						modulePanelC2P.remove(moduleListC2P.get(i).jButton);
+						modulePanelC2P.remove(moduleListC2P.get(i).moduleName);
+						modulePanelC2P.remove(moduleListC2P.get(i).placeDistinction);
+						repaint();
+						moduleListC2P.remove(i);
+						moduleListC2P.stream().skip(i).forEach(m->
+						{
+//							m.jButton.setLocation(m.jButton.getX(), m.jButton.getY()-ROW_SPACE);
+//							m.moduleName.setLocation(m.moduleName.getX(), m.moduleName.getY()-ROW_SPACE);
+//							m.placeDistinction.setLocation(m.placeDistinction.getX(), m.placeDistinction.getY()-ROW_SPACE);
+							m.setLocation(m.getyCoordinate()-ROW_SPACE);
+						});
+					}
+				}
+				moduleYCoordinateC2P-=ROW_SPACE;
+				repaint();
+			}
+		});
+		btnDeleteC2P.setBounds(210, 237, 70, 23);
+		panel.add(btnDeleteC2P);
+		
+		JButton btnOkC2P = new JButton("OK");
+		btnOkC2P.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		btnOkC2P.setBounds(290, 237, 51, 23);
+		panel.add(btnOkC2P);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setLayout(null);
@@ -404,48 +489,6 @@ public class SerialPortManagement extends JFrame {
 		JPanel panel_2 = new JPanel();
 		panel_2.setLayout(null);
 		scrollPane_1.setViewportView(panel_2);
-		
-		textField_6 = new JTextField();
-		textField_6.setColumns(10);
-		textField_6.setBounds(51, 9, 88, 21);
-		panel_2.add(textField_6);
-		
-		JRadioButton radioButton = new JRadioButton("");
-		radioButton.setBounds(18, 9, 21, 21);
-		panel_2.add(radioButton);
-		
-		textField_7 = new JTextField();
-		textField_7.setColumns(10);
-		textField_7.setBounds(149, 9, 144, 21);
-		panel_2.add(textField_7);
-		
-		JRadioButton radioButton_1 = new JRadioButton("");
-		radioButton_1.setBounds(18, 36, 21, 21);
-		panel_2.add(radioButton_1);
-		
-		textField_8 = new JTextField();
-		textField_8.setColumns(10);
-		textField_8.setBounds(51, 36, 88, 21);
-		panel_2.add(textField_8);
-		
-		JRadioButton radioButton_2 = new JRadioButton("");
-		radioButton_2.setBounds(18, 63, 21, 21);
-		panel_2.add(radioButton_2);
-		
-		textField_9 = new JTextField();
-		textField_9.setColumns(10);
-		textField_9.setBounds(149, 36, 144, 21);
-		panel_2.add(textField_9);
-		
-		textField_10 = new JTextField();
-		textField_10.setColumns(10);
-		textField_10.setBounds(51, 63, 88, 21);
-		panel_2.add(textField_10);
-		
-		textField_11 = new JTextField();
-		textField_11.setColumns(10);
-		textField_11.setBounds(149, 63, 144, 21);
-		panel_2.add(textField_11);
 		
 		JButton button = new JButton("Up");
 		button.setBounds(10, 210, 57, 23);
@@ -677,22 +720,11 @@ public class SerialPortManagement extends JFrame {
 	
 	/**The string that shows what you have sent**/
 	String dataToSend="";
-	private JTextField moduleName_0;
-	private JTextField placeDistinction_0;
-	private JTextField moduleName_1;
-	private JTextField placeDistinction_1;
-	private JTextField moduleName_2;
-	private JTextField placeDistinction_2;
-	private JTextField textField_6;
-	private JTextField textField_7;
-	private JTextField textField_8;
-	private JTextField textField_9;
-	private JTextField textField_10;
-	private JTextField textField_11;
 	
 	/**Get string and send it to the serial port**/
 	public void getDataAndSend(Object dataObject)
 	{
+		placeMatching(dataObject);
 		dataToSend+=(String)dataObject+'\n';
 		textArea_Send.setText(dataToSend);
 		/**Encoding the data as byte[]**/
@@ -703,6 +735,60 @@ public class SerialPortManagement extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	
+	public void placeMatching(Object dataObject)
+	{
+		String data=(String)dataObject;
+		String[] dataArray=data.split(" ");
+		Vector<Place> placeVector=petriTool_.designPanel_.placeVector_;
+		for(int i=0;i<dataArray.length;i++)
+		{
+			if(dataArray[i]!="0")
+			{
+				
+			}
+		}
+		Map<String, java.util.List<Place>> placeGroup = 
+				placeVector.stream().collect(groupingBy(place->{
+					for(int i=0;i<moduleListC2P.size();i++)
+					{
+						if(place.getplaceName_().contains(
+								(moduleListC2P.get(i).placeDistinction.getText())))
+							return moduleListC2P.get(i).placeDistinction.getText();
+						
+					}
+					return "";
+				}));
+		
+		if(placeGroup.size()<moduleListC2P.size())
+		{
+			JOptionPane.showMessageDialog(null, "Please assure your module "
+					+ "is matching with your petri net");
+			return;
+		}
+		StringBuilder dataToSendBuilder=new StringBuilder();
+		for(int i=0;i<moduleListC2P.size();i++)
+		{
+			java.util.List<Place> pList=placeGroup.get(moduleListC2P.get(i).placeDistinction.getText());
+			int res=pList.stream().map(p->p.getNumTokens()).reduce(0, (a,b)->a|b);
+			dataToSendBuilder.append(res);
+			dataToSendBuilder.append(" ");
+		}
+		String matchingStr=dataToSendBuilder.toString().trim();
+		
+		System.out.println(matchingStr);
+		
+//	for(String key:placeGroup.keySet())
+//		{
+//			System.out.print(key+"= [");
+//			for(Place place:placeGroup.get(key))
+//			{
+//				System.out.print(place.getplaceName_()+" ");
+//			}
+//			System.out.println("]");
+//		}
 	}
 }
 
