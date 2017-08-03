@@ -2135,16 +2135,17 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
             int x__ = tempTransition__.getXCoordinate() * petriTool_.gridStep_;
             int y__ = tempTransition__.getYCoordinate() * petriTool_.gridStep_;
             if (!petriTool_.designPanel_.arcStartsAt(x__, y__, true)) {
-                xDangle_ = x__ / petriTool_.gridStep_;
-                yDangle_ = y__ / petriTool_.gridStep_;
-                return (true);
-            }
+//                xDangle_ = x__ / petriTool_.gridStep_;
+//                yDangle_ = y__ / petriTool_.gridStep_;
+//                return (true);
+//            }
             if (!petriTool_.designPanel_.arcEndsAt(x__, y__, true)) {
                 xDangle_ = x__ / petriTool_.gridStep_;
                 yDangle_ = y__ / petriTool_.gridStep_;
                 return (true);
             }
         }
+        }    
         return(false);
     }
 
