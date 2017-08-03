@@ -34,6 +34,7 @@ import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
+import javax.print.attribute.standard.PrinterName;
 import javax.print.attribute.standard.RequestingUserName;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
@@ -43,6 +44,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -190,6 +192,11 @@ public class SerialPortManagement extends JFrame {
 	JPanel modulePanelC2P;
 	JPanel modulePanelP2C;
 	boolean isConnected=false;
+	boolean isSendModuleSet=false;
+	boolean isReceiveModuleSet=false;
+	JButton btnOkC2P;
+	JButton btnOkP2C;
+	
 	
 	Map<String, java.util.List<Place>> placeGroup;
 	private AutoSendListener autoSendListener=null;
@@ -305,8 +312,12 @@ public class SerialPortManagement extends JFrame {
 						isConnected=false;
 						SerialTool.closePort(serialPort);
 						isAutoSendPressed=false;
+						isSendModuleSet=false;
+						isReceiveModuleSet=false;
 						btn_Connect.setText("Connect");
 						btn_SendAuto.setEnabled(true);
+						btnOkC2P.setEnabled(true);
+						btnOkP2C.setEnabled(true);
 						JOptionPane.showMessageDialog(null, "The serial port has been closed");
 						break;
 					default:
@@ -503,7 +514,7 @@ public class SerialPortManagement extends JFrame {
 		btnDeleteC2P.setBounds(210, 237, 70, 23);
 		panelC2P.add(btnDeleteC2P);
 		
-		JButton btnOkC2P = new JButton("OK");
+		btnOkC2P = new JButton("OK");
 		btnOkC2P.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Vector<Place> placeVector=petriTool_.designPanel_.placeVector_;
@@ -511,7 +522,7 @@ public class SerialPortManagement extends JFrame {
 				Map<String, String[]> placeDistinctMap=new LinkedHashMap<>();
 				for(int i=0;i<moduleListC2P.size();i++)
 				{
-					String[] tempPlacesNames = moduleListC2P.get(i).placeDistinction.getText().split(" ");
+					String[] tempPlacesNames = moduleListC2P.get(i).placeDistinction.getText().toUpperCase().split(" ");
 					String tempPlaceGroupName = moduleListC2P.get(i).moduleName.getText();
 					placeDistinctMap.put(tempPlaceGroupName, tempPlacesNames);
 				}
@@ -535,7 +546,8 @@ public class SerialPortManagement extends JFrame {
 							+ "is matching with your petri net");
 					return;
 				}
-				
+			isSendModuleSet=true;
+			JOptionPane.showMessageDialog(null, "The send module is set");	
 			}
 		});
 		btnOkC2P.setBounds(290, 237, 51, 23);
@@ -657,7 +669,16 @@ public class SerialPortManagement extends JFrame {
 		btnDeleteP2C.setBounds(210, 210, 70, 23);
 		panelP2C.add(btnDeleteP2C);
 		
-		JButton btnOkP2C = new JButton("OK");
+		btnOkP2C = new JButton("OK");
+		btnOkP2C.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				
+				
+				isReceiveModuleSet=true;
+				JOptionPane.showMessageDialog(null, "The receive module is set");
+			}
+		});
 		btnOkP2C.setBounds(290, 210, 51, 23);
 		panelP2C.add(btnOkP2C);
 	}
@@ -798,24 +819,73 @@ public class SerialPortManagement extends JFrame {
 				int tokenNum=Integer.parseInt(dataArray[i]);
 				if(tokenNum!=0)
 				{
-					Place place_=pVector.elementAt(i);
-					if(place_.token_==null)
+//					Place place_=pVector.elementAt(i);
+//					if(place_.token_==null)
+//					{
+//						Token newToken=new Token(place_.getXCoordinate(),
+//								place_.getYCoordinate(), tokenNum);
+//						place_.setToken(newToken);
+//						tVector.addElement(newToken);
+//					}
+//					else
+//					{
+//						place_.token_.setTokensRepresented(tokenNum);
+//					}
+//					petriTool_.designPanel_.repaint();
+//					try {
+//						Thread.sleep(1000);
+//					} catch (InterruptedException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+					java.util.List<Place> mayStopPlaces=PetriSimulation.mayStopPlaces;
+					Vector<Transition> transitions=petriTool_.designPanel_.transitionVector_;
+					for(int j=0;j<transitions.size();j++)
 					{
-						Token newToken=new Token(place_.getXCoordinate(),
-								place_.getYCoordinate(), tokenNum);
-						place_.setToken(newToken);
-						tVector.addElement(newToken);
-					}
-					else
-					{
-						place_.token_.setTokensRepresented(tokenNum);
-					}
-					petriTool_.designPanel_.repaint();
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						Vector<Place> sourcePlaceVector_=transitions.get(j).sourcePlaceVector_;
+						/**If the transition's sourcePlaceVector contains the may stop place,
+						 * then judge if its sourcePlaceVector contains the receive Place,
+						 * if so, then get the receive Place and set its token.
+						 * **/
+						if(sourcePlaceVector_.stream().anyMatch(p->{
+							return mayStopPlaces.stream().
+									anyMatch(place->place.getplaceName_().equals(p.getplaceName_()));
+						}))
+						{
+							String[] receivePlaces =
+									moduleListP2C.get(i).placeDistinction.getText().
+									toUpperCase().split(" ");
+							java.util.List<String> receivePlacesList = Arrays.asList(receivePlaces);
+							java.util.List<Place> receiveTokenPlace = pVector.stream().filter(p->{
+								return receivePlacesList.stream().anyMatch(pName->{
+									return p.getplaceName_().equals(pName);
+								});
+							}).collect(toList());
+							java.util.List<Place> thePlaceToAddTokens=
+								sourcePlaceVector_.stream().filter(sp->
+								{
+									return receiveTokenPlace.stream().anyMatch(rtp->
+									{
+										return sp.getplaceName_().equals(rtp.getplaceName_());
+									});
+								}).collect(toList());
+							for(Place place:thePlaceToAddTokens)
+							{
+								if(place.token_==null)
+								{
+									Token newToken=new Token(place.getXCoordinate(),
+											place.getYCoordinate(), tokenNum);
+									place.setToken(newToken);
+									tVector.addElement(newToken);
+								}
+								else
+								{
+									place.token_.setTokensRepresented(tokenNum);
+								}
+							}
+							petriTool_.designPanel_.repaint();
+						}
+						
 					}
 					petriTool_.controlPanel_.userWantsRun();
 				}
@@ -858,7 +928,7 @@ public class SerialPortManagement extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			if(isConnected)
+			if(isConnected&&isSendModuleSet&&isReceiveModuleSet)
 			{
 				if(placeGroup==null)
 				{
@@ -868,6 +938,13 @@ public class SerialPortManagement extends JFrame {
 				petriTool_.controlPanel_.userWantsRun();
 				isAutoSendPressed=true;
 				btn_SendAuto.setEnabled(false);
+				btnOkC2P.setEnabled(false);
+				btnOkP2C.setEnabled(false);
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(null, "Please make sure the serial port is connected and both send "
+						+ "module and receive module is set");
 			}
 		}
 		
