@@ -998,6 +998,10 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
        	g.setColor (petriTool_.borderColor_);
        	g.drawRect (step__ , step__ / 2, step__ * width__,
        	            step__ * height__);
+       	
+       	
+       	
+       	//Drag the palce, tansition or token
        	if(!(placeDraged_!=null||transitionDraged_!=null||tokenDraged_!=null))
        		{
        			g2d.setColor(foregroundColor__);
