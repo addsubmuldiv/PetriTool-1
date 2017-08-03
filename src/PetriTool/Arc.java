@@ -851,6 +851,7 @@ class Arc extends PetriComponent {
     	newArc.setTokensToEnable(arcNum);
     	
     	List<Element> arcPaths=arc.elements("arcpath");
+    	boolean loadFromPipe=false;
     	for(Iterator<Element> iterator=arcPaths.iterator();iterator.hasNext();)
     	{
     		Element arcPath=iterator.next();
@@ -858,22 +859,26 @@ class Arc extends PetriComponent {
     		int y=Integer.parseInt(arcPath.attribute("y").getText());
     		newArc.xCoordinateVector_.addElement(x/designPanel.petriTool_.gridStep_);
     		newArc.yCoordinateVector_.addElement(y/designPanel.petriTool_.gridStep_);
+    		if(x%designPanel.petriTool_.gridStep_!=0)
+    			loadFromPipe=true;
     	}
-    	if(newArc.startComponent_.equals("Place"))
-    	{
-    		newArc.xCoordinateVector_.set(0, newArc.startPlace_.xCoordinate_);
-    		newArc.yCoordinateVector_.set(0, newArc.startPlace_.yCoordinate_);
-    		newArc.xCoordinateVector_.set(newArc.xCoordinateVector_.size()-1, newArc.destinationTransition_.xCoordinate_);
-    		newArc.yCoordinateVector_.set(newArc.yCoordinateVector_.size()-1, newArc.destinationTransition_.yCoordinate_);
-    	}
-    	else
-    	{
-  	    	newArc.xCoordinateVector_.set(0, newArc.startTransition_.xCoordinate_);
-    		newArc.yCoordinateVector_.set(0, newArc.startTransition_.yCoordinate_);
-    		newArc.xCoordinateVector_.set(newArc.xCoordinateVector_.size()-1, newArc.destinationPlace_.xCoordinate_);
-    		newArc.yCoordinateVector_.set(newArc.yCoordinateVector_.size()-1, newArc.destinationPlace_.yCoordinate_);
-    	}
-    	
+    	if(loadFromPipe)
+		{
+    		if(newArc.startComponent_.equals("Place"))
+			{
+				newArc.xCoordinateVector_.set(0, newArc.startPlace_.xCoordinate_);
+				newArc.yCoordinateVector_.set(0, newArc.startPlace_.yCoordinate_);
+				newArc.xCoordinateVector_.set(newArc.xCoordinateVector_.size()-1, newArc.destinationTransition_.xCoordinate_);
+				newArc.yCoordinateVector_.set(newArc.yCoordinateVector_.size()-1, newArc.destinationTransition_.yCoordinate_);
+			}
+			else
+			{
+				newArc.xCoordinateVector_.set(0, newArc.startTransition_.xCoordinate_);
+				newArc.yCoordinateVector_.set(0, newArc.startTransition_.yCoordinate_);
+				newArc.xCoordinateVector_.set(newArc.xCoordinateVector_.size()-1, newArc.destinationPlace_.xCoordinate_);
+				newArc.yCoordinateVector_.set(newArc.yCoordinateVector_.size()-1, newArc.destinationPlace_.yCoordinate_);
+			}
+		}
     	
     	
     	newArc.calculateSlopes();

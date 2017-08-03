@@ -34,6 +34,7 @@ import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
+import javax.print.attribute.standard.RequestingUserName;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DropMode;
@@ -42,6 +43,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
 import java.awt.event.ActionEvent;
@@ -63,10 +66,11 @@ public class SerialPortManagement extends JFrame {
 	
 	public final int ROW_SPACE=27;
 	
-	ArrayList<Module> moduleListC2P;
-	
+	ArrayList<Module> moduleListC2P=new ArrayList<>();
+	ArrayList<Module> moduleListP2C=new ArrayList<>();
 	
 	ButtonGroup radioGroupC2P=new ButtonGroup();
+	ButtonGroup radioGroupP2C=new ButtonGroup();
 	
 	/**
 	 * Create the frame.
@@ -82,6 +86,7 @@ public class SerialPortManagement extends JFrame {
 	 * Module set class
 	 * **/
 	int moduleYCoordinateC2P=9;
+	int moduleYCoordinateP2C=9;
 	class ModuleC2P extends Module
 	{			
 		public ModuleC2P()
@@ -107,6 +112,36 @@ public class SerialPortManagement extends JFrame {
 			{
 				modulePanelC2P.setPreferredSize(new Dimension(scrollPaneC2P.getWidth(), moduleYCoordinateC2P));
 				modulePanelC2P.revalidate();
+			}
+			repaint();
+		}
+	}
+	
+	class ModuleP2C extends Module
+	{			
+		public ModuleP2C()
+		{
+			yCoordinate=moduleYCoordinateP2C;
+			jButton=new JRadioButton("");
+			jButton.setBounds(18, moduleYCoordinateP2C, 21, 21);
+			
+			moduleName=new JTextField();
+			moduleName.setBounds(51, moduleYCoordinateP2C, 88, 21);
+			
+			placeDistinction=new JTextField();
+			placeDistinction.setBounds(149, moduleYCoordinateP2C, 144, 21);
+			
+			modulePanelP2C.add(jButton);
+			modulePanelP2C.add(moduleName);
+			modulePanelP2C.add(placeDistinction);
+			
+			radioGroupP2C.add(jButton);
+
+			moduleYCoordinateP2C+=ROW_SPACE;
+			if(moduleYCoordinateP2C>scrollPaneP2C.getHeight())
+			{
+				modulePanelP2C.setPreferredSize(new Dimension(scrollPaneP2C.getWidth(), moduleYCoordinateP2C));
+				modulePanelP2C.revalidate();
 			}
 			repaint();
 		}
@@ -151,9 +186,12 @@ public class SerialPortManagement extends JFrame {
 	
 	
 	JScrollPane scrollPaneC2P;
+	JScrollPane scrollPaneP2C;
 	JPanel modulePanelC2P;
+	JPanel modulePanelP2C;
 	boolean isConnected=false;
 	
+	Map<String, java.util.List<Place>> placeGroup;
 	private AutoSendListener autoSendListener=null;
 	
 	private void initComponent() {
@@ -345,24 +383,23 @@ public class SerialPortManagement extends JFrame {
 		jScrollPane_Receive.setBounds(10, 29, 254, 137);
 		panel_Receive.add(jScrollPane_Receive);
 		
-		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Computer to PLC Singals", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel.setBounds(249, 10, 351, 281);
-		contentPane.add(panel);
-		panel.setLayout(null);
+		JPanel panelC2P = new JPanel();
+		panelC2P.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Computer to PLC Singals", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panelC2P.setBounds(249, 10, 351, 281);
+		contentPane.add(panelC2P);
+		panelC2P.setLayout(null);
 		
 		scrollPaneC2P = new JScrollPane();
 		scrollPaneC2P.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPaneC2P.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPaneC2P.setBounds(10, 22, 331, 205);
-		panel.add(scrollPaneC2P);
+		panelC2P.add(scrollPaneC2P);
 		
 		modulePanelC2P = new JPanel();
 		scrollPaneC2P.setViewportView(modulePanelC2P);
 		modulePanelC2P.setLayout(null);
 		
 		
-		moduleListC2P=new ArrayList<>();
 		moduleListC2P.add(new ModuleC2P());
 		moduleListC2P.add(new ModuleC2P());
 		moduleListC2P.add(new ModuleC2P());
@@ -400,7 +437,7 @@ public class SerialPortManagement extends JFrame {
 			}
 		});
 		btnUpC2P.setBounds(10, 237, 57, 23);
-		panel.add(btnUpC2P);
+		panelC2P.add(btnUpC2P);
 		
 		JButton btnDownC2P = new JButton("Down");
 		btnDownC2P.addActionListener(new ActionListener() {
@@ -427,7 +464,7 @@ public class SerialPortManagement extends JFrame {
 			}
 		});
 		btnDownC2P.setBounds(77, 237, 62, 23);
-		panel.add(btnDownC2P);
+		panelC2P.add(btnDownC2P);
 		
 		JButton btnAddC2P = new JButton("Add");
 		btnAddC2P.addActionListener(new ActionListener() {
@@ -436,7 +473,7 @@ public class SerialPortManagement extends JFrame {
 			}
 		});
 		btnAddC2P.setBounds(149, 237, 51, 23);
-		panel.add(btnAddC2P);
+		panelC2P.add(btnAddC2P);
 		
 		JButton btnDeleteC2P = new JButton("Delete");
 		btnDeleteC2P.addActionListener(new ActionListener() {
@@ -464,51 +501,165 @@ public class SerialPortManagement extends JFrame {
 			}
 		});
 		btnDeleteC2P.setBounds(210, 237, 70, 23);
-		panel.add(btnDeleteC2P);
+		panelC2P.add(btnDeleteC2P);
 		
 		JButton btnOkC2P = new JButton("OK");
 		btnOkC2P.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				Vector<Place> placeVector=petriTool_.designPanel_.placeVector_;
+				
+				Map<String, String[]> placeDistinctMap=new LinkedHashMap<>();
+				for(int i=0;i<moduleListC2P.size();i++)
+				{
+					String[] tempPlacesNames = moduleListC2P.get(i).placeDistinction.getText().split(" ");
+					String tempPlaceGroupName = moduleListC2P.get(i).moduleName.getText();
+					placeDistinctMap.put(tempPlaceGroupName, tempPlacesNames);
+				}
+				
+				placeGroup = 
+						placeVector.stream().collect(groupingBy(place->{
+						for(String key:placeDistinctMap.keySet())
+						{
+							String[] tempPlacesNames = placeDistinctMap.get(key);
+							for(String placeName:tempPlacesNames)
+							{
+								if(placeName.equals(place.getplaceName_()))
+										return key;
+							}
+						}
+						return "";
+					}));
+				if(placeGroup.size()<moduleListC2P.size())
+				{
+					JOptionPane.showMessageDialog(null, "Please assure your module "
+							+ "is matching with your petri net");
+					return;
+				}
 				
 			}
 		});
 		btnOkC2P.setBounds(290, 237, 51, 23);
-		panel.add(btnOkC2P);
+		panelC2P.add(btnOkC2P);
 		
-		JPanel panel_1 = new JPanel();
-		panel_1.setLayout(null);
-		panel_1.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "PLC to Computer Singals", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel_1.setBounds(249, 301, 351, 250);
-		contentPane.add(panel_1);
+		JPanel panelP2C = new JPanel();
+		panelP2C.setLayout(null);
+		panelP2C.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "PLC to Computer Singals", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panelP2C.setBounds(249, 301, 351, 250);
+		contentPane.add(panelP2C);
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane_1.setBounds(10, 22, 331, 178);
-		panel_1.add(scrollPane_1);
+		scrollPaneP2C = new JScrollPane();
+		scrollPaneP2C.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPaneP2C.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPaneP2C.setBounds(10, 22, 331, 178);
+		panelP2C.add(scrollPaneP2C);
 		
-		JPanel panel_2 = new JPanel();
-		panel_2.setLayout(null);
-		scrollPane_1.setViewportView(panel_2);
+		modulePanelP2C = new JPanel();
+		modulePanelP2C.setLayout(null);
+		scrollPaneP2C.setViewportView(modulePanelP2C);
 		
-		JButton button = new JButton("Up");
-		button.setBounds(10, 210, 57, 23);
-		panel_1.add(button);
 		
-		JButton button_2 = new JButton("Down");
-		button_2.setBounds(77, 210, 62, 23);
-		panel_1.add(button_2);
+		moduleListP2C.add(new ModuleP2C());
+		moduleListP2C.add(new ModuleP2C());
+		moduleListP2C.add(new ModuleP2C());
+		moduleListP2C.add(new ModuleP2C());
+		moduleListP2C.add(new ModuleP2C());
+		moduleListP2C.add(new ModuleP2C());
 		
-		JButton button_3 = new JButton("Add");
-		button_3.setBounds(149, 210, 51, 23);
-		panel_1.add(button_3);
 		
-		JButton button_4 = new JButton("Delete");
-		button_4.setBounds(210, 210, 70, 23);
-		panel_1.add(button_4);
+		JButton btnUpP2C = new JButton("Up");
+		btnUpP2C.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for(int i=0;i<moduleListP2C.size();i++)
+				{
+					if(moduleListP2C.get(i).jButton.isSelected())
+					{	
+						if(i==0)
+						{
+							return;
+						}
+						Module tempModule=moduleListP2C.get(i);
+						tempModule.setLocation(tempModule.getyCoordinate()-ROW_SPACE);
+						Module lastModule=moduleListP2C.get(i-1);
+						lastModule.setLocation(lastModule.getyCoordinate()+ROW_SPACE);
+						
+						moduleListP2C.set(i, lastModule);
+						moduleListP2C.set(i-1, tempModule);
+						break;
+					}
+				}
+				repaint();
+			}
+		});
+		btnUpP2C.setBounds(10, 210, 57, 23);
+		panelP2C.add(btnUpP2C);
 		
-		JButton button_5 = new JButton("OK");
-		button_5.setBounds(290, 210, 51, 23);
-		panel_1.add(button_5);
+		JButton btnDownP2C = new JButton("Down");
+		btnDownP2C.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for(int i=0;i<moduleListP2C.size();i++)
+				{
+					if(moduleListP2C.get(i).jButton.isSelected())
+					{	
+						if(i==moduleListP2C.size()-1)
+						{
+							return;
+						}
+						Module tempModule=moduleListP2C.get(i);
+						tempModule.setLocation(tempModule.getyCoordinate()+ROW_SPACE);
+						Module nextModule=moduleListP2C.get(i+1);
+						nextModule.setLocation(nextModule.getyCoordinate()-ROW_SPACE);
+						
+						moduleListP2C.set(i, nextModule);
+						moduleListP2C.set(i+1, tempModule);
+						break;
+					}
+				}
+				repaint();
+			}
+		});
+		btnDownP2C.setBounds(77, 210, 62, 23);
+		panelP2C.add(btnDownP2C);
+		
+		JButton btnAddP2C = new JButton("Add");
+		btnAddP2C.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				moduleListP2C.add(new ModuleP2C());
+			}
+		});
+		btnAddP2C.setBounds(149, 210, 51, 23);
+		panelP2C.add(btnAddP2C);
+		
+		JButton btnDeleteP2C = new JButton("Delete");
+		btnDeleteP2C.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for(int i=0;i<moduleListP2C.size();i++)
+				{
+					if(moduleListP2C.get(i).jButton.isSelected())
+					{
+						modulePanelP2C.remove(moduleListP2C.get(i).jButton);
+						modulePanelP2C.remove(moduleListP2C.get(i).moduleName);
+						modulePanelP2C.remove(moduleListP2C.get(i).placeDistinction);
+						repaint();
+						moduleListP2C.remove(i);
+						moduleListP2C.stream().skip(i).forEach(m->
+						{
+//							m.jButton.setLocation(m.jButton.getX(), m.jButton.getY()-ROW_SPACE);
+//							m.moduleName.setLocation(m.moduleName.getX(), m.moduleName.getY()-ROW_SPACE);
+//							m.placeDistinction.setLocation(m.placeDistinction.getX(), m.placeDistinction.getY()-ROW_SPACE);
+							m.setLocation(m.getyCoordinate()-ROW_SPACE);
+						});
+					}
+				}
+				moduleYCoordinateP2C-=ROW_SPACE;
+				repaint();
+			}
+		});
+		btnDeleteP2C.setBounds(210, 210, 70, 23);
+		panelP2C.add(btnDeleteP2C);
+		
+		JButton btnOkP2C = new JButton("OK");
+		btnOkP2C.setBounds(290, 210, 51, 23);
+		panelP2C.add(btnOkP2C);
 	}
 	
 	
@@ -709,6 +860,11 @@ public class SerialPortManagement extends JFrame {
 			// TODO Auto-generated method stub
 			if(isConnected)
 			{
+				if(placeGroup==null)
+				{
+					JOptionPane.showMessageDialog(null, "Sorry! You have to click OK first!");
+					return;
+				}
 				petriTool_.controlPanel_.userWantsRun();
 				isAutoSendPressed=true;
 				btn_SendAuto.setEnabled(false);
@@ -724,7 +880,9 @@ public class SerialPortManagement extends JFrame {
 	/**Get string and send it to the serial port**/
 	public void getDataAndSend(Object dataObject)
 	{
-		placeMatching(dataObject);
+		dataObject=placeMatching(dataObject);
+		if(dataObject.equals(""))
+			return;
 		dataToSend+=(String)dataObject+'\n';
 		textArea_Send.setText(dataToSend);
 		/**Encoding the data as byte[]**/
@@ -738,48 +896,34 @@ public class SerialPortManagement extends JFrame {
 	}
 	
 	
-	public void placeMatching(Object dataObject)
+	public String placeMatching(Object dataObject)
 	{
-		String data=(String)dataObject;
-		String[] dataArray=data.split(" ");
-		Vector<Place> placeVector=petriTool_.designPanel_.placeVector_;
-		for(int i=0;i<dataArray.length;i++)
-		{
-			if(dataArray[i]!="0")
-			{
-				
-			}
-		}
-		Map<String, java.util.List<Place>> placeGroup = 
-				placeVector.stream().collect(groupingBy(place->{
-					for(int i=0;i<moduleListC2P.size();i++)
-					{
-						if(place.getplaceName_().contains(
-								(moduleListC2P.get(i).placeDistinction.getText())))
-							return moduleListC2P.get(i).placeDistinction.getText();
-						
-					}
-					return "";
-				}));
-		
+//		String data=(String)dataObject;
+//		String[] dataArray=data.split(" ");
+//		for(int i=0;i<dataArray.length;i++)
+//		{
+//			if(dataArray[i]!="0")
+//			{
+//				
+//			}
+//		}
 		if(placeGroup.size()<moduleListC2P.size())
 		{
 			JOptionPane.showMessageDialog(null, "Please assure your module "
 					+ "is matching with your petri net");
-			return;
-		}
+			return "";
+		}	
 		StringBuilder dataToSendBuilder=new StringBuilder();
 		for(int i=0;i<moduleListC2P.size();i++)
 		{
-			java.util.List<Place> pList=placeGroup.get(moduleListC2P.get(i).placeDistinction.getText());
+			java.util.List<Place> pList=placeGroup.get(moduleListC2P.get(i).moduleName.getText());
 			int res=pList.stream().map(p->p.getNumTokens()).reduce(0, (a,b)->a|b);
 			dataToSendBuilder.append(res);
 			dataToSendBuilder.append(" ");
 		}
 		String matchingStr=dataToSendBuilder.toString().trim();
 		
-		System.out.println(matchingStr);
-		
+		return matchingStr;
 //	for(String key:placeGroup.keySet())
 //		{
 //			System.out.print(key+"= [");
