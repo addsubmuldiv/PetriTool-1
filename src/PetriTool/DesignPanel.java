@@ -1000,7 +1000,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
        	g.setColor (petriTool_.borderColor_);
        	g.drawRect (step__ , step__ / 2, step__ * width__,
        	            step__ * height__);
-<<<<<<< HEAD
        	if(!(placeDraged_!=null||transitionDraged_!=null||tokenDraged_!=null)&&resizing!=true)
        	{
        		g2d.setColor(foregroundColor__);
@@ -1013,24 +1012,8 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
        		else if(selectRectX2_<selectRectX1_&&selectRectY2_>selectRectY1_)
        			g2d.drawRect(selectRectX2_, selectRectY1_, selectRectX1_-selectRectX2_, selectRectY2_-selectRectY1_);
        	}
-=======
        	
        	
-       	
-       	//Drag the palce, tansition or token
-       	if(!(placeDraged_!=null||transitionDraged_!=null||tokenDraged_!=null))
-       		{
-       			g2d.setColor(foregroundColor__);
-       			if(selectRectX2_>selectRectX1_&&selectRectY2_>selectRectY1_)
-       				g2d.drawRect(selectRectX1_, selectRectY1_, (selectRectX2_-selectRectX1_), (selectRectY2_-selectRectY1_));
-       			else if(selectRectX2_<selectRectX1_&&selectRectY2_<selectRectY1_)
-       				g2d.drawRect(selectRectX2_, selectRectY2_, selectRectX1_-selectRectX2_, selectRectY1_-selectRectY2_);
-       			else if(selectRectX2_>selectRectX1_&&selectRectY2_<selectRectY1_)
-       				g2d.drawRect(selectRectX1_, selectRectY2_, selectRectX2_-selectRectX1_, selectRectY1_-selectRectY2_);
-       			else if(selectRectX2_<selectRectX1_&&selectRectY2_>selectRectY1_)
-       				g2d.drawRect(selectRectX2_, selectRectY1_, selectRectX1_-selectRectX2_, selectRectY2_-selectRectY1_);
-       		}
->>>>>>> ebc73305599cd918b812234c919fbebf9e2140d9
         if(mouseDraging_==false)
         {
         	// Draw the Places
