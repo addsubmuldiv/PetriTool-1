@@ -518,7 +518,8 @@ public void userWantsZoomout() {
             }
             currentButton_ = "Reset";
             popUpButton("Reset");
-
+            if(SerialPortManagement.isAutoSendPressed())
+            	userWantsStop();
             petriTool_.initializeSimulation();
     }
 

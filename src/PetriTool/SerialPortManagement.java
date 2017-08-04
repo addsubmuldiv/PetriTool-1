@@ -522,7 +522,7 @@ public class SerialPortManagement extends JFrame {
 				Map<String, String[]> placeDistinctMap=new LinkedHashMap<>();
 				for(int i=0;i<moduleListC2P.size();i++)
 				{
-					String[] tempPlacesNames = moduleListC2P.get(i).placeDistinction.getText().toUpperCase().split(" ");
+					String[] tempPlacesNames = moduleListC2P.get(i).placeDistinction.getText().split(" ");
 					String tempPlaceGroupName = moduleListC2P.get(i).moduleName.getText();
 					placeDistinctMap.put(tempPlaceGroupName, tempPlacesNames);
 				}
@@ -853,8 +853,7 @@ public class SerialPortManagement extends JFrame {
 						}))
 						{
 							String[] receivePlaces =
-									moduleListP2C.get(i).placeDistinction.getText().
-									toUpperCase().split(" ");
+									moduleListP2C.get(i).placeDistinction.getText().split(" ");
 							java.util.List<String> receivePlacesList = Arrays.asList(receivePlaces);
 							java.util.List<Place> receiveTokenPlace = pVector.stream().filter(p->{
 								return receivePlacesList.stream().anyMatch(pName->{

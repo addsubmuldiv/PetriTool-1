@@ -50,6 +50,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MenuItem;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.FontMetrics;
@@ -63,6 +64,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Vector;
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicSliderUI.ScrollListener;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -998,18 +1000,18 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
        	g.setColor (petriTool_.borderColor_);
        	g.drawRect (step__ , step__ / 2, step__ * width__,
        	            step__ * height__);
-       	if(!(placeDraged_!=null||transitionDraged_!=null||tokenDraged_!=null))
-       		{
-       			g2d.setColor(foregroundColor__);
-       			if(selectRectX2_>selectRectX1_&&selectRectY2_>selectRectY1_)
-       				g2d.drawRect(selectRectX1_, selectRectY1_, (selectRectX2_-selectRectX1_), (selectRectY2_-selectRectY1_));
-       			else if(selectRectX2_<selectRectX1_&&selectRectY2_<selectRectY1_)
-       				g2d.drawRect(selectRectX2_, selectRectY2_, selectRectX1_-selectRectX2_, selectRectY1_-selectRectY2_);
-       			else if(selectRectX2_>selectRectX1_&&selectRectY2_<selectRectY1_)
-       				g2d.drawRect(selectRectX1_, selectRectY2_, selectRectX2_-selectRectX1_, selectRectY1_-selectRectY2_);
-       			else if(selectRectX2_<selectRectX1_&&selectRectY2_>selectRectY1_)
-       				g2d.drawRect(selectRectX2_, selectRectY1_, selectRectX1_-selectRectX2_, selectRectY2_-selectRectY1_);
-       		}
+       	if(!(placeDraged_!=null||transitionDraged_!=null||tokenDraged_!=null)&&resizing!=true)
+       	{
+       		g2d.setColor(foregroundColor__);
+       		if(selectRectX2_>selectRectX1_&&selectRectY2_>selectRectY1_)
+       			g2d.drawRect(selectRectX1_, selectRectY1_, (selectRectX2_-selectRectX1_), (selectRectY2_-selectRectY1_));
+       		else if(selectRectX2_<selectRectX1_&&selectRectY2_<selectRectY1_)
+       			g2d.drawRect(selectRectX2_, selectRectY2_, selectRectX1_-selectRectX2_, selectRectY1_-selectRectY2_);
+       		else if(selectRectX2_>selectRectX1_&&selectRectY2_<selectRectY1_)
+       			g2d.drawRect(selectRectX1_, selectRectY2_, selectRectX2_-selectRectX1_, selectRectY1_-selectRectY2_);
+       		else if(selectRectX2_<selectRectX1_&&selectRectY2_>selectRectY1_)
+       			g2d.drawRect(selectRectX2_, selectRectY1_, selectRectX1_-selectRectX2_, selectRectY2_-selectRectY1_);
+       	}
         if(mouseDraging_==false)
         {
         	// Draw the Places
@@ -2779,167 +2781,187 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
-		if(selectedButton_=="Arc")
+		if(resizing==false)
 		{
-			JOptionPane.showMessageDialog(null, "Please select pointer first");
-			return;
-		}
-		int x=e.getX();
-		int y=e.getY();
-		x+=dx;
-		y+=dy;
-		int gridStep__ = petriTool_.gridStep_;
-		int xOriginal__ = x;
-		int yOriginal__ = y;
-		// Align coordinates so that component is centered
-		// in a grid square
-		x = x - (x % gridStep__);
-		y = y - (y % gridStep__);
-		
-		/**Set the dragged components' new position **/
-		newPositionX_=x;
-		newPositionY_=y;
-		/**Set the second point of dash rectangle**/
-		selectRectX2_=x;
-		selectRectY2_=y;
-    	
-		/**
-		 * Change the x,y of mouse to grid's x,y
-		 * **/
-		int gridPosChangedX__=(newPositionX_-oldPositionX_)/petriTool_.gridStep_;
-		int gridPosChangedY__=(newPositionY_-oldPositionY_)/petriTool_.gridStep_;
-		/**===============**/
-		/**Declare iterators to traverse the vector of place,
-		 * transition, token. And judge if they are in the dash rectangle
-		 * ============================================**/
-		Iterator<Transition> transitionIterator=transitionVector_.iterator();
-		Iterator<Place> placeIterator=placeVector_.iterator();
-		Iterator<Token> tokenIterator=tokenVector_.iterator();
-		while(placeIterator.hasNext())
-		{
-			Place tempPlace=placeIterator.next();
+			if(selectedButton_=="Arc")
+			
+			{
+				JOptionPane.showMessageDialog(null, "Please select pointer first");
+				return;
+			}
+			int x=e.getX();
+			int y=e.getY();
+			x+=dx;
+			y+=dy;
+			int gridStep__ = petriTool_.gridStep_;
+			int xOriginal__ = x;
+			int yOriginal__ = y;
+			// Align coordinates so that component is centered
+			// in a grid square
+			x = x - (x % gridStep__);
+			y = y - (y % gridStep__);
+			
+			/**Set the dragged components' new position **/
+			newPositionX_=x;
+			newPositionY_=y;
+			/**Set the second point of dash rectangle**/
+			selectRectX2_=x;
+			selectRectY2_=y;
+			
 			/**
-			 * Detect if there are any place in the dash rectangle, if so, set it as selected,
-			 * otherwise set it unselected
+			 * Change the x,y of mouse to grid's x,y
 			 * **/
-			if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
-					tempPlace.getXCoordinate(), tempPlace.getYCoordinate()))
-			{	
-				tempPlace.setSelected();
-			}
-			else if(mouseDraging_==false)		//Prevent the selected become unselected
-			{									//when you drag component more than one			
-				tempPlace.setNotSelected();
-			}
-		}
-		while(transitionIterator.hasNext())
-		{
-			Transition tempTransition=transitionIterator.next();
-			/**
-			 * Just the same as place
-			 */
-			if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
-					tempTransition.getXCoordinate(), tempTransition.getYCoordinate()))
+			int gridPosChangedX__=(newPositionX_-oldPositionX_)/petriTool_.gridStep_;
+			int gridPosChangedY__=(newPositionY_-oldPositionY_)/petriTool_.gridStep_;
+			/**===============**/
+			/**Declare iterators to traverse the vector of place,
+			 * transition, token. And judge if they are in the dash rectangle
+			 * ============================================**/
+			Iterator<Transition> transitionIterator=transitionVector_.iterator();
+			Iterator<Place> placeIterator=placeVector_.iterator();
+			Iterator<Token> tokenIterator=tokenVector_.iterator();
+			while(placeIterator.hasNext())
 			{
-				tempTransition.setSelected();
-			}
-			else if(mouseDraging_==false)
-			{
-				tempTransition.setNotSelected();
-			}
-		}
-    	while(tokenIterator.hasNext())
-    	{
-    		Token tempToken=tokenIterator.next();
-    		/**
-			 * Just the same as place
-			 */
-    		if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
-					tempToken.getXCoordinate(), tempToken.getYCoordinate()))
-			{
-				tempToken.setSelected();
-			}
-			else if(mouseDraging_==false)
-			{
-				tempToken.setNotSelected();
-			}
-
-    	}
-    	/**========================================================================**/
-    	/**Single drag and move===============================================================**/
-    	if(mouseDraging_==true)
-		{
-			
-			if(placeDraged_!=null)
-			{	
-        		placeDraged_.setxCoordinate_(x/gridStep__);
-				placeDraged_.setyCoordinate_(y/gridStep__);
-			}
-			if(tokenDraged_!=null)
-			{	
-				tokenDraged_.setxCoordinate_(x/gridStep__);
-				tokenDraged_.setyCoordinate_(y/gridStep__);
-			}
-			if(transitionDraged_!=null)
-			{
-				transitionDraged_.setxCoordinate_(x/gridStep__);
-				transitionDraged_.setyCoordinate_(y/gridStep__);
-			}
-			
-			/**Change all components' position who are selected**/
-			changePosTogether(gridPosChangedX__, gridPosChangedY__);
-
-			
-			/**if the red border is not big enough, set it bigger**/
-			if(x/gridStep__>petriTool_.gridWidth_)
-			{
-				petriTool_.gridWidth_=x/gridStep__;
-			}
-			if(y/gridStep__>petriTool_.gridHeight_)
-			{
-				petriTool_.gridHeight_=y/gridStep__;
-			}
-			
-			
-			
-			
-			
-			
-			
-			
-		/*	if(arcIn_!=null)
-			{
-				arcIn_.setEndCoordinate(x/gridStep__, y/gridStep__);
-			}
-			if(arcOut_!=null)
-			{
-				arcOut_.setFirstCoordinate(x/gridStep__, y/gridStep__);
-			}*/
-			
-			if(!arcsInVector_.isEmpty())
-			{
-				Iterator<Arc> arcInItor=arcsInVector_.iterator();
-				while(arcInItor.hasNext())
-				{
-					Arc arcInTemp=arcInItor.next();
-					arcInTemp.setEndCoordinate(x/gridStep__, y/gridStep__);
-					arcInTemp.calculateSlopes();
-					arcInTemp.setArcDrawCoordinates();
-					
+				Place tempPlace=placeIterator.next();
+				/**
+				 * Detect if there are any place in the dash rectangle, if so, set it as selected,
+				 * otherwise set it unselected
+				 * **/
+				if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
+						tempPlace.getXCoordinate(), tempPlace.getYCoordinate()))
+				{	
+					tempPlace.setSelected();
+				}
+				else if(mouseDraging_==false)		//Prevent the selected become unselected
+				{									//when you drag component more than one			
+					tempPlace.setNotSelected();
 				}
 			}
-			if(!arcsOutVector_.isEmpty())
+			while(transitionIterator.hasNext())
 			{
-				Iterator<Arc> arcOutItor=arcsOutVector_.iterator();
-				while(arcOutItor.hasNext())
+				Transition tempTransition=transitionIterator.next();
+				/**
+				 * Just the same as place
+				 */
+				if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
+						tempTransition.getXCoordinate(), tempTransition.getYCoordinate()))
 				{
-					Arc arcOutTemp=arcOutItor.next();
-					arcOutTemp.setFirstCoordinate(x/gridStep__, y/gridStep__);
-					arcOutTemp.calculateSlopes();
-					arcOutTemp.setArcDrawCoordinates();
+					tempTransition.setSelected();
+				}
+				else if(mouseDraging_==false)
+				{
+					tempTransition.setNotSelected();
 				}
 			}
-    	/**========================================================================**/
+			while(tokenIterator.hasNext())
+			{
+				Token tempToken=tokenIterator.next();
+				/**
+				 * Just the same as place
+				 */
+				if(isInRect(selectRectX1_, selectRectY1_, selectRectX2_, selectRectY2_, 
+						tempToken.getXCoordinate(), tempToken.getYCoordinate()))
+				{
+					tempToken.setSelected();
+				}
+				else if(mouseDraging_==false)
+				{
+					tempToken.setNotSelected();
+				}
+
+			}
+			/**========================================================================**/
+			/**Single drag and move===============================================================**/
+			if(mouseDraging_==true)
+			{
+				
+				if(placeDraged_!=null)
+				{	
+					placeDraged_.setxCoordinate_(x/gridStep__);
+					placeDraged_.setyCoordinate_(y/gridStep__);
+				}
+				if(tokenDraged_!=null)
+				{	
+					tokenDraged_.setxCoordinate_(x/gridStep__);
+					tokenDraged_.setyCoordinate_(y/gridStep__);
+				}
+				if(transitionDraged_!=null)
+				{
+					transitionDraged_.setxCoordinate_(x/gridStep__);
+					transitionDraged_.setyCoordinate_(y/gridStep__);
+				}
+				
+				/**Change all components' position who are selected**/
+				changePosTogether(gridPosChangedX__, gridPosChangedY__);
+
+				
+				/**if the red border is not big enough, set it bigger**/
+				if(x/gridStep__>petriTool_.gridWidth_)
+				{
+					petriTool_.gridWidth_=x/gridStep__;
+				}
+				if(y/gridStep__>petriTool_.gridHeight_)
+				{
+					petriTool_.gridHeight_=y/gridStep__;
+				}
+				
+				
+				
+				
+				
+				
+				
+				
+			/*	if(arcIn_!=null)
+				{
+					arcIn_.setEndCoordinate(x/gridStep__, y/gridStep__);
+				}
+				if(arcOut_!=null)
+				{
+					arcOut_.setFirstCoordinate(x/gridStep__, y/gridStep__);
+				}*/
+				
+				if(!arcsInVector_.isEmpty())
+				{
+					Iterator<Arc> arcInItor=arcsInVector_.iterator();
+					while(arcInItor.hasNext())
+					{
+						Arc arcInTemp=arcInItor.next();
+						arcInTemp.setEndCoordinate(x/gridStep__, y/gridStep__);
+						arcInTemp.calculateSlopes();
+						arcInTemp.setArcDrawCoordinates();
+						
+					}
+				}
+				if(!arcsOutVector_.isEmpty())
+				{
+					Iterator<Arc> arcOutItor=arcsOutVector_.iterator();
+					while(arcOutItor.hasNext())
+					{
+						Arc arcOutTemp=arcOutItor.next();
+						arcOutTemp.setFirstCoordinate(x/gridStep__, y/gridStep__);
+						arcOutTemp.calculateSlopes();
+						arcOutTemp.setArcDrawCoordinates();
+					}
+				}
+			}
+			/**========================================================================**/
+		}
+		else
+		{
+			if(seResizing)
+			{
+				petriTool_.gridHeight_=e.getY()/petriTool_.gridStep_;
+				petriTool_.gridWidth_=e.getX()/petriTool_.gridStep_;
+			}
+			else if(sResizing)
+			{
+				petriTool_.gridHeight_=e.getY()/petriTool_.gridStep_;
+			}
+			else if(eResizing)
+			{
+				petriTool_.gridWidth_=e.getX()/petriTool_.gridStep_;
+			}
 		}
     	update(getGraphics());
     	return;
@@ -2947,8 +2969,47 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
-	}
+		// TODO Auto-generated method stupb
+		if(e.getX()/petriTool_.gridStep_==petriTool_.gridWidth_+1&&
+				(double)e.getY()/petriTool_.gridStep_>(double)petriTool_.gridHeight_&&
+				(double)e.getY()/petriTool_.gridStep_<(double)petriTool_.gridHeight_+1)
+		{		
+			this.setCursor(new Cursor(Cursor.SE_RESIZE_CURSOR));
+			seResizing=true;
+			resizing=true;
+			eResizing=false;
+			sResizing=false;
+		}
+		else if(e.getX()/petriTool_.gridStep_==petriTool_.gridWidth_+1)
+		{	
+			this.setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
+			eResizing=true;
+			resizing=true;
+			sResizing=false;
+			seResizing=false;
+		}
+		else if((double)e.getY()/petriTool_.gridStep_>(double)petriTool_.gridHeight_&&
+				(double)e.getY()/petriTool_.gridStep_<(double)petriTool_.gridHeight_+1)
+		{	
+			this.setCursor(new Cursor(Cursor.S_RESIZE_CURSOR));
+			sResizing=true;
+			resizing=true;
+			eResizing=false;
+			seResizing=false;
+		}
+		else
+		{
+			this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			eResizing=false;
+			sResizing=false;
+			seResizing=false;
+			resizing=false;
+		}
+		}
+	private boolean eResizing=false;
+	private boolean sResizing=false;
+	private boolean seResizing=false;
+	private boolean resizing=false;
 }
 
 
