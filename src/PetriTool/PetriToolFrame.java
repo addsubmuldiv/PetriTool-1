@@ -60,6 +60,9 @@ import java.util.Vector;
 import java.lang.StringIndexOutOfBoundsException;
 import java.io.IOException;
 
+import javax.print.attribute.Attribute;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
@@ -1509,41 +1512,63 @@ class PetriToolFrame extends Frame {
         }
         // If help button is not active, carry out action
               
-        PrinterJob job_ = PrinterJob.getPrinterJob();
-        PageFormat pageFormat = new PageFormat();
-    	Paper paper=new Paper();
-        paper.setSize(petriTool_.gridWidth_*petriTool_.gridStep_,
-        		petriTool_.gridHeight_*petriTool_.gridStep_);
-        paper.setImageableArea(0, 0, petriTool_.gridWidth_*petriTool_.gridStep_,
-        		petriTool_.gridHeight_*petriTool_.gridStep_);
-        pageFormat.setPaper(paper);
-        pageFormat.setOrientation(pageFormat.PORTRAIT);
-        Book book=new Book();
-        try {
-			book.append(new PrintControl(petriTool_, petriTool_.designPanel_.placeVector_,  petriTool_.designPanel_.transitionVector_,
-					 petriTool_.designPanel_.tokenVector_,  petriTool_.designPanel_.arcVector_),pageFormat);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-       
-        job_.setPageable(book);
+//        PrinterJob job_ = PrinterJob.getPrinterJob();
+//        PageFormat pageFormat = new PageFormat();
+//    	Paper paper=new Paper();
+//        paper.setSize(petriTool_.gridWidth_*petriTool_.gridStep_,
+//        		petriTool_.gridHeight_*petriTool_.gridStep_);
+//        paper.setImageableArea(0, 0, petriTool_.gridWidth_*petriTool_.gridStep_,
+//        		petriTool_.gridHeight_*petriTool_.gridStep_);
+//        pageFormat.setPaper(paper);
+//        pageFormat.setOrientation(pageFormat.PORTRAIT);
+//        Book book=new Book();
+//        try {
+//			book.append(new PrintControl(petriTool_, petriTool_.designPanel_.placeVector_,  petriTool_.designPanel_.transitionVector_,
+//					 petriTool_.designPanel_.tokenVector_,  petriTool_.designPanel_.arcVector_),pageFormat);
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//       
+//        job_.setPageable(book);
+//        
+//        try {
+//             // Show the printDialog for the user to confirm the print job. 
+//             boolean  printOk = job_.printDialog();
+//             
+//             if(printOk)
+//            {
+//                 job_.print(); 
+//            }
+//
+//         }catch (PrinterException e) {
+//         e.printStackTrace();
+//        }
+        PrintControl canvas=new PrintControl(petriTool_, petriTool_.designPanel_.placeVector_,  petriTool_.designPanel_.transitionVector_,
+					 petriTool_.designPanel_.tokenVector_,  petriTool_.designPanel_.arcVector_);
         
-        try {
-             // Show the printDialog for the user to confirm the print job. 
-             boolean  printOk = job_.printDialog();
-             
-             if(printOk)
-            {
-                 job_.print(); 
-            }
-
-         }catch (PrinterException e) {
-         e.printStackTrace();
+        PrintRequestAttributeSet attributes=new HashPrintRequestAttributeSet();
+        try 
+        {
+			PrinterJob job=PrinterJob.getPrinterJob();
+//			Book book=new Book();
+			PageFormat pageFormat=new PageFormat();
+			Paper paper=new Paper();
+			paper.setSize(petriTool_.gridWidth_*petriTool_.gridStep_,
+	        		petriTool_.gridHeight_*petriTool_.gridStep_);
+	        paper.setImageableArea(0, 0, petriTool_.gridWidth_*petriTool_.gridStep_,
+	        		petriTool_.gridHeight_*petriTool_.gridStep_);
+			pageFormat.setPaper(paper);
+//			book.append(canvas, pageFormat);
+//			job.setPageable(book);
+			job.setPrintable(canvas, pageFormat);
+			if(job.printDialog(attributes))
+				job.print(attributes);
         }
-        
-        
-                
+        catch(PrinterException e)
+        {
+        	e.printStackTrace();
+        }
         return false;
     }
     

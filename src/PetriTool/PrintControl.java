@@ -42,7 +42,7 @@ public class PrintControl  implements Printable{
 	Vector<Arc> arcVector_;
 	
    public PrintControl(PetriTool petriTool_, Vector<Place> placeVector_, Vector<Transition> transitionVector_,
-		   Vector<Token> tokenVector_, Vector<Arc> arcVector_) throws IOException {
+		   Vector<Token> tokenVector_, Vector<Arc> arcVector_){
 	// TODO 
 //	int width = 400;  
 //    int height = 400; 
@@ -58,57 +58,54 @@ public class PrintControl  implements Printable{
 }
 
 
-public int print(Graphics gra, PageFormat pf, int pageIndex) throws PrinterException {
+   public int print(Graphics gra, PageFormat pf, int pageIndex) throws PrinterException {
 
-    System.out.println("pageIndex="+pageIndex);   
-    
-    Graphics2D g2 = (Graphics2D) gra;  
+		System.out.println("pageIndex="+pageIndex);   
+		
+		Graphics2D g2 = (Graphics2D) gra;  
 
-    g2.setColor(Color.black);  
+		g2.setColor(Color.black);  
 
-    double x = pf.getImageableX();  
-    double y = pf.getImageableY();  
-
-    switch(pageIndex){  
-    	case 0:  
-			Font font = new Font("Consolas", Font.PLAIN, 9);  
-			g2.setFont(font);
+		g2.translate(pf.getImageableX(), pf.getImageableY());
+		switch(pageIndex){  
+			case 0:  
+				Font font = new Font("Consolas", Font.PLAIN, 9);  
+				g2.setFont(font);
 
 
 
-			System.out.println("x="+x);  
-			int step__=petriTool_.gridStep_;
-			Color foregroundColor__=petriTool_.foregroundColor_;
-			// Draw the Places
-			for (int i__ = 0; i__ < placeVector_.size(); i__++) {
-			Place tempPlace__ = (Place) placeVector_.elementAt(i__);
-				tempPlace__.draw(g2, step__, foregroundColor__,
-						 petriTool_.placeLabels_);
-			}
+				int step__=15;
+				Color foregroundColor__=petriTool_.foregroundColor_;
+				// Draw the Places
+				for (int i__ = 0; i__ < placeVector_.size(); i__++) {
+				Place tempPlace__ = (Place) placeVector_.elementAt(i__);
+					tempPlace__.draw(g2, step__, foregroundColor__,
+							 petriTool_.placeLabels_);
+				}
 
-			// Draw the Transitions
-			for (int i__ = 0; i__ < transitionVector_.size(); i__++) {
-				Transition tempTransition__ = (Transition) transitionVector_.
-											elementAt(i__);
-				tempTransition__.draw(g2, step__, foregroundColor__,
-									  petriTool_.transitionLabels_);
-			}
+				// Draw the Transitions
+				for (int i__ = 0; i__ < transitionVector_.size(); i__++) {
+					Transition tempTransition__ = (Transition) transitionVector_.
+												elementAt(i__);
+					tempTransition__.draw(g2, step__, foregroundColor__,
+										  petriTool_.transitionLabels_);
+				}
 
-			// Draw the Tokens
-			for (int i__ = 0; i__ < tokenVector_.size(); i__++) {
-				Token tempToken__ = (Token) tokenVector_.elementAt(i__);
-				tempToken__.draw(g2, step__, foregroundColor__);
-			}
+				// Draw the Tokens
+				for (int i__ = 0; i__ < tokenVector_.size(); i__++) {
+					Token tempToken__ = (Token) tokenVector_.elementAt(i__);
+					tempToken__.draw(g2, step__, foregroundColor__);
+				}
 
-			// Draw the Arcs
-			for (int i__ = 0; i__ < arcVector_.size(); i__++) {
-				Arc tempArc__ = (Arc) arcVector_.elementAt(i__);
-				tempArc__.draw(g2, step__, foregroundColor__);
-			}
-			return PAGE_EXISTS;
-		default:
-			return NO_SUCH_PAGE;
-    }
-}
+				// Draw the Arcs
+				for (int i__ = 0; i__ < arcVector_.size(); i__++) {
+					Arc tempArc__ = (Arc) arcVector_.elementAt(i__);
+					tempArc__.draw(g2, step__, foregroundColor__);
+				}
+				return PAGE_EXISTS;
+			default:
+				return NO_SUCH_PAGE;
+    	}
+   }
 
 }
