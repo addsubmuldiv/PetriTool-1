@@ -395,7 +395,7 @@ public class SerialPortManagement extends JFrame {
 		panel_Receive.add(jScrollPane_Receive);
 		
 		JPanel panelC2P = new JPanel();
-		panelC2P.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Computer to PLC Singals", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panelC2P.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Master to Slaves Singals", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panelC2P.setBounds(249, 10, 351, 281);
 		contentPane.add(panelC2P);
 		panelC2P.setLayout(null);
@@ -555,7 +555,7 @@ public class SerialPortManagement extends JFrame {
 		
 		JPanel panelP2C = new JPanel();
 		panelP2C.setLayout(null);
-		panelP2C.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "PLC to Computer Singals", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panelP2C.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Slaves to Master Singals", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		panelP2C.setBounds(249, 301, 351, 250);
 		contentPane.add(panelP2C);
 		
