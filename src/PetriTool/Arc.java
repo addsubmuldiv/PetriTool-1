@@ -596,12 +596,14 @@ class Arc extends PetriComponent {
             case 1:
             case 3: g.drawLine(tempX__, tempY__ - 4,
                                tempX__, tempY__ + 4);
-                    g.drawString(String.valueOf(tokensToEnable_), tempX__ - 2, tempY__ - 6);
+                    if(tokensToEnable_!=1)
+                    	g.drawString(String.valueOf(tokensToEnable_), tempX__ - 2, tempY__ - 6);
                     break;
             case 2:
             case 4: g.drawLine(tempX__ - 4, tempY__,
                                tempX__ + 4, tempY__);
-                    g.drawString(String.valueOf(tokensToEnable_), tempX__ + 6, tempY__ - 2);
+                    if(tokensToEnable_!=1)
+                    	g.drawString(String.valueOf(tokensToEnable_), tempX__ + 6, tempY__ - 2);
                     break;
         }
     }
