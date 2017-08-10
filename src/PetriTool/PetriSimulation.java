@@ -281,6 +281,31 @@ class PetriSimulation extends Thread {
         }
     }
 
+    /**when you have started one time simulation and then you want to change the design
+     * you must call this method to reset some configuration
+     * **/
+    public void updateSimulation()
+    {
+		currentMarkingVector_ = petriTool_.designPanel_.getInitialMarking();
+
+		// Reset Tokens to match initial marking
+		resetAllTokens(petriTool_.designPanel_.placeVector_,
+					   petriTool_.designPanel_.tokenVector_);
+
+		setComponentLinks(petriTool_.designPanel_.transitionVector_,
+						  petriTool_.designPanel_.tokenVector_,
+						  petriTool_.designPanel_.arcVector_);
+
+		// Reset all Transitions to pre-simulation state
+		resetAllTransitions(petriTool_.designPanel_.transitionVector_);
+    }
+    
+    
+    
+    
+    
+    
+    
     /**
       * Stop the simulation
     **/
@@ -306,6 +331,7 @@ class PetriSimulation extends Thread {
     **/
     public void runSimulation() {
         modeString_ = new String("Run");
+        updateSimulation();
         this.resume();
     }
 
