@@ -201,11 +201,9 @@ public class CommunicationPropeties extends JFrame {
 					endBits=end;
 					if(propetiesList.size()!=0)
 					{
-						for(int i=0;i<propetiesList.size();i++)
-						{
-							other+=" "+propetiesList.get(i).propetiesValue.getText();
-						}
-						other+=" ";
+						other=propetiesList.stream().
+								map(p->p.propetiesValue.getText()).
+								collect(joining(" "));
 					}
 					otherBits=other;
 				}
@@ -226,7 +224,7 @@ public class CommunicationPropeties extends JFrame {
 		propetiesPanel.setLayout(null);
 		scrollPanePropeties.setViewportView(propetiesPanel);
 		
-		JLabel lblStartBits = new JLabel("Start bits：");
+		JLabel lblStartBits = new JLabel("Start bits");
 		lblStartBits.setBounds(61, 7, 72, 21);
 		propetiesPanel.add(lblStartBits);
 		
@@ -235,7 +233,7 @@ public class CommunicationPropeties extends JFrame {
 		propetiesPanel.add(textFieldStartBits);
 		textFieldStartBits.setColumns(10);
 		
-		JLabel lblEndBits = new JLabel("End bits：");
+		JLabel lblEndBits = new JLabel("End bits");
 		lblEndBits.setBounds(71, 38, 60, 21);
 		propetiesPanel.add(lblEndBits);
 		
@@ -321,8 +319,8 @@ public class CommunicationPropeties extends JFrame {
 			dataArray[i]="0"+dataArray[i];
 			dataList.add(dataArray[i]);
 		}
-		String res=dataList.stream().collect(joining(" "));
-		return startBits+" "+otherBits+" "+res+" "+endBits;
+		String dataBits=dataList.stream().collect(joining(" "));
+		return startBits+" "+otherBits+" "+dataBits+" "+endBits;
 	}
 	
 	

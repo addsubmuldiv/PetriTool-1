@@ -983,7 +983,10 @@ public class SerialPortManagement extends JFrame {
 		dataObject=placeMatching(dataObject);
 		if(dataObject.equals(""))
 			return;
-		dataToSend+=(String)dataObject+'\n';
+//		dataToSend+=(String)dataObject+'\n';
+		String decoratedData=
+				communicationPropeties.decorateData((String)dataObject);
+		dataToSend+=decoratedData;
 		textArea_Send.setText(dataToSend);
 		/**Encoding the data as byte[]**/
 		byte[] dataSend=((String)dataObject).getBytes();
@@ -995,6 +998,19 @@ public class SerialPortManagement extends JFrame {
 		}
 	}
 	
+	public static byte[] hex2byte(String hex) {
+        String digital = "0123456789ABCDEF";
+        String hex1 = hex.replace(" ", "");
+        char[] hex2char = hex1.toCharArray();//exp:AA0101010101FF0D0A
+        byte[] bytes = new byte[hex1.length() / 2];//2*4 bits == 1 byte 
+        byte temp;
+        for (int p = 0; p < bytes.length; p++) {
+            temp = (byte) (digital.indexOf(hex2char[2 * p]) * 16);
+            temp += digital.indexOf(hex2char[2 * p + 1]);
+            bytes[p] = (byte) (temp & 0xff);
+        }
+        return bytes;
+    }
 	
 	public String placeMatching(Object dataObject)
 	{
