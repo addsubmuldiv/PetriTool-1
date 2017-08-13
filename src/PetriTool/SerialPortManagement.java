@@ -65,7 +65,7 @@ public class SerialPortManagement extends JFrame {
 	private SerialPort serialPort;
 	JTextArea textArea_Receive;
 	JTextArea textArea_Send;
-	
+	private CommunicationPropeties communicationPropeties;
 	public final int ROW_SPACE=27;
 	
 	ArrayList<Module> moduleListC2P=new ArrayList<>();
@@ -272,6 +272,7 @@ public class SerialPortManagement extends JFrame {
 		
 		// Add a button to connect with device
 		btn_Connect= new JButton("Connect");
+		btn_Connect.setToolTipText("Connect");
 		btn_Connect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String commNameStr=(String)comboBox_Serial_Port.getSelectedItem();
@@ -325,8 +326,19 @@ public class SerialPortManagement extends JFrame {
 				}
 			}
 		});
-		btn_Connect.setBounds(59, 281, 111, 36);
+		btn_Connect.setBounds(28, 281, 170, 36);
 		panel_Control.add(btn_Connect);
+		
+		JButton btn_CommunicationPropeties = new JButton("Communication Propeties");
+		btn_CommunicationPropeties.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				communicationPropeties=new CommunicationPropeties();
+				communicationPropeties.setVisible(true);
+			}
+		});
+		btn_CommunicationPropeties.setToolTipText("Communication Propeties");
+		btn_CommunicationPropeties.setBounds(28, 349, 170, 36);
+		panel_Control.add(btn_CommunicationPropeties);
 		
 		
 		JPanel panel_Send = new JPanel();
@@ -344,6 +356,7 @@ public class SerialPortManagement extends JFrame {
 		panel_Send.add(jScrollPane_Send);
 		
 		JButton btn_Send = new JButton("Manual Test");
+		btn_Send.setToolTipText("Manual Test");
 		btn_Send.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -368,6 +381,7 @@ public class SerialPortManagement extends JFrame {
 		
         autoSendListener=new AutoSendListener();
 		btn_SendAuto = new JButton("Auto Send");
+		btn_SendAuto.setToolTipText("Auto Send");
 		btn_SendAuto.addActionListener(autoSendListener);
 		//Todo 
 		btn_SendAuto.setBounds(151, 290, 100, 36);
@@ -424,6 +438,7 @@ public class SerialPortManagement extends JFrame {
 		
 		
 		JButton btnUpC2P = new JButton("Up");
+		btnUpC2P.setToolTipText("Up");
 		btnUpC2P.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i=0;i<moduleListC2P.size();i++)
@@ -451,6 +466,7 @@ public class SerialPortManagement extends JFrame {
 		panelC2P.add(btnUpC2P);
 		
 		JButton btnDownC2P = new JButton("Down");
+		btnDownC2P.setToolTipText("Down");
 		btnDownC2P.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i=0;i<moduleListC2P.size();i++)
@@ -478,6 +494,7 @@ public class SerialPortManagement extends JFrame {
 		panelC2P.add(btnDownC2P);
 		
 		JButton btnAddC2P = new JButton("Add");
+		btnAddC2P.setToolTipText("Add");
 		btnAddC2P.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				moduleListC2P.add(new ModuleC2P());
@@ -487,6 +504,7 @@ public class SerialPortManagement extends JFrame {
 		panelC2P.add(btnAddC2P);
 		
 		JButton btnDeleteC2P = new JButton("Delete");
+		btnDeleteC2P.setToolTipText("Delete");
 		btnDeleteC2P.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i=0;i<moduleListC2P.size();i++)
@@ -515,6 +533,7 @@ public class SerialPortManagement extends JFrame {
 		panelC2P.add(btnDeleteC2P);
 		
 		btnOkC2P = new JButton("OK");
+		btnOkC2P.setToolTipText("OK");
 		btnOkC2P.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Vector<Place> placeVector=petriTool_.designPanel_.placeVector_;
@@ -579,6 +598,7 @@ public class SerialPortManagement extends JFrame {
 		
 		
 		JButton btnUpP2C = new JButton("Up");
+		btnUpP2C.setToolTipText("Up");
 		btnUpP2C.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i=0;i<moduleListP2C.size();i++)
@@ -606,6 +626,7 @@ public class SerialPortManagement extends JFrame {
 		panelP2C.add(btnUpP2C);
 		
 		JButton btnDownP2C = new JButton("Down");
+		btnDownP2C.setToolTipText("Down");
 		btnDownP2C.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i=0;i<moduleListP2C.size();i++)
@@ -633,6 +654,7 @@ public class SerialPortManagement extends JFrame {
 		panelP2C.add(btnDownP2C);
 		
 		JButton btnAddP2C = new JButton("Add");
+		btnAddP2C.setToolTipText("Add");
 		btnAddP2C.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				moduleListP2C.add(new ModuleP2C());
@@ -642,6 +664,7 @@ public class SerialPortManagement extends JFrame {
 		panelP2C.add(btnAddP2C);
 		
 		JButton btnDeleteP2C = new JButton("Delete");
+		btnDeleteP2C.setToolTipText("Delete");
 		btnDeleteP2C.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i=0;i<moduleListP2C.size();i++)
@@ -670,6 +693,7 @@ public class SerialPortManagement extends JFrame {
 		panelP2C.add(btnDeleteP2C);
 		
 		btnOkP2C = new JButton("OK");
+		btnOkP2C.setToolTipText("OK");
 		btnOkP2C.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
