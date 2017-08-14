@@ -19,8 +19,11 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JTextField;
 import java.awt.Font;
+import java.awt.Window;
 import java.util.ArrayList;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import static java.util.stream.Collectors.*;
 
@@ -35,6 +38,7 @@ public class CommunicationPropeties extends JFrame {
 	public static String endBits="";
 	public static String otherBits="";
 	public static String dataDecorated="";
+	private static CommunicationPropeties communicationPropeties;
 	/**
 	 * Launch the application.
 	 */
@@ -115,6 +119,9 @@ public class CommunicationPropeties extends JFrame {
 	ButtonGroup rdButtonGroup;
 	JRadioButton rdbtnHEX; 
 	JRadioButton rdbtnDEC; 
+	
+	public static boolean isHEX=false;
+	
 	private JPanel propetiesPanel;
 	/**
 	 * Create the frame.
@@ -124,6 +131,8 @@ public class CommunicationPropeties extends JFrame {
 		setTitle("Communication Propeties");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 366, 298);
+		communicationPropeties=this;
+        this.addWindowListener(new Win());
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -205,8 +214,13 @@ public class CommunicationPropeties extends JFrame {
 								map(p->p.propetiesValue.getText()).
 								collect(joining(" "));
 					}
-					otherBits=other;
+					otherBits=other+" ";
+					isHEX=true;
+					communicationPropeties.setVisible(false);
+					return;
 				}
+				isHEX=false;
+				communicationPropeties.setVisible(false);
 			}
 		});
 		btnOk.setFont(UIManager.getFont("Button.font"));
@@ -320,9 +334,18 @@ public class CommunicationPropeties extends JFrame {
 			dataList.add(dataArray[i]);
 		}
 		String dataBits=dataList.stream().collect(joining(" "));
-		return startBits+" "+otherBits+" "+dataBits+" "+endBits;
+		return startBits+" "+otherBits+dataBits+" "+endBits;
 	}
-	
+	class Win extends WindowAdapter {
+		/**
+		 * The key to fix the can't close bug
+		 * **/
+	    public void windowClosing(WindowEvent e) 
+	    {
+	        e.getWindow().setVisible(false);
+	        ((Window) e.getComponent()).dispose();
+	    }
+	}
 	
 	
 }

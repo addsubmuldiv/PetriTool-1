@@ -286,12 +286,6 @@ class PetriSimulation extends Thread {
      * **/
     public void updateSimulation()
     {
-		currentMarkingVector_ = petriTool_.designPanel_.getInitialMarking();
-
-		// Reset Tokens to match initial marking
-		resetAllTokens(petriTool_.designPanel_.placeVector_,
-					   petriTool_.designPanel_.tokenVector_);
-
 		setComponentLinks(petriTool_.designPanel_.transitionVector_,
 						  petriTool_.designPanel_.tokenVector_,
 						  petriTool_.designPanel_.arcVector_);

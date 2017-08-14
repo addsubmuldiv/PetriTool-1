@@ -814,18 +814,33 @@ public class SerialPortManagement extends JFrame {
 							JOptionPane.showMessageDialog(null, "No valid data is obtained from reading data! Please check the equipment or procedure!", "Error", JOptionPane.INFORMATION_MESSAGE);
 							System.exit(0);
 						}else {
-							String dataOriginal = new String(data);	//Converts the byte array data to a string that holds the raw data
-							
+							String finalData="";
+							if(CommunicationPropeties.isHEX)
+							{
+								String hexDataStr=byte2HexStr(data);
+								finalData=hexDataStr;
+							}
+							else
+							{
+								String dataOriginal = new String(data);	//Converts the byte array data to a string that holds the raw data
+								finalData=dataOriginal;
+							}
+							/**
+							 * 
+							 * 
+							 * 
+							 * 
+							 * **/
 							if(isAutoSendPressed)
 							{
-								autoDataReceiveHandle(dataOriginal);
+								autoDataReceiveHandle(finalData);
 							}
 							
-							dataValid+=dataOriginal+"\n";
+							dataValid+=finalData+"\n";
 							textArea_Receive.setText(dataValid);
 							repaint();
-							}
-						}	
+						}
+					}	
 				}catch (ReadDataFromSerialPortFailure | SerialPortInputStreamCloseFailure e) {
 					JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.INFORMATION_MESSAGE);
 				}
@@ -983,13 +998,21 @@ public class SerialPortManagement extends JFrame {
 		dataObject=placeMatching(dataObject);
 		if(dataObject.equals(""))
 			return;
-//		dataToSend+=(String)dataObject+'\n';
-		String decoratedData=
+		byte[] dataSend;
+		if(communicationPropeties.isHEX)
+		{
+			String decoratedData=
 				communicationPropeties.decorateData((String)dataObject);
-		dataToSend+=decoratedData;
+			dataToSend+=decoratedData+'\n';
+			dataSend=hex2byte(decoratedData);
+		}
+		else
+		{
+			dataToSend+=(String)dataObject+'\n';
+			dataSend=((String)dataObject).getBytes();
+		}
 		textArea_Send.setText(dataToSend);
 		/**Encoding the data as byte[]**/
-		byte[] dataSend=((String)dataObject).getBytes();
 		try {
 			SerialTool.sendToPort(serialPort, dataSend);
 		} catch (SendDataToSerialPortFailure | SerialPortOutputStreamCloseFailure e) {
@@ -1011,6 +1034,22 @@ public class SerialPortManagement extends JFrame {
         }
         return bytes;
     }
+	
+	
+	public static String byte2HexStr(byte[] b)  
+    {  
+        String stmp="";  
+        StringBuilder sb = new StringBuilder("");  
+        for (int n=0;n<b.length;n++)  
+        {  
+            stmp = Integer.toHexString(b[n] & 0xFF);  
+            sb.append((stmp.length()==1)? "0"+stmp : stmp);  
+            sb.append(" ");  
+        }  
+        return sb.toString().toUpperCase().trim();  
+    }
+	
+	
 	
 	public String placeMatching(Object dataObject)
 	{
