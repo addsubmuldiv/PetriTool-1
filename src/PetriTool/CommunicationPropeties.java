@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.IntrospectionException;
 import java.awt.event.ActionEvent;
 import static java.util.stream.Collectors.*;
 
@@ -334,8 +335,31 @@ public class CommunicationPropeties extends JFrame {
 			dataList.add(dataArray[i]);
 		}
 		String dataBits=dataList.stream().collect(joining(" "));
-		return startBits+" "+otherBits+dataBits+" "+endBits;
+		return startBits+" "+otherBits+dataBits+" "+endBits+" 0D 0A";
 	}
+	
+	
+	
+	public String parseData(String hexData)
+	{
+		String data=hexData.substring(startBits.length()).trim();
+		int endBitsPosition=data.indexOf(endBits);
+		String dataToParse=data.substring(0, endBitsPosition).trim();
+		String[] dataArray=dataToParse.split(" ");
+		StringBuilder sBuilder=new StringBuilder();
+		for(int i=0;i<dataArray.length;i++)
+		{
+			dataArray[i]=dataArray[i].substring(1);
+			sBuilder.append(dataArray[i]);
+			sBuilder.append(" ");
+		}
+		return sBuilder.toString().trim();
+	}
+	
+	
+	
+	
+	
 	class Win extends WindowAdapter {
 		/**
 		 * The key to fix the can't close bug

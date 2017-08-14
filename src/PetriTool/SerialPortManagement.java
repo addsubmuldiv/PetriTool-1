@@ -818,7 +818,7 @@ public class SerialPortManagement extends JFrame {
 							if(CommunicationPropeties.isHEX)
 							{
 								String hexDataStr=byte2HexStr(data);
-								finalData=hexDataStr;
+								finalData=communicationPropeties.parseData(hexDataStr);
 							}
 							else
 							{
