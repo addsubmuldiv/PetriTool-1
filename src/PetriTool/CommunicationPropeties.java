@@ -40,21 +40,6 @@ public class CommunicationPropeties extends JFrame {
 	public static String otherBits="";
 	public static String dataDecorated="";
 	private static CommunicationPropeties communicationPropeties;
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					CommunicationPropeties frame = new CommunicationPropeties();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 	
 	private int propetiesYCoordinate=69;
 	
@@ -130,10 +115,9 @@ public class CommunicationPropeties extends JFrame {
 	public CommunicationPropeties() {
 		setResizable(false);
 		setTitle("Communication Protocol");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 366, 298);
 		communicationPropeties=this;
-        this.addWindowListener(new Win());
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -360,16 +344,7 @@ public class CommunicationPropeties extends JFrame {
 	
 	
 	
-	class Win extends WindowAdapter {
-		/**
-		 * The key to fix the can't close bug
-		 * **/
-	    public void windowClosing(WindowEvent e) 
-	    {
-	        e.getWindow().setVisible(false);
-	        ((Window) e.getComponent()).dispose();
-	    }
-	}
 	
 	
-}
+}	
+
