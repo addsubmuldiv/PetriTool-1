@@ -129,7 +129,7 @@ public class CommunicationPropeties extends JFrame {
 	 */
 	public CommunicationPropeties() {
 		setResizable(false);
-		setTitle("Communication Propeties");
+		setTitle("Communication Protocol");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 366, 298);
 		communicationPropeties=this;

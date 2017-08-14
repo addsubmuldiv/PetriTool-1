@@ -541,15 +541,15 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
     		place.passToDOM(net);
     	}
     	
-    	for(Object p: transitionVector_)
+    	for(Object t: transitionVector_)
     	{
-    		Transition place=(Transition)p;
-    		place.passToDOM(net);
+    		Transition transition=(Transition)t;
+    		transition.passToDOM(net);
     	}
   
-    	for(Object p:arcVector_)
+    	for(Object a:arcVector_)
     	{
-    		Arc arc=(Arc)p;
+    		Arc arc=(Arc)a;
     		arc.passToDOM(net);
     	}
     	
