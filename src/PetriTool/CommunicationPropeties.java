@@ -322,8 +322,7 @@ public class CommunicationPropeties extends JFrame {
 		return startBits+" "+otherBits+dataBits+" "+endBits+" 0D 0A";
 	}
 	
-	
-	
+	//TODO
 	public String parseData(String hexData)
 	{
 		String data=hexData.substring(startBits.length()).trim();
@@ -339,12 +338,6 @@ public class CommunicationPropeties extends JFrame {
 		}
 		return sBuilder.toString().trim();
 	}
-	
-	
-	
-	
-	
-	
 	
 }	
 

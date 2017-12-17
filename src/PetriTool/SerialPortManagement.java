@@ -368,7 +368,6 @@ public class SerialPortManagement extends JFrame {
 				try {
 					SerialTool.sendToPort(serialPort, dataSend);
 				} catch (SendDataToSerialPortFailure | SerialPortOutputStreamCloseFailure e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			
@@ -719,7 +718,6 @@ public class SerialPortManagement extends JFrame {
 				UIManager.setLookAndFeel(lookAndFeel);
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 					| UnsupportedLookAndFeelException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}  	
 	}
@@ -769,7 +767,9 @@ public class SerialPortManagement extends JFrame {
 	
 	class SerialListener implements SerialPortEventListener
 	{
-
+		/**
+		 * 这个方法是用来接受下位机发来的数据的
+		 */
 		@Override
 		public void serialEvent(SerialPortEvent serialPortEvent) {
 			// TODO Auto-generated method stub
@@ -822,8 +822,12 @@ public class SerialPortManagement extends JFrame {
 							}
 							else
 							{
-								String dataOriginal = new String(data);	//Converts the byte array data to a string that holds the raw data
-								finalData=dataOriginal;
+//								String dataOriginal = new String(data);	//Converts the byte array data to a string that holds the raw data
+//								finalData=dataOriginal;
+								finalData=byte2HexStr(data);
+//								finalData=communicationPropeties.parseData(hexDataStr);
+//								int DApos=finalData.indexOf("0D 0A");
+//								finalData=finalData.substring(0, DApos).trim();
 							}
 							/**
 							 * 
@@ -847,7 +851,7 @@ public class SerialPortManagement extends JFrame {
 			}
 		}
 		
-		
+//TODO
 		public void autoDataReceiveHandle(String dataOriginal)
 		{
 			Vector<Place> pVector=petriTool_.designPanel_.placeVector_;
@@ -965,7 +969,7 @@ public class SerialPortManagement extends JFrame {
 	{
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
+			// 
 			if(isConnected&&isSendModuleSet&&isReceiveModuleSet)
 			{
 				if(placeGroup==null)
@@ -1003,20 +1007,33 @@ public class SerialPortManagement extends JFrame {
 		{
 			String decoratedData=
 				communicationPropeties.decorateData((String)dataObject);
-			dataToSend+=decoratedData+'\n';
+			dataToSend+=decoratedData+'\n';  //add '\n' is to show the data more beautiful
 			dataSend=hex2byte(decoratedData);
 		}
 		else
 		{
-			dataToSend+=(String)dataObject+'\n';
-			dataSend=((String)dataObject).getBytes();
+//			dataToSend+=(String)dataObject+'\n';
+//			dataSend=((String)dataObject).getBytes();
+			String[] dataArray=((String)dataObject).split(" ");
+			ArrayList<String> dataList=new ArrayList<>();
+			for(int i=0;i<dataArray.length;i++)
+			{
+				dataArray[i]="0"+dataArray[i];
+				dataList.add(dataArray[i]);
+			}
+			//
+			String dataBits=dataList.stream().collect(joining(" "));
+			dataToSend+=dataBits+" 0D 0A"+"\n";
+			dataSend=hex2byte(dataBits+" 0D 0A");
+			
+			
 		}
 		textArea_Send.setText(dataToSend);
 		/**Encoding the data as byte[]**/
 		try {
 			SerialTool.sendToPort(serialPort, dataSend);
 		} catch (SendDataToSerialPortFailure | SerialPortOutputStreamCloseFailure e) {
-			// TODO Auto-generated catch block
+			// 
 			e.printStackTrace();
 		}
 	}
