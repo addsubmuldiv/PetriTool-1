@@ -33,15 +33,12 @@ package PetriTool;
 
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
 import java.awt.MediaTracker;
 import java.awt.Panel;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.Vector;
-
-import com.sun.media.jfxmedia.control.VideoDataBuffer;
 
 import java.util.Observable;
 import java.io.IOException;
@@ -170,19 +167,19 @@ public class ControlPanel extends Panel {
         imageButtonNames_ = new Vector(numButtons_);
 
         for (int i__ = 0; i__ < numButtons_; i__++) {
-            normal_ = toolkit_.getImage("images/" + buttonList[i__] +
+            normal_ = toolkit_.getImage("./images/" + buttonList[i__] +
                                         "_n.gif");
             tracker_.addImage(normal_, 0);
 
-            pressed_ = toolkit_.getImage("images/" + buttonList[i__] +
+            pressed_ = toolkit_.getImage("./images/" + buttonList[i__] +
                                          "_p.gif");
             tracker_.addImage(pressed_, 1);
 
-            disabled_ = toolkit_.getImage("images/" + buttonList[i__] +
+            disabled_ = toolkit_.getImage("./images/" + buttonList[i__] +
                                           "_d.gif");
             tracker_.addImage(disabled_, 2);
 
-            active_ = toolkit_.getImage("images/" + buttonList[i__] +
+            active_ = toolkit_.getImage("./images/" + buttonList[i__] +
                                         "_a.gif");
             tracker_.addImage(active_, 3);
 
