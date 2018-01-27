@@ -480,14 +480,19 @@ class PetriSimulation extends Thread {
         simulationRepaint();
         
         //select the enabled transition
-        Transition theEnabledOne;
-//TODO for(int i=0;i<transitionVector__.size();i++) {
-//        	if((transitionVector__.get(i)))
-//        }
+        Transition theEnabledOne = null;
+        for(int i=0;i<transitionVector__.size();i++) {
+        	if(((Transition)transitionVector__.get(i)).isEnabled()) {
+        		theEnabledOne = (Transition)transitionVector__.get(i);
+        	}
+        }
         
         
         // Wait for a period of time
-    //TODO    sleepSimulation();
+        if(theEnabledOne!=null)
+        	sleepSimulation(theEnabledOne.getSpeed());
+        else
+        	sleepSimulation(PetriTool.getSimulationSpeed());
         // Add Tokens to all sink Places
         for (i__ = 0; i__ < transitionVector__.size(); i__++) {
             transition__ = (Transition) transitionVector__.elementAt(i__);

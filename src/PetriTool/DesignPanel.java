@@ -218,17 +218,16 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
     
     
     /**
-     * three Inner class to listen the menuItem clicked event,
+     * three Inner classes to listen the menuItem clicked event,
      * and pass the mouse coordinate to the edit dialog
      * **/
-    
     class placeEditListener implements ActionListener
     {
 		DesignPanel myself;
 		
 		public placeEditListener(DesignPanel designPanel) {
 			// TODO Auto-generated constructor stub
-			myself=designPanel;
+			myself = designPanel;
 		}
 		
 		public void actionPerformed(ActionEvent e) {
@@ -236,6 +235,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 			EditPlace editPlaceDialog=new EditPlace(petriTool_, myself);
 			editPlaceDialog.setTokenEdited_(getToken(mouseX_, mouseY_));
 			editPlaceDialog.setPlaceEdited_(getPlace(mouseX_, mouseY_));
+			editPlaceDialog.setText();
 			editPlaceDialog.setVisible(true);
 		}
     }
@@ -284,6 +284,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 			// TODO Auto-generated method stub
 			EditTransition editTransitionDialog=new EditTransition(petriTool_,myself);
 			editTransitionDialog.setTransitionEdited_(getTransition(mouseX_, mouseY_));
+			editTransitionDialog.setText();
 			editTransitionDialog.setVisible(true);
 		}
     	
@@ -321,6 +322,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 			// TODO Auto-generated method stub
 			EditArc editArcDialog=new EditArc(petriTool_,myself);
 			editArcDialog.setArcEdited_(getArc(mouseX_, mouseY_));
+			editArcDialog.setText();
 			editArcDialog.setVisible(true);
 		}
     	

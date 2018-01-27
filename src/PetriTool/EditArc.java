@@ -41,6 +41,13 @@ public class EditArc extends JDialog {
 		this.arcEdited_ = arcEdited_;
 	}
 
+	
+	
+	public void setText() {
+		this.textField_arcOption.setText(String.valueOf(arcEdited_.getTokensToEnable()));
+	}
+	
+	
 	/**
 	 * Create the dialog.
 	 */

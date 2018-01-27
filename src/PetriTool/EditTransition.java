@@ -33,6 +33,13 @@ public class EditTransition extends JDialog {
 	public void setTransitionEdited_(Transition transitionEdited_) {
 		this.transitionEdited_ = transitionEdited_;
 	}
+	
+	
+	
+	public void setText() {
+		this.textField_speed.setText(String.valueOf(transitionEdited_.speed_));
+		this.textField_transitionName.setText(transitionEdited_.getTransitionName_());
+	}
 
 	/**
 	 * Launch the application.

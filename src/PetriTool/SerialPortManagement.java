@@ -1024,7 +1024,7 @@ public class SerialPortManagement extends JFrame {
 			//
 			String dataBits=dataList.stream().collect(joining(" "));
 			dataToSend+=dataBits+" 0D 0A"+"\n";
-			dataSend=hex2byte(dataBits+" 0D 0A");
+			dataSend=hex2byte(dataBits+" 0D 0A");	//THE CODE TO SEND
 			
 			
 		}

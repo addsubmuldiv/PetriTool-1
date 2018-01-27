@@ -50,7 +50,17 @@ public class EditPlace extends JDialog {
 	public void setPlaceEdited_(Place placeEdited_) {
 		this.placeEdited_ = placeEdited_;
 	}
-
+	
+	
+	public void setText() {
+		this.textField_placeName.setText(placeEdited_.getplaceName_());
+		if(tokenEdited_!=null)
+			this.textField_tokenOption.setText(String.valueOf(tokenEdited_.getTokensRepresented()));
+		else
+			this.textField_tokenOption.setText("0");
+	}
+	
+	
 	/**
 	 * Launch the application.
 	 */
