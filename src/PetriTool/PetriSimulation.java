@@ -333,9 +333,9 @@ class PetriSimulation extends Thread {
     /**
       * Make the simulation wait, based on the simulation speed
     **/
-    public void sleepSimulation() {
+    public void sleepSimulation(int simulationSpeed) {
         try {
-            switch(petriTool_.simulationSpeed_) {
+            switch(simulationSpeed) {
                 case 1: sleep(5000); break;
                 case 2: sleep(4000); break;
                 case 3: sleep(3000); break;
@@ -478,9 +478,16 @@ class PetriSimulation extends Thread {
 
         // Repaint the design
         simulationRepaint();
-
+        
+        //select the enabled transition
+        Transition theEnabledOne;
+//TODO for(int i=0;i<transitionVector__.size();i++) {
+//        	if((transitionVector__.get(i)))
+//        }
+        
+        
         // Wait for a period of time
-        sleepSimulation();
+    //TODO    sleepSimulation();
         // Add Tokens to all sink Places
         for (i__ = 0; i__ < transitionVector__.size(); i__++) {
             transition__ = (Transition) transitionVector__.elementAt(i__);
@@ -563,7 +570,7 @@ class PetriSimulation extends Thread {
             simulationRepaint();
 
             // Wait for a period of time
-            sleepSimulation();
+            sleepSimulation(petriTool_.simulationSpeed_);
 
             // Place tokens as indicated by sourcePlaceVector
             for (i__ = 0; i__ < transitionVector__.size(); i__++) {
@@ -647,7 +654,7 @@ class PetriSimulation extends Thread {
                 if (modeString_.equals("Run")) {
                     goForward();
                     // Pause for user to see new marking
-                    sleepSimulation();
+                    sleepSimulation(petriTool_.simulationSpeed_);	//this call is to set the speed of places
                 }
                 else if (modeString_.equals("ForwardStep")) {
                     goForward();

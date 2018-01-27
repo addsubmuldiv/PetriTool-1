@@ -24,6 +24,7 @@ public class EditTransition extends JDialog {
 	private JTextField textField_transitionName;
 	
 	private Transition transitionEdited_;
+	private JTextField textField_speed;
 	
 	public Transition getTransitionEdited_() {
 		return transitionEdited_;
@@ -57,7 +58,7 @@ public class EditTransition extends JDialog {
 		getContentPane().setLayout(null);
 		{
 			JLabel lblNewLabel_transitionName = new JLabel("Transition Name:");
-			lblNewLabel_transitionName.setFont(new Font("宋体", Font.PLAIN, 14));
+			lblNewLabel_transitionName.setFont(new Font("Dialog", Font.PLAIN, 14));
 			lblNewLabel_transitionName.setBounds(49, 63, 124, 15);
 			getContentPane().add(lblNewLabel_transitionName);
 		}
@@ -81,6 +82,18 @@ public class EditTransition extends JDialog {
 					transitionEdited_.draw(designPanel_.getGraphics(), petriTool_.gridStep_,
 							petriTool_.foregroundColor_, petriTool_.transitionLabels_);
 							designPanel_.repaint();
+					String speedText = textField_speed.getText().trim();
+					//use regex to ensure the speed is an int
+					if(!speedText.matches("^\\+?[1-9][0-9]*$")) {
+						JOptionPane.showMessageDialog(null, "Invalid input");
+						return;
+					}
+					int transitionSpeed = Integer.parseInt(speedText);
+					if(transitionSpeed>10) {
+						JOptionPane.showMessageDialog(null, "Please ensure the speed is in [1~10]");
+						return;
+					}
+					transitionEdited_.setSpeed(transitionSpeed);
 					dispose();
 				}
 			});
@@ -97,6 +110,16 @@ public class EditTransition extends JDialog {
 			btn_Cancel.setBounds(215, 143, 93, 23);
 			getContentPane().add(btn_Cancel);
 		}
+		
+		JLabel lblNewLabel_speed = new JLabel("Speed:");
+		lblNewLabel_speed.setFont(new Font("Dialog", Font.PLAIN, 14));
+		lblNewLabel_speed.setBounds(111, 94, 53, 15);
+		getContentPane().add(lblNewLabel_speed);
+		
+		textField_speed = new JTextField();
+		textField_speed.setColumns(10);
+		textField_speed.setBounds(171, 91, 151, 21);
+		getContentPane().add(textField_speed);
 		/**Set the window style**/
 		String lookAndFeel =   
                 UIManager.getSystemLookAndFeelClassName();  
@@ -104,9 +127,8 @@ public class EditTransition extends JDialog {
 				UIManager.setLookAndFeel(lookAndFeel);
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 					| UnsupportedLookAndFeelException e) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e.printStackTrace();
 			}  
 	}
-
 }

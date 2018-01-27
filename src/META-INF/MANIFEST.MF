@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Class-Path: .;D:\MyCode\PetriTool-1\lib\RXTXcomm.jar;D:\MyCode\PetriTo
+ ol-1\lib\dom4j-2.0.1.jar;D:\MyCode\PetriTool-1\src\PetriTool;D:\MyCod
+ e\PetriTool-1\src\FileViewer;D:\MyCode\PetriTool-1\src\PetriToolFrame
+Main-Class: PetriTool.PetriTool
+
