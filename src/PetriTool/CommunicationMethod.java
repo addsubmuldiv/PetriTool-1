@@ -40,7 +40,8 @@ public class CommunicationMethod implements ActionListener,Observer{
 	
 	public void connectToDevice()
 	{
-		serialPortManagement=new SerialPortManagement(petriTool_);
+		if(serialPortManagement==null)
+			serialPortManagement=new SerialPortManagement(petriTool_);
 		serialPortManagement.setVisible(true);
 	}
 	

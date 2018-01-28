@@ -1,27 +1,16 @@
 package PetriTool;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.awt.TextField;
-import java.awt.Window;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JTabbedPane;
-import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.border.TitledBorder;
-
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 import PetriTool.serialException.*;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
-import javafx.scene.control.ComboBox;
-
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -31,27 +20,21 @@ import java.awt.Dimension;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
-import javax.swing.JTextPane;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
-import javax.print.attribute.standard.PrinterName;
-import javax.print.attribute.standard.RequestingUserName;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DropMode;
 import javax.swing.ScrollPaneConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
 import java.awt.event.ActionEvent;
 import javax.swing.JRadioButton;
-import javax.swing.ImageIcon;
 import static java.util.stream.Collectors.*;
 
 
@@ -329,16 +312,16 @@ public class SerialPortManagement extends JFrame {
 		btn_Connect.setBounds(28, 281, 170, 36);
 		panel_Control.add(btn_Connect);
 		
-		JButton btn_CommunicationPropeties = new JButton("Communication Propeties");
-		btn_CommunicationPropeties.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				communicationPropeties=new CommunicationPropeties();
-				communicationPropeties.setVisible(true);
-			}
-		});
-		btn_CommunicationPropeties.setToolTipText("Communication Propeties");
-		btn_CommunicationPropeties.setBounds(28, 349, 170, 36);
-		panel_Control.add(btn_CommunicationPropeties);
+//		JButton btn_CommunicationPropeties = new JButton("Communication Propeties");
+//		btn_CommunicationPropeties.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				communicationPropeties=new CommunicationPropeties();
+//				communicationPropeties.setVisible(true);
+//			}
+//		});
+//		btn_CommunicationPropeties.setToolTipText("Communication Propeties");
+//		btn_CommunicationPropeties.setBounds(28, 349, 170, 36);
+//		panel_Control.add(btn_CommunicationPropeties);
 		
 		
 		JPanel panel_Send = new JPanel();
@@ -416,7 +399,7 @@ public class SerialPortManagement extends JFrame {
 		scrollPaneC2P = new JScrollPane();
 		scrollPaneC2P.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPaneC2P.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPaneC2P.setBounds(10, 22, 331, 205);
+		scrollPaneC2P.setBounds(10, 37, 331, 190);
 		panelC2P.add(scrollPaneC2P);
 		
 		modulePanelC2P = new JPanel();
@@ -571,6 +554,14 @@ public class SerialPortManagement extends JFrame {
 		btnOkC2P.setBounds(290, 237, 51, 23);
 		panelC2P.add(btnOkC2P);
 		
+		JLabel lblFunction = new JLabel("Function");
+		lblFunction.setBounds(80, 20, 54, 15);
+		panelC2P.add(lblFunction);
+		
+		JLabel lblNewLabel_1 = new JLabel("Place Name");
+		lblNewLabel_1.setBounds(200, 20, 70, 15);
+		panelC2P.add(lblNewLabel_1);
+		
 		JPanel panelP2C = new JPanel();
 		panelP2C.setLayout(null);
 		panelP2C.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Slaves to Master Singals", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
@@ -580,7 +571,7 @@ public class SerialPortManagement extends JFrame {
 		scrollPaneP2C = new JScrollPane();
 		scrollPaneP2C.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPaneP2C.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPaneP2C.setBounds(10, 22, 331, 178);
+		scrollPaneP2C.setBounds(10, 39, 331, 161);
 		panelP2C.add(scrollPaneP2C);
 		
 		modulePanelP2C = new JPanel();
@@ -704,6 +695,14 @@ public class SerialPortManagement extends JFrame {
 		});
 		btnOkP2C.setBounds(290, 210, 51, 23);
 		panelP2C.add(btnOkP2C);
+		
+		JLabel label = new JLabel("Function");
+		label.setBounds(80, 21, 54, 15);
+		panelP2C.add(label);
+		
+		JLabel label_1 = new JLabel("Place Name");
+		label_1.setBounds(200, 21, 70, 15);
+		panelP2C.add(label_1);
 	}
 	
 	
@@ -946,7 +945,7 @@ public class SerialPortManagement extends JFrame {
 	        e.getWindow().setVisible(false);
 	        isAutoSendPressed=false;
 	        SerialTool.closePort(serialPort);
-	        ((Window) e.getComponent()).dispose();
+	 //       ((Window) e.getComponent()).dispose();
 	    }
 	}
 	
