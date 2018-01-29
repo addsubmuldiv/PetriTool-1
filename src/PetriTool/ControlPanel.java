@@ -147,7 +147,7 @@ public class ControlPanel extends Panel {
     	
     }
     
-    
+//    public class 
     
     
 
@@ -815,7 +815,6 @@ public void userWantsZoomout() {
            
     }  
     
-    
     /**
      * Enable the RS232 button in the control panel
     **/
@@ -828,6 +827,10 @@ public void userWantsZoomout() {
            
     }  
     
+    public void userWantsModule() {
+    	currentButton_ = "Module";
+    	StatusMessage("Now we can draw a module");
+    }
     
     
     
@@ -875,6 +878,9 @@ public void userWantsZoomout() {
         }
         else if (buttonName.equals("Arc")) {
             userWantsArc();
+        }
+        else if (buttonName.equals("Module")) {
+        	userWantsModule();
         }
         else if (buttonName.equals("Text")) {
             userWantsText();

@@ -176,7 +176,7 @@ class PetriToolFrame extends Frame {
 
     /** List of ImageButton names in the ControlPanel **/
     String[] buttonList = {"New", "Open", "Save", "Save_as", "Print", "Zoom_in", "Zoom_out","Pointer", "Place", "Token",
-                           "Transition", "Arc", "Text",
+                           "Transition", "Arc", "Module", "Text",
                            "Reset", "RevStep", "ForStep",
                            "Run", "Pause", "Stop", "Calc", "Show",
                            "Prop", "Help", "ConnectToDevice", "alpha_mining", "delta_mining"};
@@ -1267,6 +1267,10 @@ class PetriToolFrame extends Frame {
                 petriTool_.controlPanel_.updateButtons("Arc");
                 petriTool_.controlPanel_.userWantsArc();
             }
+//            else if (label.equals("Module")) {
+//            	petriTool_.controlPanel_.updateButtons("Module");
+//            	petriTool_.controlPanel_.userWantsModule();
+//            }
             else if (label.equals("Text")) {
                 petriTool_.controlPanel_.updateButtons("Text");
                 petriTool_.controlPanel_.userWantsText();
@@ -1526,7 +1530,6 @@ class PetriToolFrame extends Frame {
 //			book.append(new PrintControl(petriTool_, petriTool_.designPanel_.placeVector_,  petriTool_.designPanel_.transitionVector_,
 //					 petriTool_.designPanel_.tokenVector_,  petriTool_.designPanel_.arcVector_),pageFormat);
 //		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
 //			e1.printStackTrace();
 //		}
 //       

@@ -147,6 +147,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
     /** Vector of all Arcs in the design **/
     protected Vector arcVector_;
 
+    protected Vector<PetriModule> moduleVector_;
     /** Vector of all Captions in the design **/
     protected Vector captionVector_;
 
@@ -226,12 +227,10 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 		DesignPanel myself;
 		
 		public placeEditListener(DesignPanel designPanel) {
-			// TODO Auto-generated constructor stub
 			myself = designPanel;
 		}
 		
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			EditPlace editPlaceDialog=new EditPlace(petriTool_, myself);
 			editPlaceDialog.setTokenEdited_(getToken(mouseX_, mouseY_));
 			editPlaceDialog.setPlaceEdited_(getPlace(mouseX_, mouseY_));
@@ -245,7 +244,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			Place placeToDelete=getPlace(mouseX_, mouseY_);
 			placeVector_.removeElement(placeToDelete);
 			tokenVector_.removeElement(getToken(mouseX_, mouseY_));
@@ -275,13 +273,11 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
     	DesignPanel myself;
     	
     	public transitionEditListener(DesignPanel designPanel) {
-			// TODO Auto-generated constructor stub
     		myself=designPanel;
 		}
     	
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			EditTransition editTransitionDialog=new EditTransition(petriTool_,myself);
 			editTransitionDialog.setTransitionEdited_(getTransition(mouseX_, mouseY_));
 			editTransitionDialog.setText();
@@ -297,7 +293,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			Transition transitionToDelete=getTransition(mouseX_, mouseY_);
 			transitionVector_.removeElement(transitionToDelete);
 			arcVector_.removeElement(getArc(mouseX_, mouseY_));
@@ -314,12 +309,10 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
     {
     	DesignPanel myself;
     	public ArcEditListener(DesignPanel designPanel) {
-			// TODO Auto-generated constructor stub
     		myself=designPanel;
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			EditArc editArcDialog=new EditArc(petriTool_,myself);
 			editArcDialog.setArcEdited_(getArc(mouseX_, mouseY_));
 			editArcDialog.setText();
@@ -333,7 +326,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			Arc arcToDelete=getArc(mouseX_, mouseY_);
 			arcVector_.removeElement(arcToDelete);
 			repaint();
@@ -377,7 +369,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         transitionVector_ = new Vector();
         arcVector_ = new Vector();
         captionVector_ = new Vector();
-
+        moduleVector_ = new Vector<>();
         // Initialize buffer vectors for design cut, copy, paste
         placeVectorBuf_ = new Vector();
         tokenVectorBuf_ = new Vector();
@@ -570,7 +562,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 			XMLWriter writer = new XMLWriter(osw, of);  
 			writer.write(document);
          } catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
@@ -616,7 +607,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 			setInitialMarking();
 			
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
@@ -2419,7 +2409,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 	
 	
 	private void setAllNotSelected() {
-		// TODO Auto-generated method stub
 		setOneKindOfComponentsNotSelected(arcVector_);
 		setOneKindOfComponentsNotSelected(placeVector_);
 		setOneKindOfComponentsNotSelected(transitionVector_);
@@ -2440,13 +2429,11 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 	
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -2459,7 +2446,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
    **/
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
 		if(!gridSpaceOccupied(e.getX(), e.getY()))
 		{
 			setAllNotSelected();
@@ -2734,7 +2720,25 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
                 StatusMessage("Arcs must be drawn within the border.");
             }
         }
-
+        
+        else if (selectedButton_.equals("Module")) {
+        	if (validDimension(x, y)) {
+                if (!gridSpaceOccupied(x, y)) {
+                	//TODO
+                	moduleVector_.add(new PetriModule(x/gridStep__, y/gridStep__));
+                    petriTool_.destroySimulation();
+                    System.out.println("you drawed a module");
+                    setInitialMarking();
+//					update(getGraphics());
+                }
+                else {
+                    StatusMessage("Transitions may not be drawn within 1 grid space of other elements");
+                }
+            }
+            else {
+                StatusMessage("Transitions must be drawn within the border.");
+            }
+        }
         else if (selectedButton_.equals("Calc")) {
 
         }
@@ -2760,7 +2764,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
      **/
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
+		
 		
 
 		
@@ -2784,7 +2788,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
 		if(resizing==false)
 		{
 			if(selectedButton_=="Arc")
@@ -2973,7 +2976,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stupb
 		if(e.getX()/petriTool_.gridStep_==petriTool_.gridWidth_+1&&
 				(double)e.getY()/petriTool_.gridStep_>(double)petriTool_.gridHeight_&&
 				(double)e.getY()/petriTool_.gridStep_<(double)petriTool_.gridHeight_+1)
