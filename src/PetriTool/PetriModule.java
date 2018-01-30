@@ -46,13 +46,13 @@ public class PetriModule {
 	private static int moduleCount = 0;
 	
 	private void changeNames() {
-		placeAction.setplaceName_("mP"+moduleCount);
-		placeOk.setplaceName_("mP"+moduleCount+"_Ok");
-		placeSuccess.setplaceName_("mP"+moduleCount+"_Success");
-		placeError.setplaceName_("mP"+moduleCount+"_Error");
-		placeFail.setplaceName_("mP"+moduleCount+"_Fail");
-		transitionOk.setTransitionName_("mT"+moduleCount+"_Ok");
-		transitionError.setTransitionName_("mT"+moduleCount+"_Fail");
+		placeAction.setplaceName_("ComP"+moduleCount);
+		placeOk.setplaceName_("ComP"+moduleCount+"_Ok");
+		placeSuccess.setplaceName_("ComP"+moduleCount+"_Success");
+		placeError.setplaceName_("ComP"+moduleCount+"_Error");
+		placeFail.setplaceName_("ComP"+moduleCount+"_Fail");
+		transitionOk.setTransitionName_("ComT"+moduleCount+"_Ok");
+		transitionError.setTransitionName_("ComT"+moduleCount+"_Fail");
 		moduleCount++;
 	}
 
