@@ -35,7 +35,6 @@ public class ControlMethod implements ActionListener,TreeSelectionListener{
 	
 	@SuppressWarnings("unchecked")
 	public ControlMethod(PetriTool petriTool) {
-		// TODO Auto-generated constructor stub
 		this.petriTool_=petriTool;
 		this.designPanel_=petriTool.designPanel_;
 		placeVector_=designPanel_.placeVector_;
@@ -47,14 +46,12 @@ public class ControlMethod implements ActionListener,TreeSelectionListener{
 	
 	@SuppressWarnings("unchecked")
 	public ControlMethod(PetriTool petriTool,JTree tree) {
-		// TODO Auto-generated constructor stub
 		this(petriTool);
 		this.tree=tree;
 	}
 	
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
-		// TODO Auto-generated method stub
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
  		if (node == null)
  			return;
@@ -75,7 +72,6 @@ public class ControlMethod implements ActionListener,TreeSelectionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		MenuItem source=(MenuItem)(e.getSource());
 		String menuItemName=source.getLabel();
 		switch(menuItemName)
@@ -132,7 +128,7 @@ public class ControlMethod implements ActionListener,TreeSelectionListener{
 
 	public void output()
 	{
-		JOptionPane.showMessageDialog(null, "Output is ……");
+		JOptionPane.showMessageDialog(null, "Output is ...");
 	}
 
 	
@@ -143,7 +139,6 @@ public class ControlMethod implements ActionListener,TreeSelectionListener{
 			UIManager.setLookAndFeel(lookAndFeel);
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}  
 	}

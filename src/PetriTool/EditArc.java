@@ -108,7 +108,6 @@ public class EditArc extends JDialog {
 				UIManager.setLookAndFeel(lookAndFeel);
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 					| UnsupportedLookAndFeelException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}  
 	}

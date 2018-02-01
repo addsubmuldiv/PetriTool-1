@@ -121,6 +121,7 @@ public class EditPlace extends JDialog {
 					placeEdited_.draw(designPanel_.getGraphics(), petriTool_.gridStep_,
 					petriTool_.foregroundColor_, true);
 					designPanel_.repaint();
+					//TODO
 					if(textField_tokenOption.getText().trim().length()!=0&&placeEdited_.getNumTokens()==0)
 					{
 						System.out.println(placeEdited_.getNumTokens());
@@ -155,7 +156,6 @@ public class EditPlace extends JDialog {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
 					dispose();
 				}
 			});
@@ -169,7 +169,6 @@ public class EditPlace extends JDialog {
 				UIManager.setLookAndFeel(lookAndFeel);
 			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 					| UnsupportedLookAndFeelException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}  
 	}

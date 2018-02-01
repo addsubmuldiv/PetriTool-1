@@ -3,6 +3,7 @@ package PetriTool;
 import static PetriTool.PetriTool.getPlaceLabel;
 import static PetriTool.PetriTool.getTransitionLabel;
 
+import java.nio.channels.NonWritableChannelException;
 import java.util.Vector;
 
 import static PetriTool.PetriTool.designPanel_;
@@ -11,111 +12,154 @@ import static PetriTool.PetriTool.componentPanel_;
 public class PetriModule {
 	private Place placeOk;
 	private Place placeFail;
-	private Place placeAction;
+	private Place placeExe;
 	private Place placeSuccess;
 	private Place placeError;
+	private Place placeBegin;
+	private Place placeAbort;
+	private Place placeStop;
 	private Transition transitionOk;
 	private Transition transitionError;
+	private Transition transitionAbort;
+	private Transition transitionBegin;
 	
 	
-	private Arc arcActionToOk;
-	private Arc arcActionToError;
+	private Arc arcExeToOk;
+	private Arc arcExeToError;
 	private Arc arcOkToOk;
 	private Arc arcOkToSuccess;
 	private Arc arcErrorToError;
 	private Arc arcErrorToFail;
+	private Arc arcBeginToBegin;
+	private Arc arcBeginToExe;
+	private Arc arcAbortToAbort;
+	private Arc arcAbortToStop;
+	private Arc arcExeToAbort;
 	
 	
 	
 	public PetriModule(int x, int y) {
-		placeAction = new Place(x,y,getPlaceLabel());
+		placeExe = new Place(x,y,getPlaceLabel());
 		placeOk = new Place(x+4,y-3,getPlaceLabel());
 		placeError = new Place(x+4,y+3,getPlaceLabel());
 		placeSuccess = new Place(x+8,y-1,getPlaceLabel());
 		placeFail = new Place(x+8,y+1,getPlaceLabel());
+		placeBegin = new Place(x-3,y-2,getPlaceLabel());
+		placeAbort = new Place(x-3,y+5,getPlaceLabel());
+		placeStop = new Place(x+8,y+5,getPlaceLabel());
+		transitionBegin = new Transition(x-2,y,getTransitionLabel());
+		transitionAbort = new Transition(x+2,y+5,getTransitionLabel());
 		transitionOk = new Transition(x+4, y-1, getTransitionLabel());
 		transitionError = new Transition(x+4, y+1, getTransitionLabel());
 		changeNames();
+		setArc();
+//		setArcEnd();
+//		arcAssemble();
+//		printArc();
 		putIntoVectors();
-		setArcStart();
-		setArcEnd();
-		arcAssemble();
 	}
 	
 	
 	private static int moduleCount = 0;
 	
 	private void changeNames() {
-		placeAction.setplaceName_("ComP"+moduleCount);
+		placeExe.setplaceName_("ComP"+moduleCount);
 		placeOk.setplaceName_("ComP"+moduleCount+"_Ok");
 		placeSuccess.setplaceName_("ComP"+moduleCount+"_Success");
 		placeError.setplaceName_("ComP"+moduleCount+"_Error");
 		placeFail.setplaceName_("ComP"+moduleCount+"_Fail");
+		placeAbort.setplaceName_("ComP"+moduleCount+"_Abort");
+		placeBegin.setplaceName_("ComP"+moduleCount+"_Begin");
+		placeStop.setplaceName_("ComP"+moduleCount+"_Stop");
 		transitionOk.setTransitionName_("ComT"+moduleCount+"_Ok");
-		transitionError.setTransitionName_("ComT"+moduleCount+"_Fail");
+		transitionBegin.setTransitionName_("ComT"+moduleCount+"_Begin");
+		transitionAbort.setTransitionName_("ComT"+moduleCount+"_Abort");
+		transitionError.setTransitionName_("ComT"+moduleCount+"_Error");
 		moduleCount++;
 	}
+	
+	public void printArc() {
+		System.out.println(arcExeToOk);
+	}
+	
+	
 
 	/**
 	 * put places and transitions into vectors
 	 */
 	private void putIntoVectors() {
-		designPanel_.placeVector_.add(placeAction);
+		designPanel_.placeVector_.add(placeExe);
 		designPanel_.placeVector_.add(placeOk);
 		designPanel_.placeVector_.add(placeError);
 		designPanel_.placeVector_.add(placeSuccess);
 		designPanel_.placeVector_.add(placeFail);
+		designPanel_.placeVector_.add(placeAbort);
+		designPanel_.placeVector_.add(placeBegin);
+		designPanel_.placeVector_.add(placeStop);
 		
 		designPanel_.transitionVector_.add(transitionOk);
+		designPanel_.transitionVector_.add(transitionAbort);
+		designPanel_.transitionVector_.add(transitionBegin);
 		designPanel_.transitionVector_.add(transitionError);
-	}
-	
-	private void setArcStart() {
-		arcActionToOk = new Arc(placeAction.getXCoordinate(),placeAction.getYCoordinate());
-		arcActionToError = new Arc(placeAction.getXCoordinate(),placeAction.getYCoordinate());
-		arcOkToOk = new Arc(placeOk.getXCoordinate(),placeOk.getYCoordinate());
-		arcOkToSuccess = new Arc(transitionOk.getXCoordinate(),transitionOk.getYCoordinate());
-		arcErrorToError = new Arc(placeError.getXCoordinate(),placeError.getYCoordinate());
-		arcErrorToFail = new Arc(transitionError.getXCoordinate(),transitionError.getYCoordinate());
 		
-		arcActionToOk.setStartComponent("Place");
-		arcActionToError.setStartComponent("Place");
-		arcOkToOk.setStartComponent("Place");
-		arcErrorToError.setStartComponent("Place");
-		arcOkToSuccess.setStartComponent("Transition");
-		arcErrorToFail.setStartComponent("Transition");
+		designPanel_.arcVector_.add(arcBeginToBegin);
+		designPanel_.arcVector_.add(arcBeginToExe);
+		designPanel_.arcVector_.add(arcAbortToAbort);
+		designPanel_.arcVector_.add(arcErrorToError);
+		designPanel_.arcVector_.add(arcExeToOk);
+		designPanel_.arcVector_.add(arcErrorToFail);
+		designPanel_.arcVector_.add(arcOkToOk);
+		designPanel_.arcVector_.add(arcExeToAbort);
+		designPanel_.arcVector_.add(arcAbortToStop);
+		designPanel_.arcVector_.add(arcExeToError);
+		designPanel_.arcVector_.add(arcOkToSuccess);
 	}
 	
-	private void setArcEnd() {
-		arcActionToOk.addCoordinates(transitionOk.getXCoordinate(), transitionOk.getYCoordinate());
-		arcOkToOk.addCoordinates(transitionOk.getXCoordinate(), transitionOk.getYCoordinate());
-		arcActionToError.addCoordinates(transitionError.getXCoordinate(), transitionError.getYCoordinate());
-		arcErrorToError.addCoordinates(transitionError.getXCoordinate(), transitionError.getYCoordinate());
-		arcErrorToFail.addCoordinates(placeFail.getXCoordinate(), placeFail.getYCoordinate());
-		arcOkToSuccess.addCoordinates(placeSuccess.getXCoordinate(), placeSuccess.getYCoordinate());
-		
-		arcActionToOk.setEndComponent("Transition");
-		arcActionToError.setEndComponent("Transition");
-		arcErrorToError.setEndComponent("Transition");
-		arcOkToOk.setEndComponent("Transition");
-		arcOkToSuccess.setEndComponent("Place");
-		arcErrorToFail.setEndComponent("Place");
-	}
-	
-	private void arcAssemble() {
-		Vector<Arc> tempArcVector = new Vector<>();
-		tempArcVector.add(arcActionToError);
-		tempArcVector.add(arcActionToOk);
-		tempArcVector.add(arcErrorToError);
-		tempArcVector.add(arcErrorToFail);
-		tempArcVector.add(arcOkToSuccess);
-		tempArcVector.add(arcOkToOk);
-			
-		for(Arc arc : tempArcVector) {
-			arc.setTokensToEnable(componentPanel_.getTokensToEnable());
-			arc.calculateSlopes();
-			arc.setArcDrawCoordinates();
-			designPanel_.arcVector_.add(arc);
-		}
+	private void setArc() {
+		arcBeginToBegin = new Arc(placeBegin,transitionBegin);
+		arcBeginToExe = new Arc(transitionBegin,placeExe);
+		arcAbortToAbort = new Arc(placeAbort,transitionAbort);
+		arcErrorToError = new Arc(placeError,transitionError);
+		arcExeToOk = new Arc(placeExe,transitionOk);
+		arcErrorToFail = new Arc(transitionError,placeFail);
+		arcOkToOk = new Arc(placeOk,transitionOk);
+		arcExeToAbort = new Arc(placeExe,transitionAbort);
+		arcAbortToStop = new Arc(transitionAbort,placeStop);
+		arcExeToError = new Arc(placeExe,transitionError);
+		arcOkToSuccess = new Arc(transitionOk,placeSuccess);
 	}
 }
+	
+//	private void setArcEnd() {
+//		arcExeToOk.addCoordinates(transitionOk.getXCoordinate(), transitionOk.getYCoordinate());
+//		arcOkToOk.addCoordinates(transitionOk.getXCoordinate(), transitionOk.getYCoordinate());
+//		arcExeToError.addCoordinates(transitionError.getXCoordinate(), transitionError.getYCoordinate());
+//		arcErrorToError.addCoordinates(transitionError.getXCoordinate(), transitionError.getYCoordinate());
+//		arcErrorToFail.addCoordinates(placeFail.getXCoordinate(), placeFail.getYCoordinate());
+//		arcOkToSuccess.addCoordinates(placeSuccess.getXCoordinate(), placeSuccess.getYCoordinate());
+//		
+//		arcExeToOk.setEndComponent("Transition");
+//		arcExeToError.setEndComponent("Transition");
+//		arcErrorToError.setEndComponent("Transition");
+//		arcOkToOk.setEndComponent("Transition");
+//		arcOkToSuccess.setEndComponent("Place");
+//		arcErrorToFail.setEndComponent("Place");
+//	}
+	
+//	private void arcAssemble() {
+//		Vector<Arc> tempArcVector = new Vector<>();
+//		tempArcVector.add(arcExeToError);
+//		tempArcVector.add(arcExeToOk);
+//		tempArcVector.add(arcErrorToError);
+//		tempArcVector.add(arcErrorToFail);
+//		tempArcVector.add(arcOkToSuccess);
+//		tempArcVector.add(arcOkToOk);
+//			
+//		for(Arc arc : tempArcVector) {
+//			arc.setTokensToEnable(componentPanel_.getTokensToEnable());
+//			arc.calculateSlopes();
+//			arc.setArcDrawCoordinates();
+//			designPanel_.arcVector_.add(arc);
+//		}
+//	}
+//}

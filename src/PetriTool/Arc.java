@@ -41,6 +41,9 @@ import org.dom4j.Element;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import static PetriTool.PetriTool.componentPanel_;
+
 import java.awt.Color;
 import java.awt.Graphics;
 
@@ -177,12 +180,80 @@ class Arc extends PetriComponent {
         }
     }
 
+    
+    
+    
+    public Arc(Place startPlace,Transition endTransition) {
+		xCoordinateVector_ = new Vector();
+        yCoordinateVector_ = new Vector();
+        xDrawCoordinateVector_ = new Vector();
+        yDrawCoordinateVector_ = new Vector();
+        slopeVector_ = new Vector();
+
+        try {
+            xCoordinateVector_.insertElementAt(new Integer (startPlace.getXCoordinate()), 0);
+            yCoordinateVector_.insertElementAt(new Integer (startPlace.getYCoordinate()), 0);
+            setStartComponent("Place");
+            setStartPlace_(startPlace);
+            
+            addCoordinates(endTransition.getXCoordinate(), endTransition.getYCoordinate());
+            setEndComponent("Transition");
+            setDestinationTransition_(endTransition);
+            arcAssemble();
+            
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
+           System.out.println("Error - " + e);
+        }
+    }
+    
+    
+    
+    public Arc(Transition startTransition,Place endPlace) {
+    	xCoordinateVector_ = new Vector();
+        yCoordinateVector_ = new Vector();
+        xDrawCoordinateVector_ = new Vector();
+        yDrawCoordinateVector_ = new Vector();
+        slopeVector_ = new Vector();
+
+        try {
+            xCoordinateVector_.insertElementAt(new Integer (startTransition.getXCoordinate()), 0);
+            yCoordinateVector_.insertElementAt(new Integer (startTransition.getYCoordinate()), 0);
+            setStartComponent("Transition");
+            setStartTransition_(startTransition);
+            
+            addCoordinates(endPlace.getXCoordinate(), endPlace.getYCoordinate());
+            setEndComponent("Place");
+            setDestinationPlace_(endPlace);
+            arcAssemble();
+            
+        }
+        catch (ArrayIndexOutOfBoundsException e) {
+           System.out.println("Error - " + e);
+        }
+    }
+    
+    
+    
+    
+    
+    
     /**
       * Construct a new Arc without specifying any parameters.
     **/
     public Arc() {
     }
 
+    
+    
+    private void arcAssemble() {
+    	setTokensToEnable(componentPanel_.getTokensToEnable());
+		calculateSlopes();
+		setArcDrawCoordinates();
+    }
+    
+    
+    
     /**
       * Create a copy of the current Arc Object
     **/
@@ -246,7 +317,7 @@ class Arc extends PetriComponent {
     }
     
     /**
-     * ������ֹ�������
+     * this method is used to change the end coordinate of the arc, which is used when you are dragging something
      * @param x
      * @param y
      */
@@ -1115,6 +1186,15 @@ class Arc extends PetriComponent {
         }
         return (coordinate);
     }
+    
+    
+    //TODO
+	@Override
+	public String toString() {
+		return "Arc [startPlace_=" + startPlace_ + ", destinationPlace_=" + destinationPlace_ + ", startTransition_="
+				+ startTransition_ + ", destinationTransition_=" + destinationTransition_ + ", destinationIsPlace_="
+				+ destinationIsPlace_ + "]";
+	}
 
     /**
       * Sets the destination object and destinationIsPlace_ accordingly
