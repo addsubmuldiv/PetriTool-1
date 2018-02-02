@@ -36,9 +36,12 @@ public class PetriModule {
 	private Arc arcAbortToStop;
 	private Arc arcExeToAbort;
 	
-	
+	private int XCoordinate;
+	private int YCoordinate;
 	
 	public PetriModule(int x, int y) {
+		XCoordinate=x;
+		YCoordinate=y;
 		placeExe = new Place(x,y,getPlaceLabel());
 		placeOk = new Place(x+4,y-3,getPlaceLabel());
 		placeError = new Place(x+4,y+3,getPlaceLabel());
@@ -60,6 +63,23 @@ public class PetriModule {
 	}
 	
 	
+	public Place getExe() {
+		return placeExe;
+	}
+	
+	public int getXCoordinate() {
+		return XCoordinate;
+	}
+
+	public static final int xDistance = 12;
+	public static final int yDistance = 8;
+	
+
+	public int getYCoordinate() {
+		return YCoordinate;
+	}
+
+
 	private static int moduleCount = 0;
 	
 	private void changeNames() {

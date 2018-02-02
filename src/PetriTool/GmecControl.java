@@ -18,7 +18,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.util.Random;
-import java.util.Vector;
 import java.awt.event.ActionEvent;
 import static java.util.stream.Collectors.*;
 public class GmecControl extends JFrame {

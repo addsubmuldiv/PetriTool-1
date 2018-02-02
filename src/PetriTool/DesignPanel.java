@@ -66,6 +66,7 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicSliderUI.ScrollListener;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -78,6 +79,7 @@ import com.sun.org.apache.xerces.internal.util.Status;
 import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
@@ -1458,6 +1460,20 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         return (true);
 
     }
+    
+    /**
+     * When you delete a place which is a member of a module, delete the module simultaneously
+     * @param tempPlace__
+     */
+    public void deleteModule(Place tempPlace__) {
+    	ListIterator<PetriModule> moduleIterator = moduleVector_.listIterator();
+    	while(moduleIterator.hasNext()) {
+    		if(tempPlace__==moduleIterator.next().getExe()) {
+    			moduleIterator.remove();
+    		}
+    	}
+    }
+    
 
     /**
       * When the user selects delete, all of the items currently
@@ -1476,6 +1492,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         for (int i__ = 0; i__ < maxRange__ ; i__++) {
             Place tempPlace__ = (Place) placeVector_.elementAt(i__ - offset__);
             if (tempPlace__.isSelected()) {
+            	deleteModule(tempPlace__);
                 obsoleteXVector__.addElement
                     (new Integer(tempPlace__.getXCoordinate()));
                 obsoleteYVector__.addElement
@@ -1483,9 +1500,10 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
                 placeVector_.removeElementAt(i__ - offset__);
                 offset__++;
                 itemsDeleted__ = true;
-
             }
         }
+        
+        
 
         // Remove all selected transitions
         offset__ = 0;
@@ -2728,19 +2746,21 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         else if (selectedButton_.equals("Module")) {
         	if (validDimension(x, y)) {
                 if (!gridSpaceOccupied(x, y)) {
-                	//TODO
-                	moduleVector_.add(new PetriModule(x/gridStep__, y/gridStep__));
+                	if(canDrawAModule(x/gridStep__, y/gridStep__))
+						moduleVector_.add(new PetriModule(x/gridStep__, y/gridStep__));
+                	else {
+						StatusMessage("Collision");
+                		return;
+                	}
                     petriTool_.destroySimulation();
-                    System.out.println("you drawed a module");
                     setInitialMarking();
-//					update(getGraphics());
                 }
                 else {
-                    StatusMessage("Transitions may not be drawn within 1 grid space of other elements");
+                    StatusMessage("Collision");
                 }
             }
             else {
-                StatusMessage("Transitions must be drawn within the border.");
+                StatusMessage("Module must be drawn within the border.");
             }
         }
         else if (selectedButton_.equals("Calc")) {
@@ -3020,6 +3040,20 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 	private boolean sResizing=false;
 	private boolean seResizing=false;
 	private boolean resizing=false;
+	
+	
+	
+	public boolean canDrawAModule(int xCoordinate, int yCoordinate) {
+		if(!moduleVector_.isEmpty()) {
+			for(PetriModule module:moduleVector_) {
+				if(Math.abs(module.getXCoordinate()-xCoordinate)<=PetriModule.xDistance
+						&&Math.abs(module.getYCoordinate()-yCoordinate)<=PetriModule.yDistance)
+					return false;
+			}
+		}
+		return true;
+	}
+	
 }
 
 
