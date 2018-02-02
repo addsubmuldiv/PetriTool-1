@@ -71,8 +71,8 @@ public class PetriModule {
 		return XCoordinate;
 	}
 
-	public static final int xDistance = 12;
-	public static final int yDistance = 8;
+	public static final int xDistance = 14;
+	public static final int yDistance = 10;
 	
 
 	public int getYCoordinate() {
