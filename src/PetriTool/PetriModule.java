@@ -44,10 +44,10 @@ public class PetriModule {
 		placeError = new Place(x+4,y+3,getPlaceLabel());
 		placeSuccess = new Place(x+8,y-1,getPlaceLabel());
 		placeFail = new Place(x+8,y+1,getPlaceLabel());
-		placeBegin = new Place(x-3,y-2,getPlaceLabel());
-		placeAbort = new Place(x-3,y+5,getPlaceLabel());
+		placeBegin = new Place(x-4,y-2,getPlaceLabel());
+		placeAbort = new Place(x-4,y+5,getPlaceLabel());
 		placeStop = new Place(x+8,y+5,getPlaceLabel());
-		transitionBegin = new Transition(x-3,y,getTransitionLabel());
+		transitionBegin = new Transition(x-4,y,getTransitionLabel());
 		transitionAbort = new Transition(x+2,y+5,getTransitionLabel());
 		transitionOk = new Transition(x+4, y-1, getTransitionLabel());
 		transitionError = new Transition(x+4, y+1, getTransitionLabel());

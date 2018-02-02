@@ -196,12 +196,6 @@ public class GmecControl extends JFrame {
 	
 	
 	
-	public void gmec() {
-		
-	}
-	
-	
-	
 	/**
 	 * Create the frame.
 	 */
