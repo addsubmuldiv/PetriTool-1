@@ -1032,7 +1032,11 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
         	// Draw the Arcs
         	for (int i__ = 0; i__ < arcVector_.size(); i__++) {
         	    Arc tempArc__ = (Arc) arcVector_.elementAt(i__);
-        	    tempArc__.draw(g, step__, foregroundColor__);
+        	    if((tempArc__.getStartPlace_()!=null&&tempArc__.getStartPlace_().getplaceName_().matches("C[0-9][0-9]*"))
+        	    		||(tempArc__.getDestinationPlace_()!=null&&tempArc__.getDestinationPlace_().getplaceName_().matches("C[0-9][0-9]*")))
+        	    	tempArc__.draw(g2d, step__, foregroundColor__);
+        	    else
+					tempArc__.draw(g, step__, foregroundColor__);
         	}
 	
         	// Draw the Captions

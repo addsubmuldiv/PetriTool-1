@@ -47,7 +47,7 @@ public class PetriModule {
 		placeBegin = new Place(x-3,y-2,getPlaceLabel());
 		placeAbort = new Place(x-3,y+5,getPlaceLabel());
 		placeStop = new Place(x+8,y+5,getPlaceLabel());
-		transitionBegin = new Transition(x-2,y,getTransitionLabel());
+		transitionBegin = new Transition(x-3,y,getTransitionLabel());
 		transitionAbort = new Transition(x+2,y+5,getTransitionLabel());
 		transitionOk = new Transition(x+4, y-1, getTransitionLabel());
 		transitionError = new Transition(x+4, y+1, getTransitionLabel());
@@ -76,10 +76,6 @@ public class PetriModule {
 		transitionAbort.setTransitionName_("ComT"+moduleCount+"_Abort");
 		transitionError.setTransitionName_("ComT"+moduleCount+"_Error");
 		moduleCount++;
-	}
-	
-	public void printArc() {
-		System.out.println(arcExeToOk);
 	}
 	
 	
@@ -130,36 +126,3 @@ public class PetriModule {
 	}
 }
 	
-//	private void setArcEnd() {
-//		arcExeToOk.addCoordinates(transitionOk.getXCoordinate(), transitionOk.getYCoordinate());
-//		arcOkToOk.addCoordinates(transitionOk.getXCoordinate(), transitionOk.getYCoordinate());
-//		arcExeToError.addCoordinates(transitionError.getXCoordinate(), transitionError.getYCoordinate());
-//		arcErrorToError.addCoordinates(transitionError.getXCoordinate(), transitionError.getYCoordinate());
-//		arcErrorToFail.addCoordinates(placeFail.getXCoordinate(), placeFail.getYCoordinate());
-//		arcOkToSuccess.addCoordinates(placeSuccess.getXCoordinate(), placeSuccess.getYCoordinate());
-//		
-//		arcExeToOk.setEndComponent("Transition");
-//		arcExeToError.setEndComponent("Transition");
-//		arcErrorToError.setEndComponent("Transition");
-//		arcOkToOk.setEndComponent("Transition");
-//		arcOkToSuccess.setEndComponent("Place");
-//		arcErrorToFail.setEndComponent("Place");
-//	}
-	
-//	private void arcAssemble() {
-//		Vector<Arc> tempArcVector = new Vector<>();
-//		tempArcVector.add(arcExeToError);
-//		tempArcVector.add(arcExeToOk);
-//		tempArcVector.add(arcErrorToError);
-//		tempArcVector.add(arcErrorToFail);
-//		tempArcVector.add(arcOkToSuccess);
-//		tempArcVector.add(arcOkToOk);
-//			
-//		for(Arc arc : tempArcVector) {
-//			arc.setTokensToEnable(componentPanel_.getTokensToEnable());
-//			arc.calculateSlopes();
-//			arc.setArcDrawCoordinates();
-//			designPanel_.arcVector_.add(arc);
-//		}
-//	}
-//}

@@ -122,8 +122,8 @@ public class ControlMethod implements ActionListener,TreeSelectionListener{
 	
 	public void GMECcontrol()
 	{
-		JOptionPane.showMessageDialog(null, "GMEC control method is invoked!");
-		output();
+		GmecControl gmecControl = new GmecControl();
+		gmecControl.setVisible(true);
 	}
 
 	public void output()

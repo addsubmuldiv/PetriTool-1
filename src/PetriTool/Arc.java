@@ -121,11 +121,7 @@ class Arc extends PetriComponent {
     /** Handle to the Transition that this Arc goes to, or null **/
     protected Transition destinationTransition_;
 
-    /**
-      * Tells which of destinationPlace_ or destinationTransition_
-      * should be valid during simulation.
-    **/
-    protected boolean destinationIsPlace_ = false;
+   
 
     /** Size of the arrow head **/
     protected final double ARROW_SIZE = 5.0;
@@ -570,19 +566,35 @@ class Arc extends PetriComponent {
     
     
     
-    
+    /**
+     * get the start place of the arc if it is not null
+     * @param startPlace_
+     */
     public void setStartPlace_(Place startPlace_) {
 		this.startPlace_ = startPlace_;
 	}
-
+    
+    
+    /**
+     * get the start transition of the arc if it is not null
+     * @param startTransition_
+     */
 	public void setStartTransition_(Transition startTransition_) {
 		this.startTransition_ = startTransition_;
 	}
-
+	
+	/**
+	 * get the destination place of the arc if it is not null
+	 * @param destinationPlace_
+	 */
 	public void setDestinationPlace_(Place destinationPlace_) {
 		this.destinationPlace_ = destinationPlace_;
 	}
-
+	
+	/**
+	 * get the destination transition of the arc if it is not null
+	 * @param destinationTransition_
+	 */
 	public void setDestinationTransition_(Transition destinationTransition_) {
 		this.destinationTransition_ = destinationTransition_;
 	}
@@ -1192,8 +1204,35 @@ class Arc extends PetriComponent {
 	@Override
 	public String toString() {
 		return "Arc [startPlace_=" + startPlace_ + ", destinationPlace_=" + destinationPlace_ + ", startTransition_="
-				+ startTransition_ + ", destinationTransition_=" + destinationTransition_ + ", destinationIsPlace_="
-				+ destinationIsPlace_ + "]";
+				+ startTransition_ + ", destinationTransition_=" + destinationTransition_ + "]";
+	}
+
+
+
+
+	public Place getStartPlace_() {
+		return startPlace_;
+	}
+
+
+
+
+	public Place getDestinationPlace_() {
+		return destinationPlace_;
+	}
+
+
+
+
+	public Transition getStartTransition_() {
+		return startTransition_;
+	}
+
+
+
+
+	public Transition getDestinationTransition_() {
+		return destinationTransition_;
 	}
 
     /**
