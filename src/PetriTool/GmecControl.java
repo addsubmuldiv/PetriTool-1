@@ -9,6 +9,8 @@ import javax.swing.border.EmptyBorder;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.util.Vector;
 import javax.swing.JTextField;
@@ -134,6 +136,7 @@ public class GmecControl extends JFrame {
 			allZero = allZero && placeToTransition[i]==0;
 		}
 		if(allZero) {
+			JOptionPane.showMessageDialog(null, "It is not necessory to change the petri net!");
 			return;
 		}
 		
