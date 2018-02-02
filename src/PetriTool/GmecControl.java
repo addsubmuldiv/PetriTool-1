@@ -129,6 +129,14 @@ public class GmecControl extends JFrame {
 	 */
 	public void addNewPlace(int[] placeToTransition,int token) {
 		//TODO
+		boolean allZero = true;
+		for(int i=0;i<placeToTransition.length;i++) {
+			allZero = allZero && placeToTransition[i]==0;
+		}
+		if(allZero) {
+			return;
+		}
+		
 		Vector<Arc> arcVector = PetriTool.designPanel_.arcVector_;
 		Vector<Place> placeVector = PetriTool.designPanel_.placeVector_;
 		Vector<Transition> transitionVector = PetriTool.designPanel_.transitionVector_;

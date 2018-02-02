@@ -1434,10 +1434,6 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
     }
 
 
-
-
-
-
     /**
       * This routine is called when the user is performing a
       * select operation in a grid space with both a Place
