@@ -43,6 +43,7 @@ import java.awt.Event;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -63,6 +64,7 @@ import java.io.IOException;
 import javax.print.attribute.Attribute;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
+import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
@@ -73,6 +75,7 @@ import javax.xml.soap.Text;
 import com.sun.javafx.geom.transform.BaseTransform.Degree;
 
 import javafx.scene.control.Control;
+import pipe.main.Pipe;
 
 /**
   * A class representing the Frame containing the PetriTool
@@ -173,7 +176,7 @@ class PetriToolFrame extends Frame {
     Menu communication;
     
     /** Menu for process mining operations **/
-    Menu mining;
+    Menu tools;
     
     /** Menu for conversion operations*/
     Menu conversion;
@@ -516,11 +519,14 @@ class PetriToolFrame extends Frame {
         menubar.add(communication);
         
         // Create the Processing menu.  Add items to it.  Add to menubar.
-        mining = new Menu("Mining");
+        tools = new Menu("Tools");
         MenuItem processMining=new MenuItem("process mining");
+        MenuItem pipe4 = new MenuItem("pipe 4.0");
         processMining.addActionListener(new MiningMethod(petriTool_));
-        mining.add(processMining);
-        menubar.add(mining);
+        pipe4.addActionListener(new pipeListener());
+        tools.add(processMining);
+        tools.add(pipe4);
+        menubar.add(tools);
         
         conversion = new Menu("Conversion");
         MenuItem Text2Mxml = new MenuItem("text2mxml");
@@ -540,6 +546,15 @@ class PetriToolFrame extends Frame {
         return(menubar);
     }
 
+    class pipeListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			Pipe.startPipe();
+		}
+    	
+    }
     /**
       * Handle all events in this frame by calling super.handleEvent()
     **/
