@@ -68,6 +68,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.xml.soap.Text;
 
 import com.sun.javafx.geom.transform.BaseTransform.Degree;
 
@@ -173,6 +174,9 @@ class PetriToolFrame extends Frame {
     
     /** Menu for process mining operations **/
     Menu mining;
+    
+    /** Menu for conversion operations*/
+    Menu conversion;
 
     /** List of ImageButton names in the ControlPanel **/
     String[] buttonList = {"New", "Open", "Save", "Save_as", "Print", "Zoom_in", "Zoom_out","Pointer", "Place", "Token",
@@ -513,14 +517,16 @@ class PetriToolFrame extends Frame {
         
         // Create the Processing menu.  Add items to it.  Add to menubar.
         mining = new Menu("Mining");
-        MenuItem alpahMining=new MenuItem("alpha mining");
-        MenuItem deltaMining=new MenuItem("delta mining");
-        alpahMining.addActionListener(new MiningMethod(petriTool_));
-        deltaMining.addActionListener(new MiningMethod(petriTool_));
-        mining.add(alpahMining);
-        mining.add(deltaMining);
+        MenuItem processMining=new MenuItem("process mining");
+        processMining.addActionListener(new MiningMethod(petriTool_));
+        mining.add(processMining);
         menubar.add(mining);
-
+        
+        conversion = new Menu("Conversion");
+        MenuItem Text2Mxml = new MenuItem("text2mxml");
+        Text2Mxml.addActionListener(new Conversion());
+        conversion.add(Text2Mxml);
+        menubar.add(conversion);
         
         // Create Help menu; add an item; add to menubar
         help = new Menu("Help");
@@ -537,7 +543,7 @@ class PetriToolFrame extends Frame {
     /**
       * Handle all events in this frame by calling super.handleEvent()
     **/
-    /* 
+    /*
      * This method doesn't work after you click your right button,
      * only if you close your window before your clicking right button will it works.
      * Reason: Don't know yet, but the bug has been fixed
@@ -552,7 +558,7 @@ class PetriToolFrame extends Frame {
 
     /**
       * Repaint the elements in the frame
-    **/
+    */
     public void repaint() {
         petriTool_.controlPanel_.repaint();
         petriTool_.designPanel_.repaint();
@@ -562,7 +568,7 @@ class PetriToolFrame extends Frame {
     /**
       * Set either the Font style or Font Size, based on the
       * String label received in the event.
-    **/
+    */
     public void setFont (String label) {
         int selectedIndex__ = -1;
         boolean foundMatch__ = false;
@@ -1267,10 +1273,6 @@ class PetriToolFrame extends Frame {
                 petriTool_.controlPanel_.updateButtons("Arc");
                 petriTool_.controlPanel_.userWantsArc();
             }
-//            else if (label.equals("Module")) {
-//            	petriTool_.controlPanel_.updateButtons("Module");
-//            	petriTool_.controlPanel_.userWantsModule();
-//            }
             else if (label.equals("Text")) {
                 petriTool_.controlPanel_.updateButtons("Text");
                 petriTool_.controlPanel_.userWantsText();
