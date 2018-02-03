@@ -19,9 +19,11 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.util.ListIterator;
 import java.util.Random;
 import java.awt.event.ActionEvent;
 import static java.util.stream.Collectors.*;
+import javax.swing.JRadioButton;
 public class GmecControl extends JFrame {
 
 	private JPanel contentPane;
@@ -30,39 +32,56 @@ public class GmecControl extends JFrame {
 
 	private Vector<GmecModule> gmecModuleVector = new Vector<>();
 	
-	private int labelYCoordinate = 13;
-	private int textYCoordinate = 10;
+	private int currentYCoordinate = 10;
 	private int count = 0;
 	private static final int distance = 28; 
 	class GmecModule {
+		private JRadioButton selectedButton;
 		private JLabel labelL;
 		private JLabel labelB;
 		private JTextField textL;
 		private JTextField textB;
+		private int yCoordinate;
 		public GmecModule() {
+			this.yCoordinate = currentYCoordinate;
+			selectedButton = new JRadioButton("");
 			labelL = new JLabel("L"+count+":");
 			labelB = new JLabel("B"+count+":");
 			textL = new JTextField();
 			textB = new JTextField();
-			labelL.setBounds(10,labelYCoordinate,24,15);
-			textL.setBounds(37,textYCoordinate,210,21);
-			labelB.setBounds(270,labelYCoordinate,28,15);
-			textB.setBounds(298,textYCoordinate,82,21);
+			selectedButton.setBounds(10,yCoordinate,21,21);
+			labelL.setBounds(37,yCoordinate,24,21);
+			textL.setBounds(64,yCoordinate,183,21);
+			labelB.setBounds(270,yCoordinate,28,21);
+			textB.setBounds(298,yCoordinate,82,21);
 			
+			constraintPanel.add(selectedButton);
 			constraintPanel.add(labelL);
 			constraintPanel.add(labelB);
 			constraintPanel.add(textB);
 			constraintPanel.add(textL);
 			
-			labelYCoordinate+=distance;
-			textYCoordinate+=distance;
+			currentYCoordinate+=distance;
 			count++;
-			if(textYCoordinate>constraintPanel.getHeight())
+			if(currentYCoordinate>constraintPanel.getHeight())
 			{
-				constraintPanel.setPreferredSize(new Dimension(constraintPanel.getWidth(), textYCoordinate));
+				constraintPanel.setPreferredSize(new Dimension(constraintPanel.getWidth(), currentYCoordinate));
 				constraintPanel.revalidate();
 			}
 			repaint();
+		}
+		
+		public int getYCoordinate() {
+			return yCoordinate;
+		}
+		
+		public void setLocation(int yCoordinate) {
+			selectedButton.setBounds(10,yCoordinate,21,21);
+			labelL.setBounds(37,yCoordinate,24,21);
+			textL.setBounds(64,yCoordinate,183,21);
+			labelB.setBounds(270,yCoordinate,28,21);
+			textB.setBounds(298,yCoordinate,82,21);
+			this.yCoordinate = yCoordinate;
 		}
 	}
 	
@@ -183,13 +202,14 @@ public class GmecControl extends JFrame {
 	}
 	
 	public void calculatePlace(IncidenceMatrix incidenceMatrix) {
+		int placeNum = PetriTool.designPanel_.placeVector_.size();
 		for(int i=0;i<gmecModuleVector.size();i++) {
 			GmecModule gmecModule = gmecModuleVector.get(i);
 			if(StringUtils.isNotBlank(gmecModule.textB.getText())
 					&&StringUtils.isNotBlank(gmecModule.textL.getText())) {
 				//we use space to split the array
 				String[] gmecLstr = gmecModule.textL.getText().split(" ");
-				if(gmecLstr.length==PetriTool.designPanel_.placeVector_.size()) {
+				if(gmecLstr.length==placeNum) {
 					gmecL = new int[gmecLstr.length];
 					for (int j = 0; j < gmecL.length; j++) {
 						gmecL[j]=Integer.parseInt(gmecLstr[j]);
@@ -278,17 +298,24 @@ public class GmecControl extends JFrame {
 		JButton btn_delete = new JButton("Delete");
 		btn_delete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				GmecModule temp = gmecModuleVector.lastElement();
-				constraintPanel.remove(temp.labelB);
-				constraintPanel.remove(temp.labelL);
-				constraintPanel.remove(temp.textB);
-				constraintPanel.remove(temp.textL);
-				gmecModuleVector.remove(temp);
-				textYCoordinate-=distance;
-				labelYCoordinate-=distance;
-				count--;
-				constraintPanel.setPreferredSize(new Dimension(constraintPanel.getWidth(), textYCoordinate));
-				constraintPanel.revalidate();
+				for(int i=0;i<gmecModuleVector.size();i++)
+				{
+					if(gmecModuleVector.get(i).selectedButton.isSelected())
+					{
+						constraintPanel.remove(gmecModuleVector.get(i).selectedButton);
+						constraintPanel.remove(gmecModuleVector.get(i).labelB);
+						constraintPanel.remove(gmecModuleVector.get(i).labelL);
+						constraintPanel.remove(gmecModuleVector.get(i).textB);
+						constraintPanel.remove(gmecModuleVector.get(i).textL);
+						repaint();
+						gmecModuleVector.remove(i);
+						gmecModuleVector.stream().skip(i).forEach(m->
+						{
+							m.setLocation(m.getYCoordinate()-distance);
+						});
+					}
+				}
+				currentYCoordinate-=distance;
 				repaint();
 			}
 		});

@@ -500,9 +500,6 @@ public class SerialPortManagement extends JFrame {
 						moduleListC2P.remove(i);
 						moduleListC2P.stream().skip(i).forEach(m->
 						{
-//							m.jButton.setLocation(m.jButton.getX(), m.jButton.getY()-ROW_SPACE);
-//							m.moduleName.setLocation(m.moduleName.getX(), m.moduleName.getY()-ROW_SPACE);
-//							m.placeDistinction.setLocation(m.placeDistinction.getX(), m.placeDistinction.getY()-ROW_SPACE);
 							m.setLocation(m.getyCoordinate()-ROW_SPACE);
 						});
 					}
@@ -668,9 +665,6 @@ public class SerialPortManagement extends JFrame {
 						moduleListP2C.remove(i);
 						moduleListP2C.stream().skip(i).forEach(m->
 						{
-//							m.jButton.setLocation(m.jButton.getX(), m.jButton.getY()-ROW_SPACE);
-//							m.moduleName.setLocation(m.moduleName.getX(), m.moduleName.getY()-ROW_SPACE);
-//							m.placeDistinction.setLocation(m.placeDistinction.getX(), m.placeDistinction.getY()-ROW_SPACE);
 							m.setLocation(m.getyCoordinate()-ROW_SPACE);
 						});
 					}
