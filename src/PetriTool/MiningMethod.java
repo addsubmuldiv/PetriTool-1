@@ -8,9 +8,6 @@ import java.util.Observer;
 
 import javax.swing.JOptionPane;
 
-import org.processmining.ProM;
-import org.processmining.framework.models.recommendation.net.StringLogPersistency;
-import org.processmining.framework.ui.MainUI;
 
 public class MiningMethod implements ActionListener,Observer{
 
@@ -46,7 +43,6 @@ public class MiningMethod implements ActionListener,Observer{
 	public void processMining()
 	{
 		JOptionPane.showMessageDialog(null, "process mining");
-		new MainUI();
 		//TODO
 		output();
 	}
