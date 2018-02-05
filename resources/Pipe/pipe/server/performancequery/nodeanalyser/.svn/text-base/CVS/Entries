@@ -1,0 +1,16 @@
+/ArithComp.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/ArithOp.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/BinaryNodeAnalyser.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/BoolNode.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/CalculationNodeAnalyser.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/DisCon.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/InInterval.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/InvalidNodeAnalyserException.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/Negation.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/NodeAnalyser.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/NodeAnalyserHelper.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/NodeAnalyserLoggingHandler.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/NumNode.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/RangeNode.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/UnaryNodeAnalyser.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate
+/ValueNodeAnalyser.java.svn-base/1.1/Sat Apr 28 20:30:22 2012/-kb/TFunctionalWeight&Rate

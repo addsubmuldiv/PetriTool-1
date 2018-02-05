@@ -75,7 +75,6 @@ import javax.xml.soap.Text;
 import com.sun.javafx.geom.transform.BaseTransform.Degree;
 
 import javafx.scene.control.Control;
-import pipe.main.Pipe;
 
 /**
   * A class representing the Frame containing the PetriTool
@@ -186,7 +185,7 @@ class PetriToolFrame extends Frame {
                            "Transition", "Arc", "Module", "Text",
                            "Reset", "RevStep", "ForStep",
                            "Run", "Pause", "Stop", "Calc", "Show",
-                           "Prop", "Help", "ConnectToDevice", "Process_mining", "Conversion", "Pipe"};
+                           "Prop", "Help", "ConnectToDevice", "Process_mining", "Pipe", "Conversion"};
 
     /** Directory where the current design will to be saved **/
     String saveFileDirectory_ = null;
@@ -546,7 +545,7 @@ class PetriToolFrame extends Frame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			Pipe.startPipe();
+			petriTool_.controlPanel_.userWantsPipe();
 		}
     	
     }

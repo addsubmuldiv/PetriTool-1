@@ -6,6 +6,5 @@
 	<classpathentry kind="lib" path="lib/dom4j-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/guava-20.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.5.jar"/>
-	<classpathentry kind="lib" path="C:/Users/zyh13/Desktop/pipe.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

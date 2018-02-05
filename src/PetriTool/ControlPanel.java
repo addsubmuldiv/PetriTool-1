@@ -40,8 +40,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.Vector;
 
-import pipe.main.Pipe;
-import pipe.views.ConnectableView;
 
 import java.util.Observable;
 import java.io.IOException;
@@ -837,7 +835,13 @@ public void userWantsZoomout() {
     
     
     public void userWantsPipe() {
-    	Pipe.startPipe();
+    	String cmd = "cmd /c start /b resources\\pipe\\Pipe.bat";
+    	try {
+			Runtime.getRuntime().exec(cmd);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     
