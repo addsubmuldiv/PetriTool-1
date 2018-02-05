@@ -110,6 +110,7 @@ public class EditPlace extends JDialog {
 		{
 			JButton btn_OK = new JButton("OK");
 			btn_OK.addActionListener(new ActionListener() {
+				@SuppressWarnings("unchecked")
 				public void actionPerformed(ActionEvent arg0) {
 					String placeName=textField_placeName.getText().trim().toString();
 					if(placeName.length()==0)
@@ -122,12 +123,15 @@ public class EditPlace extends JDialog {
 					petriTool_.foregroundColor_, true);
 					designPanel_.repaint();
 					//TODO
-					if(textField_tokenOption.getText().trim().length()!=0&&placeEdited_.getNumTokens()==0)
+					int tempTokenNum = Integer.parseInt(textField_tokenOption.getText().trim());
+					if(tempTokenNum!=0&&placeEdited_.getNumTokens()==0)
 					{
-						System.out.println(placeEdited_.getNumTokens());
-						JOptionPane.showMessageDialog(null, "Sorry! You hava to add a token first!");
+						Token tempToken = new Token(placeEdited_.getXCoordinate(),placeEdited_.getYCoordinate(),
+								tempTokenNum);
+						placeEdited_.setToken(tempToken);
+						PetriTool.designPanel_.tokenVector_.add(tempToken);
+						designPanel_.repaint();
 						dispose();
-						return;
 					}
 					if(tokenEdited_!=null&&textField_tokenOption.getText().trim().length()!=0)
 					{	

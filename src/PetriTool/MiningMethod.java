@@ -3,6 +3,7 @@ package PetriTool;
 import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -42,9 +43,14 @@ public class MiningMethod implements ActionListener,Observer{
 	
 	public void processMining()
 	{
-		JOptionPane.showMessageDialog(null, "process mining");
 		//TODO
-		output();
+		String cmd = "cmd /c start /b resources\\ProM\\ProM.bat";
+		try {
+			Process process = Runtime.getRuntime().exec(cmd);
+			} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	

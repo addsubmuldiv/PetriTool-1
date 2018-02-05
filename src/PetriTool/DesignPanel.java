@@ -34,21 +34,16 @@
 package PetriTool;
 
 import java.awt.Panel;
-import java.awt.PopupMenu;
 import java.awt.Event;
 import java.awt.Dimension;
 import java.awt.Scrollbar;
-import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Line2D;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.MenuItem;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.BasicStroke;
@@ -57,16 +52,13 @@ import java.awt.FontMetrics;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Vector;
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicSliderUI.ScrollListener;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -75,9 +67,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-import com.sun.org.apache.xerces.internal.util.Status;
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
-
+import java.util.List;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
@@ -217,6 +207,29 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
     **/
     JPopupMenu pMenu,tMenu,aMenu;
     
+    
+    public Place getPlaceByLabel(int label) {
+    	Vector<Place> places = placeVector_;
+    	for(Place place:places) {
+    		if(place.getLabel() == label) {
+    			return place;
+    		}
+    	}
+    	return null;
+    }
+    
+    
+    
+    
+    public Transition getTransitionByLabel(int label) {
+    	Vector<Transition> transitions = transitionVector_;
+    	for(Transition transition : transitions) {
+    		if(transition.getLabel() == label) {
+    			return transition;
+    		}
+    	}
+    	return null;
+    }
     
     
     
@@ -576,7 +589,7 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
     	newDesign();
     	StatusMessage("Loading from "+path);
     	SAXReader reader=new SAXReader();
-    	try {
+		try {
 			Document document=reader.read(new File(path));
 			Element pnml=document.getRootElement();
 			Element net=pnml.element("net");
@@ -613,7 +626,49 @@ class DesignPanel extends Panel implements MouseListener,MouseMotionListener{
 		}
     }
     
-    
+    @SuppressWarnings("unchecked")
+	public void loadFromPnml(String path) {
+    	newDesign();
+    	StatusMessage("Loading from "+path);
+    	SAXReader reader=new SAXReader();
+    	try {
+			Document document=reader.read(new File(path));
+			Element pnml=document.getRootElement();
+			Element net=pnml.element("net");
+			List<Element> placeList=net.elements("place");
+			for(Iterator<Element> iterator=placeList.iterator();iterator.hasNext();)
+			{
+				Element place=iterator.next();
+				Place tempPlace=Place.loadFromPnml(place);
+				placeVector_.add(tempPlace);
+				if(tempPlace.token_!=null)
+					tokenVector_.add(tempPlace.token_);
+			}
+			PetriTool.setPlaceLabel(placeList.size());
+			
+			List<Element> transitionList=net.elements("transition");
+			for(Iterator<Element> iterator=transitionList.iterator();iterator.hasNext();)
+			{
+				Element transition=iterator.next();
+				Transition tempTransition=Transition.loadFromPnml(transition);
+				transitionVector_.add(tempTransition);
+			}
+			PetriTool.setTransitionLabel(transitionList.size());
+			
+			List<Element> arcList=net.elements("arc");
+			for(Iterator<Element> iterator=arcList.iterator();iterator.hasNext();)
+			{
+				Element arc=iterator.next();
+				Arc tempArc=Arc.loadFromPnml(arc);
+				arcVector_.addElement(tempArc);
+			}
+			
+			setInitialMarking();
+			
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+    }
     
     
     

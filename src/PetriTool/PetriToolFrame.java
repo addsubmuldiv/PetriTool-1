@@ -186,7 +186,7 @@ class PetriToolFrame extends Frame {
                            "Transition", "Arc", "Module", "Text",
                            "Reset", "RevStep", "ForStep",
                            "Run", "Pause", "Stop", "Calc", "Show",
-                           "Prop", "Help", "ConnectToDevice", "alpha_mining", "delta_mining"};
+                           "Prop", "Help", "ConnectToDevice", "Process_mining", "Conversion", "Pipe"};
 
     /** Directory where the current design will to be saved **/
     String saveFileDirectory_ = null;
@@ -298,23 +298,21 @@ class PetriToolFrame extends Frame {
     **/
     public MenuBar PetriToolMenuBar() {
 
-
         // Create the menubar.  Tell the frame about it.
         menubar = new MenuBar();
         this.setMenuBar(menubar);
-
        
-        
-        
         // Create the file menu.  Add items to it.  Add to menubar.
-               
         file = new Menu("File");
         menuItemsToDisable_.addElement (menuItem_ = new MenuItem ("New") );
         file.add(menuItem_);
-
+        
         menuItemsToDisable_.addElement (menuItem_ = new MenuItem ("Open") );
         file.add(menuItem_);
 
+        menuItemsToDisable_.addElement(menuItem_ = new MenuItem("Open from pnml"));
+        file.add(menuItem_);
+        
         menuItemsToDisable_.addElement (menuItem_ = new MenuItem ("Close") );
         file.add(menuItem_);
 
@@ -347,10 +345,7 @@ class PetriToolFrame extends Frame {
                 saveFileDirectory_ = saveFileDialog_.getDirectory();
                 petriTool_.designPanel_.saveDesign (saveFileDirectory_ +
         				saveFileName_);
-                
             }
-        	
-        	
         });
         
         
@@ -930,6 +925,10 @@ class PetriToolFrame extends Frame {
 //                }
             	selectOpen();
             }
+            else if(label.equals("Open from pnml")) {
+            	//TODO
+            	selectOpenPnml();
+            }
             else if (label.equals("Close")) {
                 // If the help button is active, display help file
                 if (helpWanted()) {
@@ -1463,7 +1462,25 @@ class PetriToolFrame extends Frame {
         return false;
     }
     
-    
+    public boolean selectOpenPnml() {
+    	//TODO
+    	openFileDialog_ = new FileDialog(this, "Open from Pnml", FileDialog.LOAD);
+        openFileDialog_.setDirectory(".");
+        openFileDialog_.setFile("*");
+        openFileDialog_.setVisible(true);  // blocks until user selects a file
+        if (openFileDialog_.getFile() != null) {
+            saveFileName_ = openFileDialog_.getFile();
+            saveFileDirectory_ = openFileDialog_.getDirectory();
+            petriTool_.newDesign();
+            
+            if(saveFileName_.substring(saveFileName_.length()-5).equalsIgnoreCase(".pnml"))
+            	petriTool_.designPanel_.loadFromPnml(saveFileDirectory_+saveFileName_);
+
+            // Enable saveMenuItem_ now that we have a name
+            saveMenuItem_.setEnabled(true);
+        }
+        return false;
+    }
     
     
     public boolean selectSaveAs()

@@ -1,13 +1,17 @@
 package PetriTool;
 
+import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
+
+import java.util.Observable;
+import java.util.Observer;
 import java.util.StringTokenizer;
 
-public class Conversion implements ActionListener{
+public class Conversion implements ActionListener,Observer{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -117,6 +121,12 @@ public class Conversion implements ActionListener{
             //javax.swing.JOptionPane.showMessageDialog(null, "Converted Successfully!");
             System.out.println("Converted Successfully!");
         }
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		this.actionPerformed(new ActionEvent(this, 0, ""));
 	}
 
 }

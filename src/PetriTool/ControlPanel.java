@@ -40,6 +40,9 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.Vector;
 
+import pipe.main.Pipe;
+import pipe.views.ConnectableView;
+
 import java.util.Observable;
 import java.io.IOException;
 
@@ -116,9 +119,9 @@ public class ControlPanel extends Panel {
     
     private CommunicationObservable communicationObservable_;
     private MiningObservable miningObservable_;
+    private ConversionObservable conversionObservable_;
    /**an inner class just be used to call the button observer**/
-    public class CommunicationObservable extends Observable
-    {
+    public class CommunicationObservable extends Observable {
     	private	boolean called=false;
     	
     	public boolean isCalled() {
@@ -131,9 +134,22 @@ public class ControlPanel extends Panel {
     }
     
     
+    public class ConversionObservable extends Observable {
+    	private	boolean called=false;
+    	
+    	public boolean isCalled() {
+			return called;
+		}
+		public void setCalled(boolean called) {
+			this.called = called;
+			setChanged();
+		}
+    }
+    
+    
+    
    /**an inner class just be used to call the button observer**/
-    public class MiningObservable extends Observable
-    {
+    public class MiningObservable extends Observable {
     	private boolean called=false;
 
 		public boolean isCalled() {
@@ -215,6 +231,9 @@ public class ControlPanel extends Panel {
         
         miningObservable_=new MiningObservable();
         miningObservable_.addObserver(new MiningMethod(petriTool_));
+        
+        conversionObservable_ = new ConversionObservable();
+        conversionObservable_.addObserver(new Conversion());
 	}
 
     /**
@@ -806,23 +825,31 @@ public void userWantsZoomout() {
     /**
      * Enable the alpha mining button in the control panel
     **/
-    public void userWantsalphamining() {
+    public void userWantsProcessmining() {
            
-           currentButton_ = "alpha_mining";
+           currentButton_ = "Process_mining";
            miningObservable_.setCalled(true);
-           miningObservable_.notifyObservers("alpha mining");
+           miningObservable_.notifyObservers("process mining");
            StatusMessage("We can dig a model from the log by alpha mining algorithm.");
            
     }  
     
+    
+    
+    public void userWantsPipe() {
+    	Pipe.startPipe();
+    }
+    
+    
+    private Conversion conversion = new Conversion();
     /**
-     * Enable the RS232 button in the control panel
+     * Conversion
     **/
-    public void userWantsdeltamining() {
-           
-           currentButton_ = "delta_mining";
-           miningObservable_.setCalled(true);
-           miningObservable_.notifyObservers("delta mining");
+    public void userWantsConversion() {
+           //TODO
+           currentButton_ = "Conversion";
+           conversionObservable_.setCalled(true);
+           conversionObservable_.notifyObservers();
            StatusMessage("We can dig a model from the log by delta mining algorithm.");
            
     }  
@@ -918,12 +945,14 @@ public void userWantsZoomout() {
         else if (buttonName.equals("ConnectToDevice")) {
             userWantsConnectToDevice();
         }
-        else if (buttonName.equals("alpha_mining")) {
-            userWantsalphamining();
+        else if (buttonName.equals("Process_mining")) {
+            userWantsProcessmining();
         }
-        else if (buttonName.equals("delta_mining")) {
-            userWantsdeltamining();
+        else if (buttonName.equals("Conversion")) {
+            userWantsConversion();
+        }
+        else if (buttonName.equals("Pipe")) {
+        	userWantsPipe();
         }
     }
-
 }

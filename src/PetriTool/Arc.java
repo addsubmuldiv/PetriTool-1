@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static PetriTool.PetriTool.componentPanel_;
-
+import static PetriTool.PetriTool.designPanel_;
 import java.awt.Color;
 import java.awt.Graphics;
 
@@ -827,7 +827,8 @@ class Arc extends PetriComponent {
       * Given a StringTokenizer, set the Arc values.  Useful
       * for restoring an Arc from a file.
     **/
-    public void loadFromFile(StringTokenizer tokenizer) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public void loadFromFile(StringTokenizer tokenizer) {
         xCoordinateVector_ = new Vector();
         yCoordinateVector_ = new Vector();
         xDrawCoordinateVector_ = new Vector();
@@ -868,7 +869,8 @@ class Arc extends PetriComponent {
 
     
     
-    public static Arc loadFromXML(Element arc,DesignPanel designPanel)
+    @SuppressWarnings({ "unchecked", "static-access" })
+	public static Arc loadFromXML(Element arc,DesignPanel designPanel)
     {
     	Arc newArc=new Arc();
     	newArc.xCoordinateVector_=new Vector<>();
@@ -947,6 +949,7 @@ class Arc extends PetriComponent {
     		if(x%designPanel.petriTool_.gridStep_!=0)
     			loadFromPipe=true;
     	}
+    	//here is to fix the bug that when you load from pipe the start coordinate and the end coordinate will be wrong.
     	if(loadFromPipe)
 		{
     		if(newArc.startComponent_.equals("Place"))
@@ -972,7 +975,43 @@ class Arc extends PetriComponent {
     }
     
     
-    
+    @SuppressWarnings("unchecked")
+	public static Arc loadFromPnml(Element arc) {
+    	Arc newArc=new Arc();
+    	newArc.xCoordinateVector_=new Vector<>();
+    	newArc.yCoordinateVector_=new Vector<>();
+    	newArc.xDrawCoordinateVector_=new Vector<>();
+    	newArc.yDrawCoordinateVector_=new Vector<>();
+    	newArc.slopeVector_=new Vector<>();
+		String source = arc.attribute("source").getText();
+		String target = arc.attribute("target").getText();
+    	if(source.matches("trans.*")) {
+    		newArc.setStartComponent("Transition");
+    		newArc.setEndComponent("Place");
+    		
+    		int indexT = Integer.parseInt(source.substring(source.indexOf("_")+1));
+    		int indexP = Integer.parseInt(target.substring(target.indexOf("_")+1));
+    		newArc.setStartTransition_(designPanel_.getTransitionByLabel(indexT));
+    		newArc.setDestinationPlace_(designPanel_.getPlaceByLabel(indexP));
+    		newArc.addCoordinates(newArc.getStartTransition_().getXCoordinate(), newArc.getStartTransition_().getYCoordinate());
+    		//TODO
+    		newArc.setTokensToEnable(1);
+    		newArc.addCoordinates(newArc.getDestinationPlace_().getXCoordinate(), newArc.getDestinationPlace_().getYCoordinate());
+    	} else {
+    		newArc.setStartComponent("Place");
+    		newArc.setEndComponent("Transition");
+    		int indexP = Integer.parseInt(source.substring(source.indexOf("_")+1));
+    		int indexT = Integer.parseInt(target.substring(target.indexOf("_")+1));
+    		newArc.setStartPlace_(designPanel_.getPlaceByLabel(indexP));
+    		newArc.setDestinationTransition_(designPanel_.getTransitionByLabel(indexT));
+    		newArc.addCoordinates(newArc.getStartPlace_().getXCoordinate(), newArc.getStartPlace_().getYCoordinate());
+    		//TODO
+    		newArc.setTokensToEnable(1);
+    		newArc.addCoordinates(newArc.getDestinationTransition_().getXCoordinate(), newArc.getDestinationTransition_().getYCoordinate());
+
+    	}
+    	return newArc;
+    }
     
     
     
@@ -988,7 +1027,8 @@ class Arc extends PetriComponent {
       * arrow head of the arc appropriately from the four possible
       * types of arrow heads.
     **/
-    public void setArcDrawCoordinates() {
+    @SuppressWarnings("unchecked")
+	public void setArcDrawCoordinates() {
         double slope__;
         xDrawCoordinateVector_.removeAllElements();
         yDrawCoordinateVector_.removeAllElements();
@@ -1153,7 +1193,8 @@ class Arc extends PetriComponent {
     /**
       * Calculate the slopes of the different lengths of the Arc.
     **/
-    public void calculateSlopes() {
+    @SuppressWarnings("unchecked")
+	public void calculateSlopes() {
         double slope__;
         int x1__;
         int x2__;
